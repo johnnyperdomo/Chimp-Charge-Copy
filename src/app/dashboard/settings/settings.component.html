@@ -1,56 +1,58 @@
-<div class="header">
-  <div class="header-body">
-    <div class="row align-items-end">
-      <div class="col">
-        <h6 class="header-pretitle">
-          Overview
-        </h6>
+<div class="main-content">
+  <div class="header">
+    <div class="header-body">
+      <div class="row align-items-end">
+        <div class="col">
+          <h6 class="header-pretitle">
+            Overview
+          </h6>
 
-        <h1 class="header-title">
-          Settings
-        </h1>
+          <h1 class="header-title">
+            Settings
+          </h1>
+        </div>
       </div>
-    </div>
-    <div class="row">
-      <div class="col-12">
-        <ul class="nav nav-tabs header-tabs">
-          <li class="nav-item">
-            <a
-              class="nav-link text-center"
-              routerLinkActive="active"
-              [routerLink]="['/settings/account']"
-            >
-              Account
-            </a>
-          </li>
-          <li class="nav-item">
-            <a
-              class="nav-link text-center"
-              routerLinkActive="active"
-              [routerLink]="['/settings/billing']"
-            >
-              Billing
-            </a>
-          </li>
-          <li class="nav-item">
-            <a
-              class="nav-link text-center"
-              routerLinkActive="active"
-              [routerLink]="['/settings/payouts']"
-            >
-              Payouts
-            </a>
-          </li>
-        </ul>
+      <div class="row">
+        <div class="col-12">
+          <ul class="nav nav-tabs header-tabs">
+            <li class="nav-item">
+              <a
+                class="nav-link text-center"
+                routerLinkActive="active"
+                [routerLink]="['/settings/account']"
+              >
+                Account
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link text-center"
+                routerLinkActive="active"
+                [routerLink]="['/settings/billing']"
+              >
+                Billing
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link text-center"
+                routerLinkActive="active"
+                [routerLink]="['/settings/payouts']"
+              >
+                Payouts
+              </a>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
-      <router-outlet></router-outlet>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <router-outlet></router-outlet>
+      </div>
     </div>
   </div>
 </div>

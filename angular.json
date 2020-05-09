@@ -23,8 +23,15 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "aot": true,
-            "assets": ["src/favicon.ico", "src/assets"],
-            "styles": ["src/styles.scss", "src/dashkit/css/theme.min.css"],
+            "assets": ["src/favicon.ico", "src/assets", "src/dashkit/img"],
+            "styles": [
+              "src/styles.scss",
+              "src/dashkit/css/theme.min.css",
+              "src/dashkit/fonts/feather/feather.css",
+              "src/dashkit/libs/flatpickr/dist/flatpickr.min.css",
+              "src/dashkit/libs/quill/dist/quill.core.css",
+              "src/dashkit/libs/highlightjs/styles/vs2015.css"
+            ],
             "scripts": []
           },
           "configurations": {
