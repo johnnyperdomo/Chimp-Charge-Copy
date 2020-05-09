@@ -1,0 +1,51 @@
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-sm table-nowrap card-table">
+      <thead>
+        <tr>
+          <th>
+            <h5 class="text-muted">
+              Customer
+            </h5>
+          </th>
+          <th>
+            <h5 class="text-muted">
+              Amount
+            </h5>
+          </th>
+          <th>
+            <h5 class="text-muted">
+              Status
+            </h5>
+          </th>
+          <th>
+            <h5 class="text-muted">
+              Date
+            </h5>
+          </th>
+          <th colspan="2">
+            <h5 class="text-muted">
+              Type
+            </h5>
+          </th>
+        </tr>
+      </thead>
+      <tbody class="list">
+        <tr *ngFor="let paymentEl of payments">
+          <td>{{ paymentEl.customerName }}</td>
+          <td>{{ paymentEl.amount }}</td>
+          <td>
+            <!-- Badge -->
+            <!-- TODO: Change badge types according to status -->
+            <div class="badge badge-success">
+              {{ paymentEl.status }}
+            </div>
+          </td>
+          <td>{{ paymentEl.date }}</td>
+          <td>{{ paymentEl.type }}</td>
+          <td class="text-right">Refund?</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
