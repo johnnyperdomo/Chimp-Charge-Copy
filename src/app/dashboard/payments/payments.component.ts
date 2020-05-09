@@ -6,7 +6,10 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./payments.component.scss'],
 })
 export class PaymentsComponent implements OnInit {
-  payments = '$30'; //pseudo code
+  paymentsLastThirtyDays = '$2,534'; //pseudo code
+  customerCount = 9; //pseudo code
+  activeSubscriberCount = 3;
+  paymentsTotal = '$17,543';
 
   constructor() {}
 
