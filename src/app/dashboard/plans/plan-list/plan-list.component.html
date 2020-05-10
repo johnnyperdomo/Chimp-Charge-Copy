@@ -1,1 +1,64 @@
-<p>plan-list works!</p>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-sm table-nowrap card-table">
+      <thead>
+        <tr>
+          <!-- NEXT-UPDATE: add sort order, filters in table header for payment data-->
+          <!-- NEXT-UPDATE: add pagination to not show all results in 1 page, order by pages -->
+          <th>
+            <h5 class="text-muted mb-0">
+              Plan Name
+            </h5>
+          </th>
+          <th>
+            <h5 class="text-muted mb-0">
+              <u class="more-info" placement="top" ngbTooltip="Plan ID">ID</u>
+            </h5>
+          </th>
+          <th>
+            <h5 class="text-muted mb-0">
+              Type
+            </h5>
+          </th>
+          <th>
+            <h5 class="text-muted mb-0">
+              Price
+            </h5>
+          </th>
+          <th>
+            <h5 class="text-muted mb-0">
+              Created
+            </h5>
+          </th>
+        </tr>
+      </thead>
+      <tbody class="list">
+        <!-- NEXT-UPDATE: Make table rows fully tappable, or just allow txn id to be a tappable link, then leads to more in-depth information about the payment -->
+        <tr *ngFor="let planEl of plans">
+          <td>
+            <h5 class="mb-0">{{ planEl.planName }}</h5>
+          </td>
+          <td>{{ planEl.id }}</td>
+          <td>
+            <h4 class="mb-0">
+              <span class="badge badge-light">
+                <!-- TODO: make badge 'light' when single, make badge 'outline-info'
+                when recurring ; or another color -->
+                <b>{{ planEl.type }}</b>
+              </span>
+            </h4>
+          </td>
+          <td>
+            <h5 class="mb-0">{{ planEl.price }}</h5>
+            <!-- TODO: only show 'billed Monthly' if recurring type -->
+            <p class="card-text small text-muted mb-0">
+              Billed Monthly
+              <!-- TODO: Should be dynamic based on pricing interval' -->
+            </p>
+          </td>
+          <td>{{ planEl.createdDate }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
