@@ -5,7 +5,7 @@ export class Payment {
   public customerEmail: string;
   public amount: string;
   public status: string;
-  public date: string;
+  public date: string; //TODO: should be date
   public type: string;
 
   constructor(

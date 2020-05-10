@@ -7,62 +7,60 @@
           <!-- NEXT-UPDATE: add pagination to not show all results in 1 page, order by pages -->
           <th>
             <h5 class="text-muted mb-0">
-              Customer
+              Name
             </h5>
           </th>
           <th>
             <h5 class="text-muted mb-0">
-              <u placement="top" ngbTooltip="Transaction ID">TXN ID</u>
+              <u placement="top" ngbTooltip="Customer ID">ID</u>
             </h5>
           </th>
           <th>
             <h5 class="text-muted mb-0">
-              Amount
+              Total Payments
             </h5>
           </th>
           <th>
             <h5 class="text-muted mb-0">
-              Status
-            </h5>
-          </th>
-          <th>
-            <h5 class="text-muted mb-0">
-              Date
+              Created
             </h5>
           </th>
           <th colspan="2">
             <h5 class="text-muted mb-0">
-              Type
+              Recent Transaction
             </h5>
           </th>
         </tr>
       </thead>
       <tbody class="list">
         <!-- NEXT-UPDATE: Make table rows fully tappable, or just allow txn id to be a tappable link, then leads to more in-depth information about the payment -->
-        <tr *ngFor="let paymentEl of payments">
+        <tr *ngFor="let customerEl of customers">
           <td>
-            <h5 class="mb-0">{{ paymentEl.customerName }}</h5>
+            <h5 class="mb-0">{{ customerEl.customerName }}</h5>
             <p class="card-text small text-muted mb-0">
-              {{ paymentEl.customerEmail }}
+              {{ customerEl.customerEmail }}
             </p>
           </td>
-          <td>{{ paymentEl.paymentID }}</td>
+          <td>{{ customerEl.id }}</td>
           <td>
-            $<b>{{ paymentEl.amount }}</b>
+            <h5 class="mb-0">{{ customerEl.totalPayments }}</h5>
+            <p class="card-text small text-muted mb-0">
+              {{ customerEl.totalTransactions }} payments
+              <!-- TODO: Should be singular '1 payment', plural '2 payments' -->
+            </p>
           </td>
-          <td>
-            <!-- Badge -->
-            <!-- TODO: Change badge types according to status -->
-            <h4 class="mb-0">
-              <span class="badge badge-soft-warning">
-                <b>{{ paymentEl.status }}</b>
-              </span>
-            </h4>
+          <td>{{ customerEl.createdDate }}</td>
+          <td>{{ customerEl.recentTransaction }}</td>
+          <td class="text-right">
+            <!-- Only show badge if subscriber -->
+            <ng-container *ngIf="customerEl.isSubscriber">
+              <h4 class="mb-0">
+                <span class="badge badge-soft-primary">
+                  <b>Subscriber</b>
+                </span>
+              </h4>
+            </ng-container>
           </td>
-          <td>{{ paymentEl.date }}</td>
-          <td>{{ paymentEl.type }}</td>
-          <!-- TODO: make this a refundable button: opens modal -->
-          <td class="text-right">Refund?</td>
         </tr>
       </tbody>
     </table>

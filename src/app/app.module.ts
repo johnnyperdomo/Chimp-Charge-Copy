@@ -15,6 +15,9 @@ import { BillingComponent } from './dashboard/settings/billing/billing.component
 import { PayoutsComponent } from './dashboard/settings/payouts/payouts.component';
 import { PaymentListComponent } from './dashboard/payments/payment-list/payment-list.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { CustomerListComponent } from './dashboard/customers/customer-list/customer-list.component';
+import { PlanListComponent } from './dashboard/plans/plan-list/plan-list.component';
+import { SubscriberListComponent } from './dashboard/subscribers/subscriber-list/subscriber-list.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +33,9 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     BillingComponent,
     PayoutsComponent,
     PaymentListComponent,
+    CustomerListComponent,
+    PlanListComponent,
+    SubscriberListComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, NgbModule],
   providers: [],
