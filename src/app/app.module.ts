@@ -14,6 +14,7 @@ import { AccountComponent } from './dashboard/settings/account/account.component
 import { BillingComponent } from './dashboard/settings/billing/billing.component';
 import { PayoutsComponent } from './dashboard/settings/payouts/payouts.component';
 import { PaymentListComponent } from './dashboard/payments/payment-list/payment-list.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,7 @@ import { PaymentListComponent } from './dashboard/payments/payment-list/payment-
     PayoutsComponent,
     PaymentListComponent,
   ],
-  imports: [BrowserModule, AppRoutingModule],
+  imports: [BrowserModule, AppRoutingModule, NgbModule],
   providers: [],
   bootstrap: [AppComponent],
 })

@@ -12,6 +12,11 @@
           </th>
           <th>
             <h5 class="text-muted mb-0">
+              <u placement="top" ngbTooltip="Transaction ID">TXN ID</u>
+            </h5>
+          </th>
+          <th>
+            <h5 class="text-muted mb-0">
               Amount
             </h5>
           </th>
@@ -33,6 +38,8 @@
         </tr>
       </thead>
       <tbody class="list">
+        <!-- NEXT-UPDATE: Make table rows fully tappable, then leads to more in-depth
+        information -->
         <tr *ngFor="let paymentEl of payments">
           <td>
             <h5 class="mb-0">{{ paymentEl.customerName }}</h5>
@@ -40,7 +47,7 @@
               {{ paymentEl.customerEmail }}
             </p>
           </td>
-
+          <td class="">{{ paymentEl.paymentID }}</td>
           <td>
             $<b>{{ paymentEl.amount }}</b>
           </td>
