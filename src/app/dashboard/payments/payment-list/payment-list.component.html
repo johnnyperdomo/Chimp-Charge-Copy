@@ -3,28 +3,30 @@
     <table class="table table-sm table-nowrap card-table">
       <thead>
         <tr>
+          <!-- NEXT-UPDATE: add sort order, filters in table header for payment data-->
+          <!-- NEXT-UPDATE: add pagination to not show all results in 1 page, order by pages -->
           <th>
-            <h5 class="text-muted">
+            <h5 class="text-muted mb-0">
               Customer
             </h5>
           </th>
           <th>
-            <h5 class="text-muted">
+            <h5 class="text-muted mb-0">
               Amount
             </h5>
           </th>
           <th>
-            <h5 class="text-muted">
+            <h5 class="text-muted mb-0">
               Status
             </h5>
           </th>
           <th>
-            <h5 class="text-muted">
+            <h5 class="text-muted mb-0">
               Date
             </h5>
           </th>
           <th colspan="2">
-            <h5 class="text-muted">
+            <h5 class="text-muted mb-0">
               Type
             </h5>
           </th>
@@ -32,8 +34,16 @@
       </thead>
       <tbody class="list">
         <tr *ngFor="let paymentEl of payments">
-          <td>{{ paymentEl.customerName }}</td>
-          <td>{{ paymentEl.amount }}</td>
+          <td>
+            <h5 class="mb-0">{{ paymentEl.customerName }}</h5>
+            <p class="card-text small text-muted mb-0">
+              {{ paymentEl.customerEmail }}
+            </p>
+          </td>
+
+          <td>
+            $<b>{{ paymentEl.amount }}</b>
+          </td>
           <td>
             <!-- Badge -->
             <!-- TODO: Change badge types according to status -->
@@ -43,6 +53,7 @@
           </td>
           <td>{{ paymentEl.date }}</td>
           <td>{{ paymentEl.type }}</td>
+          <!-- TODO: make this a refundable button: opens modal -->
           <td class="text-right">Refund?</td>
         </tr>
       </tbody>

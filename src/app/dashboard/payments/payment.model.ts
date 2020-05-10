@@ -2,6 +2,7 @@
 export class Payment {
   public paymentID: string;
   public customerName: string;
+  public customerEmail: string;
   public amount: string;
   public status: string;
   public date: string;
@@ -10,6 +11,7 @@ export class Payment {
   constructor(
     paymentID: string,
     customerName: string,
+    customerEmail: string,
     amount: string,
     status: string,
     date: string,
@@ -17,6 +19,7 @@ export class Payment {
   ) {
     this.paymentID = paymentID;
     this.customerName = customerName;
+    this.customerEmail = customerEmail;
     this.amount = amount;
     this.status = status;
     this.date = date;
