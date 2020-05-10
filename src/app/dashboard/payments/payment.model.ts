@@ -4,6 +4,7 @@ export class Payment {
   public customerName: string;
   public customerEmail: string;
   public amount: string;
+  public planName: string;
   public status: string;
   public date: string; //TODO: should be date
   public type: string;
@@ -13,6 +14,7 @@ export class Payment {
     customerName: string,
     customerEmail: string,
     amount: string,
+    planName: string,
     status: string,
     date: string,
     type: string
@@ -21,6 +23,7 @@ export class Payment {
     this.customerName = customerName;
     this.customerEmail = customerEmail;
     this.amount = amount;
+    this.planName = planName;
     this.status = status;
     this.date = date;
     this.type = type;

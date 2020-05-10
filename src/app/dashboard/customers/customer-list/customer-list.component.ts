@@ -14,6 +14,7 @@ export class CustomerListComponent implements OnInit {
       'Johnny@test.com',
       5,
       '$837.69',
+      'Marketing Fee',
       '11/17/19',
       '05/12/20',
       true
@@ -24,6 +25,7 @@ export class CustomerListComponent implements OnInit {
       'Bobb@test.com',
       10,
       '$8377.69',
+      'Consultation 30 mins',
       '11/17/19',
       '05/12/20',
       false
@@ -34,6 +36,7 @@ export class CustomerListComponent implements OnInit {
       'tommy@test.com',
       7,
       '$250',
+      'Logo Design',
       '11/17/19',
       '05/12/20',
       true

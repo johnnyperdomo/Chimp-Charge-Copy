@@ -12,7 +12,9 @@
           </th>
           <th>
             <h5 class="text-muted mb-0">
-              <u placement="top" ngbTooltip="Transaction ID">TXN ID</u>
+              <u class="more-info" placement="top" ngbTooltip="Transaction ID"
+                >TXN ID</u
+              >
             </h5>
           </th>
           <th>
@@ -48,13 +50,16 @@
           </td>
           <td>{{ paymentEl.paymentID }}</td>
           <td>
-            $<b>{{ paymentEl.amount }}</b>
+            <h5 class="mb-0">{{ paymentEl.amount }}</h5>
+            <p class="card-text small text-muted mb-0">
+              {{ paymentEl.planName }}
+            </p>
           </td>
           <td>
             <!-- Badge -->
             <!-- TODO: Change badge types according to status -->
             <h4 class="mb-0">
-              <span class="badge badge-soft-warning">
+              <span class="badge badge-soft-success">
                 <b>{{ paymentEl.status }}</b>
               </span>
             </h4>
@@ -62,7 +67,12 @@
           <td>{{ paymentEl.date }}</td>
           <td>{{ paymentEl.type }}</td>
           <!-- TODO: make this a refundable button: opens modal -->
-          <td class="text-right">Refund?</td>
+          <!-- TODO: Only make refundable if available -->
+          <td class="text-right">
+            <button type="button" class="btn btn-link btn-sm destructive">
+              Refund
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>

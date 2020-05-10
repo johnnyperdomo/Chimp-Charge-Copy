@@ -13,6 +13,7 @@ export class PaymentListComponent implements OnInit {
       'Johnny J',
       'johnny@jim.com',
       '30.84',
+      'Plumbing',
       'Success',
       '11/1/2020',
       'Single'
@@ -22,6 +23,7 @@ export class PaymentListComponent implements OnInit {
       'Bobby B',
       'bobby@bob.com',
       '50',
+      'Marketing Service',
       'Dispute',
       '11/18/2020',
       'Recurring'
@@ -31,6 +33,7 @@ export class PaymentListComponent implements OnInit {
       'Peter T',
       'peter@thiel.com',
       '80',
+      'Graphic Logo',
       'Refunded',
       '11/19/2020',
       'Single'
@@ -40,6 +43,7 @@ export class PaymentListComponent implements OnInit {
       'Lenny L',
       'lenny@lion.com',
       '24.57',
+      'Consultation Fee',
       'Success',
       '11/20/2020',
       'Recurring'
