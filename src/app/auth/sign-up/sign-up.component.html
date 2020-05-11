@@ -1,0 +1,98 @@
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-5 col-xl-4 my-5">
+      <!-- Heading -->
+      <h1 class="display-4 text-center mb-3">
+        Sign up
+      </h1>
+
+      <!-- Subheading -->
+      <p class="text-muted text-center mb-5">
+        Sign up to gain access to Chimp Charge.
+      </p>
+
+      <!-- TODO: add angular form validation -->
+      <!-- Form -->
+      <form>
+        <!-- First & Last Name -->
+        <div class="form-row">
+          <!-- First Name -->
+          <div class="col-12 col-md-6 mb-3">
+            <!-- Label -->
+            <label>
+              First Name
+            </label>
+
+            <!-- Input -->
+            <input
+              type="text"
+              class="form-control"
+              placeholder="James"
+              required
+            />
+          </div>
+          <!-- Last Name -->
+          <div class="col-12 col-md-6 mb-3">
+            <!-- Label -->
+            <label>
+              Last Name
+            </label>
+
+            <!-- Input -->
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Bond"
+              required
+            />
+          </div>
+        </div>
+
+        <!-- Email address -->
+        <div class="form-group">
+          <!-- Label -->
+          <label>
+            Email Address
+          </label>
+
+          <!-- Input -->
+          <input
+            type="email"
+            class="form-control"
+            placeholder="name@address.com"
+            required
+          />
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <!-- Label -->
+          <label>
+            Password
+          </label>
+
+          <!-- Input -->
+          <input
+            type="password"
+            class="form-control form-control-appended"
+            placeholder="Enter your password"
+            required
+          />
+        </div>
+
+        <!-- Submit -->
+        <button class="btn btn-lg btn-block btn-primary mb-3">
+          Sign up
+        </button>
+
+        <!-- Link -->
+        <div class="text-center">
+          <small class="text-muted text-center">
+            Already have an account?
+            <a [routerLink]="['/login']">Log in</a>.
+          </small>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

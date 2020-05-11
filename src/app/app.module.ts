@@ -18,6 +18,9 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CustomerListComponent } from './dashboard/customers/customer-list/customer-list.component';
 import { PlanListComponent } from './dashboard/plans/plan-list/plan-list.component';
 import { SubscriberListComponent } from './dashboard/subscribers/subscriber-list/subscriber-list.component';
+import { SignUpComponent } from './auth/sign-up/sign-up.component';
+import { LoginComponent } from './auth/login/login.component';
+import { AuthComponent } from './auth/auth.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +39,9 @@ import { SubscriberListComponent } from './dashboard/subscribers/subscriber-list
     CustomerListComponent,
     PlanListComponent,
     SubscriberListComponent,
+    SignUpComponent,
+    LoginComponent,
+    AuthComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, NgbModule],
   providers: [],
