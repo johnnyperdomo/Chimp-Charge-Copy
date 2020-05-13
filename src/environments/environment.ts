@@ -3,7 +3,15 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  firebase: {
+    apiKey: 'AIzaSyCikXqOWu98MqEjplpXth4HatoECoXiZmY',
+    authDomain: 'chimp-charge.firebaseapp.com',
+    databaseURL: 'https://chimp-charge.firebaseio.com',
+    projectId: 'chimp-charge',
+    storageBucket: 'chimp-charge.appspot.com',
+    messagingSenderId: '273131846932',
+  },
 };
 
 /*
