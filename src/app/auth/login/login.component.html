@@ -13,47 +13,65 @@
 
       <!-- TODO: add angular form validation -->
       <!-- Form -->
-      <form>
+      <form
+        #loginForm="ngForm"
+        (ngSubmit)="onSubmit(loginForm)"
+        class="needs-validation"
+      >
         <!-- Email address -->
         <div class="form-group">
-          <!-- Label -->
-          <label>Email Address</label>
-
-          <!-- Input -->
+          <label for="email">Email Address</label>
           <input
             type="email"
+            id="email"
             class="form-control"
             placeholder="name@address.com"
+            ngModel
+            name="email"
             required
+            email
+            #email="ngModel"
           />
+          <span class="help-block" *ngIf="!email.valid && email.touched">
+            Please enter a valid email.</span
+          >
         </div>
 
         <!-- Password -->
         <div class="form-group">
           <div class="row">
             <div class="col">
-              <!-- Label -->
-              <label>Password</label>
+              <label for="password">Password</label>
             </div>
+            <!-- Help text -->
             <div class="col-auto">
-              <!-- Help text -->
               <a href="password-reset.html" class="form-text small text-muted">
                 Forgot password?
               </a>
             </div>
           </div>
 
-          <!-- Input -->
           <input
             type="password"
+            id="password"
             class="form-control form-control-appended"
+            name="password"
+            ngModel
             placeholder="Enter your password"
             required
+            minlength="6"
+            #password="ngModel"
           />
+          <span class="help-block" *ngIf="!password.valid && password.touched">
+            Please enter a valid password.</span
+          >
         </div>
 
         <!-- Submit -->
-        <button class="btn btn-lg btn-block btn-primary mb-3">
+        <button
+          class="btn btn-lg btn-block btn-primary mb-3"
+          [disabled]="!loginForm.valid"
+        >
           Login
         </button>
 

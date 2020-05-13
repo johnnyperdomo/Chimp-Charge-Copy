@@ -6,6 +6,6 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  //TODO: get auth state from firebase, this controls the component rendering
+  //TODO: get auth state from firebase, this controls the component rendering: isLoggedIn
   isLoggedIn = false;
 }
