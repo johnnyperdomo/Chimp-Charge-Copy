@@ -12,7 +12,6 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {}
 
   onSubmit(loginForm: NgForm) {
-    console.log(loginForm);
     if (!loginForm.valid) {
       return;
     }
@@ -22,6 +21,7 @@ export class LoginComponent implements OnInit {
 
     console.log(email, password);
 
+    //TODO: firebase auth
     loginForm.reset();
   }
 }

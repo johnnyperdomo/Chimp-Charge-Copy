@@ -4,7 +4,7 @@ input.ng-invalid.ng-touched {
   border: 1px solid $invalidColor;
 }
 
-.help-block {
+.help-block-invalid {
   font-size: small;
   color: $invalidColor;
 }
