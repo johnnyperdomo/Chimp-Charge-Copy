@@ -60,4 +60,6 @@ export class SignUpComponent implements OnInit, OnDestroy {
       this.storeSub.unsubscribe();
     }
   }
+
+  //NEXT-UPDATE - add email verification with firebase
 }

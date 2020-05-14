@@ -6,13 +6,10 @@ import { Actions, Effect, ofType } from '@ngrx/effects';
 import * as AuthActions from './auth.actions';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { FirebaseError } from 'firebase';
+import { handleError } from '../auth-methods/handle-error';
 
-const handleError = (errorRes: FirebaseError) => {
-  //TODO: get error data
-  console.log(
-    `error code: ${errorRes.code}, error Message: ${errorRes.message}`
-  );
-  return of(new AuthActions.AuthenticateFail(errorRes.message));
+const handleAuth = (resData: any) => {
+  //TODO: handle auth
 };
 
 @Injectable()
@@ -22,13 +19,18 @@ export class AuthEffects {
     ofType(AuthActions.SIGNUP_START),
     switchMap((signupAction: AuthActions.SignupStart) => {
       return from(
-        this.fbAuth.createUserWithEmailAndPassword(
+        this.afAuth.createUserWithEmailAndPassword(
           signupAction.payload.email,
           signupAction.payload.password
         )
       ).pipe(
         tap((resData) => {
+          //TODO: create auto logout
           console.log(resData);
+        }),
+        map((resData) => {
+          //TODO: handle auth
+          return { type: 'Dummy' };
         }),
         catchError((errorRes) => {
           return handleError(errorRes);
@@ -37,5 +39,5 @@ export class AuthEffects {
     })
   );
 
-  constructor(private actions$: Actions, private fbAuth: AngularFireAuth) {}
+  constructor(private actions$: Actions, private afAuth: AngularFireAuth) {}
 }
