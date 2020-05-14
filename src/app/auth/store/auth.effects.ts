@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable, from, of } from 'rxjs';
 import { switchMap, catchError, map, tap } from 'rxjs/operators';
-import { Action } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import * as AuthActions from './auth.actions';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { FirebaseError } from 'firebase';
-import { handleError } from '../auth-methods/handle-error';
+import { AuthService } from '../auth.service';
 
 const handleAuth = (resData: any) => {
   //TODO: handle auth
@@ -33,11 +31,15 @@ export class AuthEffects {
           return { type: 'Dummy' };
         }),
         catchError((errorRes) => {
-          return handleError(errorRes);
+          return this.authService.handleError(errorRes);
         })
       );
     })
   );
 
-  constructor(private actions$: Actions, private afAuth: AngularFireAuth) {}
+  constructor(
+    private actions$: Actions,
+    private afAuth: AngularFireAuth,
+    private authService: AuthService
+  ) {}
 }

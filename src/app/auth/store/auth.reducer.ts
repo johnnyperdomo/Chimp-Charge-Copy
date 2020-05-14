@@ -1,8 +1,9 @@
 import { User } from '../user.model';
 import * as AuthActions from './auth.actions';
+import * as angFire from 'firebase';
 
 export interface State {
-  user: User;
+  user: angFire.User;
   authError: string;
   loading: boolean;
 }
@@ -19,17 +20,10 @@ export function authReducer(
 ) {
   switch (action.type) {
     case AuthActions.AUTHENTICATE_SUCCESS:
-      const user = new User(
-        action.payload.email,
-        action.payload.userId,
-        action.payload.token,
-        action.payload.expirationDate
-      ); //create a new user
-
       return {
         ...state,
         authError: null,
-        user: user, //override new user property
+        user: action.payload.user, //override new user property
         loading: false,
       };
     case AuthActions.LOGOUT:

@@ -1,4 +1,5 @@
 import { Action } from '@ngrx/store';
+import * as angFire from 'firebase';
 
 export const LOGIN_START = '[Auth] Login Start';
 export const SIGNUP_START = '[Auth] Signup Start';
@@ -11,20 +12,12 @@ export const LOGOUT = '[Auth] Logout';
 export class AuthenticateSuccess implements Action {
   readonly type = AUTHENTICATE_SUCCESS;
 
-  constructor(
-    public payload: {
-      email: string;
-      userId: string;
-      token: string;
-      expirationDate: Date;
-      redirect: boolean;
-    }
-  ) {}
+  constructor(public payload: { user: angFire.User }) {}
+  //pass in firebase User interface
 }
 
 export class Logout implements Action {
   readonly type = LOGOUT;
-
   //just clear when logout, no payload is needed
 }
 
@@ -48,13 +41,11 @@ export class SignupStart implements Action {
 
 export class ClearError implements Action {
   readonly type = CLEAR_ERROR;
-
   //no payload needed, just reset
 }
 
 export class AutoLogin implements Action {
   readonly type = AUTO_LOGIN;
-  //no payload needed
 }
 
 //union type
