@@ -20,11 +20,17 @@ export const handleError = (errorRes: FirebaseError) => {
     case 'auth/weak-password':
       errorMessage = 'Weak password. Please enter a stronger password.';
       break;
+    case 'auth/user-disabled':
+      errorMessage =
+        'This current account is disabled. Please contact support.';
+      break;
+    case 'auth/user-not-found':
+    case 'auth/wrong-password':
+      errorMessage = 'Login failed: Invalid username or password.';
+      break;
     default:
       errorMessage = 'Unknown error. Please contact support.';
       break;
-
-    //TODO: create error messages for login session
   }
   return of(new AuthActions.AuthenticateFail(errorMessage));
 };
