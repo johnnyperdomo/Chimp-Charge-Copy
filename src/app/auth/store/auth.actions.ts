@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import * as angFire from 'firebase';
+import { User } from '../user.model';
 
 export const LOGIN_START = '[Auth] Login Start';
 export const SIGNUP_START = '[Auth] Signup Start';
@@ -12,7 +12,7 @@ export const LOGOUT = '[Auth] Logout';
 export class AuthenticateSuccess implements Action {
   readonly type = AUTHENTICATE_SUCCESS;
 
-  constructor(public payload: { user: angFire.User }) {}
+  constructor(public payload: { user: User }) {}
   //pass in firebase User interface
 }
 

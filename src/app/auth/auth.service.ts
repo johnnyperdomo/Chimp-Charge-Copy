@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { of } from 'rxjs';
 import { FirebaseError } from 'firebase';
 import * as AuthActions from './store/auth.actions';
+import { User } from './user.model';
 
 @Injectable({
   providedIn: 'root',
@@ -44,4 +45,20 @@ export class AuthService {
     }
     return of(new AuthActions.AuthenticateFail(errorMessage));
   }
+
+  handleAuthentication(
+    email: string,
+    id: string,
+    token: string,
+    expDate: string
+  ) {
+    //TODO: save to local storage
+
+    const newUser = new User(email, id, token, expDate);
+    return new AuthActions.AuthenticateSuccess({ user: newUser });
+  }
+
+  //TODO: auto login
+
+  //TODO: auto logout
 }

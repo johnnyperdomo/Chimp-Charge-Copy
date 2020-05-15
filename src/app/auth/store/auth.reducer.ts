@@ -3,7 +3,7 @@ import * as AuthActions from './auth.actions';
 import * as angFire from 'firebase';
 
 export interface State {
-  user: angFire.User;
+  user: User;
   authError: string;
   loading: boolean;
 }

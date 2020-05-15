@@ -11,13 +11,24 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./sign-up.component.scss'],
 })
 export class SignUpComponent implements OnInit, OnDestroy {
+  isLoading = false;
+  error: string = null;
   private storeSub: Subscription;
 
   constructor(private store: Store<fromApp.AppState>) {}
 
   ngOnInit(): void {
     this.storeSub = this.store.select('auth').subscribe((authState) => {
-      console.log(authState.authError);
+      this.isLoading = authState.loading;
+      this.error = authState.authError;
+
+      if (authState.user) {
+        console.log(authState.user);
+        console.log(authState.user.email);
+        console.log(authState.user.id);
+        console.log('tokeeenene', authState.user.token);
+        console.log('exp datetes', authState.user.tokenExpirationDate);
+      }
 
       //TODO: get authState details
       if (authState.authError) {

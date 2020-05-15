@@ -22,13 +22,32 @@ export class AuthEffects {
           signupAction.payload.password
         )
       ).pipe(
-        tap((resData) => {
-          //TODO: create auto logout
-          console.log(resData);
-        }),
         map((resData) => {
-          //TODO: handle auth
-          return { type: 'Dummy' };
+          let resToken: string = null;
+          let resExpDate: string = null;
+
+          // this.afAuth.idTokenResult.pipe(
+          //   tap((tokenResult) => {
+          //     resToken = tokenResult.token;
+          //     resExpDate = tokenResult.expirationTime;
+          //   })
+          // );
+
+          // resData.user
+          //   .getIdTokenResult()
+          //   .then((tokenResult) => {
+          //     resToken = tokenResult.token;
+          //   })
+          //   .catch(() => {
+          //     resToken = null;
+          //   });
+
+          return this.authService.handleAuthentication(
+            resData.user.email,
+            resData.user.uid,
+            resToken,
+            resExpDate
+          );
         }),
         catchError((errorRes) => {
           return this.authService.handleError(errorRes);
