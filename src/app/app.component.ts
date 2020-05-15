@@ -21,8 +21,6 @@ export class AppComponent implements OnInit, OnDestroy {
       .select('auth')
       .pipe(map((authState) => authState.user))
       .subscribe((user) => {
-        console.log('userrrrr', user);
-
         this.isLoggedIn = !user ? false : true;
       });
   }

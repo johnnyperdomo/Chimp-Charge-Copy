@@ -1,4 +1,11 @@
-<app-dashboard *ngIf="isLoggedIn"></app-dashboard>
-<app-auth *ngIf="!isLoggedIn"></app-auth>
+<!-- TODO: Add Charge Chimp logo to top of auth pages -->
 
-<!-- TODO: fix this -->
+<app-header *ngIf="isLoggedIn"></app-header>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
