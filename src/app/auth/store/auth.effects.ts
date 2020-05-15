@@ -77,9 +77,8 @@ export class AuthEffects {
     ofType(AuthActions.AUTHENTICATE_SUCCESS),
     tap((authSuccessAction: AuthActions.AuthenticateSuccess) => {
       if (authSuccessAction.payload.user) {
-        authSuccessAction.payload.user//TODO: add auto login functionality; add auto logout timer
-        .this.authService
-          .saveUserLocally();
+        //TODO: add auto login functionality; add auto logout timer
+        this.authService.saveUserLocally(authSuccessAction.payload.user);
         this.router.navigate(['/payments']);
       }
     })

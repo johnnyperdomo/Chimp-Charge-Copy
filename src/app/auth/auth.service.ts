@@ -3,15 +3,12 @@ import { of } from 'rxjs';
 import { FirebaseError } from 'firebase';
 import * as AuthActions from './store/auth.actions';
 import { User } from './user.model';
-import { AngularFireAuth } from '@angular/fire/auth';
-import * as angFire from 'firebase';
-import { first, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(public afAuth: AngularFireAuth) {}
+  constructor() {}
 
   //Auth ==================>
 
@@ -62,20 +59,8 @@ export class AuthService {
     return new AuthActions.AuthenticateSuccess({ user: newUser });
   }
 
-  async saveUserLocally() {
-    const token = await (await this.afAuth.currentUser).getIdTokenResult(); //await, wait for it to finish
-    const user = await this.afAuth.currentUser;
-
-    if (token && user) {
-      const userData = {
-        email: user.email,
-        id: user.uid,
-        token: token.token,
-        expirationTime: token.expirationTime,
-      };
-      console.log(userData);
-      localStorage.setItem('userData', JSON.stringify(userData));
-    }
+  saveUserLocally(localUser: User) {
+    localStorage.setItem('user', JSON.stringify(localUser));
   }
 
   //TODO: auto login
