@@ -5,6 +5,7 @@ import { Actions, Effect, ofType } from '@ngrx/effects';
 import * as AuthActions from './auth.actions';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AuthService } from '../auth.service';
+import { Router } from '@angular/router';
 
 const handleAuth = (resData: any) => {
   //TODO: handle auth
@@ -23,30 +24,9 @@ export class AuthEffects {
         )
       ).pipe(
         map((resData) => {
-          let resToken: string = null;
-          let resExpDate: string = null;
-
-          // this.afAuth.idTokenResult.pipe(
-          //   tap((tokenResult) => {
-          //     resToken = tokenResult.token;
-          //     resExpDate = tokenResult.expirationTime;
-          //   })
-          // );
-
-          // resData.user
-          //   .getIdTokenResult()
-          //   .then((tokenResult) => {
-          //     resToken = tokenResult.token;
-          //   })
-          //   .catch(() => {
-          //     resToken = null;
-          //   });
-
           return this.authService.handleAuthentication(
             resData.user.email,
-            resData.user.uid,
-            resToken,
-            resExpDate
+            resData.user.uid
           );
         }),
         catchError((errorRes) => {
@@ -56,9 +36,20 @@ export class AuthEffects {
     })
   );
 
+  @Effect({ dispatch: false })
+  authRedirect = this.actions$.pipe(
+    ofType(AuthActions.AUTHENTICATE_SUCCESS),
+    tap((authSuccessAction: AuthActions.AuthenticateSuccess) => {
+      if (authSuccessAction.payload.user) {
+        this.router.navigate(['/payments']);
+      }
+    })
+  );
+
   constructor(
     private actions$: Actions,
     private afAuth: AngularFireAuth,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 }

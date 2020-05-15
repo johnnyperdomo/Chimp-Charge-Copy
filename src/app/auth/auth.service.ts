@@ -3,12 +3,13 @@ import { of } from 'rxjs';
 import { FirebaseError } from 'firebase';
 import * as AuthActions from './store/auth.actions';
 import { User } from './user.model';
+import { AngularFireAuth } from '@angular/fire/auth';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  constructor() {}
+  constructor(public afAuth: AngularFireAuth) {}
 
   //Auth ==================>
 
@@ -46,15 +47,10 @@ export class AuthService {
     return of(new AuthActions.AuthenticateFail(errorMessage));
   }
 
-  handleAuthentication(
-    email: string,
-    id: string,
-    token: string,
-    expDate: string
-  ) {
+  handleAuthentication(email: string, id: string) {
     //TODO: save to local storage
 
-    const newUser = new User(email, id, token, expDate);
+    const newUser = new User(email, id);
     return new AuthActions.AuthenticateSuccess({ user: newUser });
   }
 

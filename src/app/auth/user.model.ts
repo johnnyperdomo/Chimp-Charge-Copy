@@ -2,11 +2,6 @@
 import { Observable, from } from 'rxjs';
 
 export class User {
-  constructor(
-    public email: string,
-    public id: string,
-    public token: string,
-    public tokenExpirationDate: string //convert to Date later
-  ) {}
+  constructor(public email: string, public id: string) {}
   //TODO: figure out what to do with the token
 }
