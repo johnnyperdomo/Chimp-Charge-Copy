@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription, from } from 'rxjs';
-import { AngularFireAuth } from '@angular/fire/auth';
-import * as angFire from 'firebase';
-import { first, tap } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
+import * as fromApp from './store/app.reducer';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'app-root',
@@ -11,48 +11,25 @@ import { first, tap } from 'rxjs/operators';
 })
 export class AppComponent implements OnInit, OnDestroy {
   //TODO: get auth state from firebase, this controls the component rendering: isLoggedIn
-  isLoggedIn = true;
-  afAuthSub: Subscription;
+  isLoggedIn = false;
+  userSub: Subscription;
 
-  constructor(private afAuth: AngularFireAuth) {}
+  constructor(private store: Store<fromApp.AppState>) {}
 
   ngOnInit() {
-    // this.afAuthSub = this.isUserLoggedin()
-    //   .pipe(
-    //     tap((user) => {
-    //       if (user) {
-    //         this.isLoggedIn = true;
-    //         console.log('logged in true', user);
-    //       } else {
-    //         this.isLoggedIn = false;
-    //       }
-    //     })
-    //   )
-    //   .subscribe();
-    // from(
-    //   this.afAuth.onAuthStateChanged((user) => {
-    //     if (user) {
-    //     } else {
-    //     }
-    //   })
-    // ).subscribe();
-    // this.afAuth.onAuthStateChanged((user) => {
-    //   if (user) {
-    //     this.isLoggedIn = true;
-    //     console.log('logged in true', user);
-    //   } else {
-    //     this.isLoggedIn = false;
-    //   }
-    // });
-  }
+    this.userSub = this.store
+      .select('auth')
+      .pipe(map((authState) => authState.user))
+      .subscribe((user) => {
+        console.log('userrrrr', user);
 
-  isUserLoggedin() {
-    return this.afAuth.authState.pipe(first()).toPromise();
+        this.isLoggedIn = !user ? false : true;
+      });
   }
 
   ngOnDestroy() {
-    // if (this.afAuthSub) {
-    //   this.afAuthSub.unsubscribe();
-    // }
+    if (this.userSub) {
+      this.userSub.unsubscribe();
+    }
   }
 }

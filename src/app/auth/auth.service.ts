@@ -52,10 +52,13 @@ export class AuthService {
     return of(new AuthActions.AuthenticateFail(errorMessage));
   }
 
-  handleAuthentication(email: string, id: string) {
-    //TODO: save to local storage
-
-    const newUser = new User(email, id);
+  handleAuthentication(
+    email: string,
+    id: string,
+    token: string,
+    expirationTime: string
+  ) {
+    const newUser = new User(email, id, token, expirationTime);
     return new AuthActions.AuthenticateSuccess({ user: newUser });
   }
 

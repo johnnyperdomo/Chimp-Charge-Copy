@@ -23,9 +23,12 @@ export class SignUpComponent implements OnInit, OnDestroy {
       this.error = authState.authError;
 
       if (authState.user) {
-        console.log(authState.user);
+        console.log('datatatatatata');
+
         console.log(authState.user.email);
         console.log(authState.user.id);
+        console.log(authState.user._token);
+        console.log(authState.user._expirationTime);
       }
 
       //TODO: get authState details

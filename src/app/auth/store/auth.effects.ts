@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, from, of } from 'rxjs';
-import { switchMap, catchError, map, tap } from 'rxjs/operators';
+import { switchMap, catchError, map, tap, mergeMap } from 'rxjs/operators';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import * as AuthActions from './auth.actions';
 import { AngularFireAuth } from '@angular/fire/auth';
@@ -24,10 +24,16 @@ export class AuthEffects {
           signupAction.payload.password
         )
       ).pipe(
-        map((resData) => {
-          return this.authService.handleAuthentication(
-            resData.user.email,
-            resData.user.uid
+        mergeMap((resData) => {
+          return this.afAuth.idTokenResult.pipe(
+            map((tokenresult) => {
+              return this.authService.handleAuthentication(
+                resData.user.email,
+                resData.user.uid,
+                tokenresult.token,
+                tokenresult.expirationTime
+              );
+            })
           );
         }),
         catchError((errorRes) => {
@@ -47,10 +53,16 @@ export class AuthEffects {
           loginAction.payload.password
         )
       ).pipe(
-        map((resData) => {
-          return this.authService.handleAuthentication(
-            resData.user.email,
-            resData.user.uid
+        mergeMap((resData) => {
+          return this.afAuth.idTokenResult.pipe(
+            map((tokenresult) => {
+              return this.authService.handleAuthentication(
+                resData.user.email,
+                resData.user.uid,
+                tokenresult.token,
+                tokenresult.expirationTime
+              );
+            })
           );
         }),
         catchError((errorRes) => {
@@ -65,8 +77,9 @@ export class AuthEffects {
     ofType(AuthActions.AUTHENTICATE_SUCCESS),
     tap((authSuccessAction: AuthActions.AuthenticateSuccess) => {
       if (authSuccessAction.payload.user) {
-        //TODO: add auto login functionality; add auto logout timer
-        this.authService.saveUserLocally();
+        authSuccessAction.payload.user//TODO: add auto login functionality; add auto logout timer
+        .this.authService
+          .saveUserLocally();
         this.router.navigate(['/payments']);
       }
     })
