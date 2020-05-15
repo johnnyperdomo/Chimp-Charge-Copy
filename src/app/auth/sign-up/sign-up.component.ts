@@ -22,21 +22,11 @@ export class SignUpComponent implements OnInit, OnDestroy {
       this.isLoading = authState.loading;
       this.error = authState.authError;
 
-      if (authState.user) {
-        console.log('datatatatatata');
-
-        console.log(authState.user.email);
-        console.log(authState.user.id);
-        console.log(authState.user._token);
-        console.log(authState.user._expirationTime);
-      }
-
       //TODO: get authState details
+      //TODO: add loading spinner
+
       if (authState.authError) {
-        console.log(
-          'yay, this works on sign up component Error => ',
-          authState.authError
-        );
+        this.clearError();
       }
     });
   }
@@ -51,8 +41,6 @@ export class SignUpComponent implements OnInit, OnDestroy {
     const email = signupForm.value.email;
     const password = signupForm.value.password;
 
-    console.log(email, password, firstName, lastName);
-
     this.authenticateUser(firstName, lastName, email, password);
   }
 
@@ -65,6 +53,14 @@ export class SignUpComponent implements OnInit, OnDestroy {
     this.store.dispatch(
       new AuthActions.SignupStart({ email: email, password: password })
     );
+
+    //TODO after authenticate, create user in firestore documents
+  }
+
+  clearError() {
+    setTimeout(() => {
+      this.store.dispatch(new AuthActions.ClearError());
+    }, 5000); //5 seconds
   }
 
   ngOnDestroy() {

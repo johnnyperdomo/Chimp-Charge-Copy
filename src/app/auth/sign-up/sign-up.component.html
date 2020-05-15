@@ -89,6 +89,10 @@
           >
         </div>
 
+        <!-- TODO: center text -->
+        <div class="help-block-invalid form-group text-center" *ngIf="error">
+          {{ error }}
+        </div>
         <!-- Submit -->
         <button
           class="btn btn-lg btn-block btn-primary mb-3"

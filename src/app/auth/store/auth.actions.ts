@@ -5,7 +5,7 @@ export const LOGIN_START = '[Auth] Login Start';
 export const SIGNUP_START = '[Auth] Signup Start';
 export const AUTHENTICATE_SUCCESS = '[Auth] Authenticate Success'; //use for both login/signup
 export const AUTHENTICATE_FAIL = '[Auth] Authenticate Fail';
-export const CLEAR_ERROR = '[Auth] Clear Error'; //TODO: do i need this? check back later.
+export const CLEAR_ERROR = '[Auth] Clear Error';
 export const AUTO_LOGIN = '[Auth] Auto Login';
 export const LOGOUT = '[Auth] Logout';
 
