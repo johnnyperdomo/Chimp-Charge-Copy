@@ -10,27 +10,70 @@ import { BillingComponent } from './dashboard/settings/billing/billing.component
 import { PayoutsComponent } from './dashboard/settings/payouts/payouts.component';
 import { LoginComponent } from './auth/login/login.component';
 import { SignUpComponent } from './auth/sign-up/sign-up.component';
+import {
+  AngularFireAuthGuard,
+  redirectUnauthorizedTo,
+  redirectLoggedInTo,
+} from '@angular/fire/auth-guard';
+
+const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['login']); //if no logged in, restrict access
+const redirectLoggedInToPayments = () => redirectLoggedInTo(['payments']); //if logged in, block auth components
 
 const routes: Routes = [
   //Auth
-  { path: 'login', component: LoginComponent },
-  { path: 'signup', component: SignUpComponent },
-
-  //TODO: Create an auth guard for Components
+  {
+    path: 'login',
+    component: LoginComponent,
+    canActivate: [AngularFireAuthGuard],
+    data: { authGuardPipe: redirectLoggedInToPayments },
+  },
+  {
+    path: 'signup',
+    component: SignUpComponent,
+    canActivate: [AngularFireAuthGuard],
+    data: { authGuardPipe: redirectLoggedInToPayments },
+  },
+  //TODO: create forgot password to components, add auth guard
 
   //Dashboard
   { path: '', redirectTo: '/payments', pathMatch: 'full' },
-  { path: 'payments', component: PaymentsComponent },
-  { path: 'customers', component: CustomersComponent },
-  { path: 'subscribers', component: SubscribersComponent },
-  { path: 'plans', component: PlansComponent },
+  {
+    path: 'payments',
+    component: PaymentsComponent,
+    canActivate: [AngularFireAuthGuard],
+    data: { authGuardPipe: redirectUnauthorizedToLogin },
+  },
+  {
+    path: 'customers',
+    component: CustomersComponent,
+    canActivate: [AngularFireAuthGuard],
+    data: { authGuardPipe: redirectUnauthorizedToLogin },
+  },
+  {
+    path: 'subscribers',
+    component: SubscribersComponent,
+    canActivate: [AngularFireAuthGuard],
+    data: { authGuardPipe: redirectUnauthorizedToLogin },
+  },
+  {
+    path: 'plans',
+    component: PlansComponent,
+    canActivate: [AngularFireAuthGuard],
+    data: { authGuardPipe: redirectUnauthorizedToLogin },
+  },
 
   //Settings
-  { path: 'settings', redirectTo: 'settings/account' }, //redirects to settings/account
   {
     path: 'settings',
-
+    redirectTo: 'settings/account',
+    canActivate: [AngularFireAuthGuard],
+    data: { authGuardPipe: redirectUnauthorizedToLogin },
+  }, //redirects to settings/account
+  {
+    path: 'settings',
     component: SettingsComponent,
+    canActivate: [AngularFireAuthGuard],
+    data: { authGuardPipe: redirectUnauthorizedToLogin },
     children: [
       { path: 'account', component: AccountComponent },
       { path: 'billing', component: BillingComponent },
