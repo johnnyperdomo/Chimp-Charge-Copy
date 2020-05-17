@@ -22,8 +22,7 @@ export class SignUpComponent implements OnInit, OnDestroy {
       this.isLoading = authState.loading;
       this.error = authState.authError;
 
-      //TODO: get authState details
-      //TODO: add loading spinner
+      //NEXT-UPDATE: add loading spinner
 
       if (authState.authError) {
         this.clearError();

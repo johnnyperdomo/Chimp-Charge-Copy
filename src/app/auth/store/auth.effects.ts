@@ -74,7 +74,7 @@ export class AuthEffects {
       if (authSuccessAction.payload.user) {
         this.authService.saveUserLocally(authSuccessAction.payload.user);
         this.authService.setAutoLogoutTimer(
-          authSuccessAction.payload.user.expiresInMilliSeconds
+          authSuccessAction.payload.user.expiresInMilliseconds
         );
         this.router.navigate(['/payments']);
       }

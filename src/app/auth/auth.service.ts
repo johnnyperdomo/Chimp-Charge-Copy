@@ -5,7 +5,6 @@ import * as AuthActions from './store/auth.actions';
 import { User } from './user.model';
 import * as fromApp from '../store/app.reducer';
 import { Store } from '@ngrx/store';
-import * as moment from 'moment';
 
 @Injectable({
   providedIn: 'root',
@@ -49,8 +48,6 @@ export class AuthService {
         break;
     }
 
-    console.log(errorMessage);
-
     return of(new AuthActions.AuthenticateFail(errorMessage));
   }
 
@@ -61,7 +58,6 @@ export class AuthService {
     expirationTime: string
   ) {
     const authenticatedUser = new User(email, id, token, expirationTime);
-
     return new AuthActions.AuthenticateSuccess({ user: authenticatedUser });
   }
 
@@ -89,5 +85,3 @@ export class AuthService {
 }
 
 //TODO: auto login
-
-//TODO: auto logout

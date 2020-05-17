@@ -3,7 +3,6 @@ import { Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import * as fromApp from './store/app.reducer';
 import { Store } from '@ngrx/store';
-import * as moment from 'moment';
 
 @Component({
   selector: 'app-root',
