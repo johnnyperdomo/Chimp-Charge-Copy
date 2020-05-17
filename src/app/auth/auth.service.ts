@@ -55,10 +55,14 @@ export class AuthService {
     email: string,
     id: string,
     token: string,
-    expirationTime: string
+    expirationTime: string,
+    redirect: boolean
   ) {
     const authenticatedUser = new User(email, id, token, expirationTime);
-    return new AuthActions.AuthenticateSuccess({ user: authenticatedUser });
+    return new AuthActions.AuthenticateSuccess({
+      user: authenticatedUser,
+      redirect,
+    });
   }
 
   saveUserLocally(localUser: User) {
@@ -67,6 +71,19 @@ export class AuthService {
 
   removeUserLocally() {
     localStorage.removeItem('user');
+  }
+
+  fetchUserLocally() {
+    const fetchedUser: {
+      email: string;
+      id: string;
+      _token: string;
+      _expirationDate: string;
+    } = JSON.parse(localStorage.getItem('user'));
+
+    console.log('fetched user', fetchedUser);
+
+    return fetchedUser;
   }
 
   setAutoLogoutTimer(millisecondsToExpiration: number) {

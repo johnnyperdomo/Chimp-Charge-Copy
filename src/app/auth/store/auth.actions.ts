@@ -12,7 +12,7 @@ export const LOGOUT = '[Auth] Logout';
 export class AuthenticateSuccess implements Action {
   readonly type = AUTHENTICATE_SUCCESS;
 
-  constructor(public payload: { user: User }) {}
+  constructor(public payload: { user: User; redirect: boolean }) {}
   //pass in firebase User interface
 }
 

@@ -6,6 +6,7 @@ import * as AuthActions from './auth.actions';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
+import { User } from '../user.model';
 
 @Injectable()
 export class AuthEffects {
@@ -26,7 +27,8 @@ export class AuthEffects {
                 resData.user.email,
                 resData.user.uid,
                 tokenresult.token,
-                tokenresult.expirationTime
+                tokenresult.expirationTime,
+                true
               );
             })
           );
@@ -55,7 +57,8 @@ export class AuthEffects {
                 resData.user.email,
                 resData.user.uid,
                 tokenresult.token,
-                tokenresult.expirationTime
+                tokenresult.expirationTime,
+                true
               );
             })
           );
@@ -71,11 +74,14 @@ export class AuthEffects {
   authSuccess = this.actions$.pipe(
     ofType(AuthActions.AUTHENTICATE_SUCCESS),
     tap((authSuccessAction: AuthActions.AuthenticateSuccess) => {
-      if (authSuccessAction.payload.user) {
-        this.authService.saveUserLocally(authSuccessAction.payload.user);
+      if (
+        authSuccessAction.payload.user &&
+        authSuccessAction.payload.redirect === true
+      ) {
         this.authService.setAutoLogoutTimer(
           authSuccessAction.payload.user.expiresInMilliseconds
         );
+        this.authService.saveUserLocally(authSuccessAction.payload.user);
         this.router.navigate(['/payments']);
       }
     })
@@ -94,7 +100,34 @@ export class AuthEffects {
     })
   );
 
-  //TODO: auto login
+  @Effect()
+  autoLogin = this.actions$.pipe(
+    ofType(AuthActions.AUTO_LOGIN),
+    map(() => {
+      const userData = this.authService.fetchUserLocally();
+
+      if (!userData) {
+        return { type: 'null' }; //pseudo
+      }
+
+      const loadedUser = new User(
+        userData.email,
+        userData.id,
+        userData._token,
+        userData._expirationDate
+      );
+
+      if (loadedUser.isTokenValid) {
+        this.authService.setAutoLogoutTimer(loadedUser.expiresInMilliseconds);
+
+        return new AuthActions.AuthenticateSuccess({
+          user: loadedUser,
+          redirect: false,
+        });
+      }
+      return { type: 'null' }; //pseudo
+    })
+  );
 
   constructor(
     private actions$: Actions,

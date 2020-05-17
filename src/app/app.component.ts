@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import * as fromApp from './store/app.reducer';
 import { Store } from '@ngrx/store';
+import * as AuthActions from './auth/store/auth.actions';
 
 @Component({
   selector: 'app-root',
@@ -17,7 +18,8 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(private store: Store<fromApp.AppState>) {}
 
   ngOnInit() {
-    //TODO: add auto login
+    this.autoLoginUser();
+
     this.userSub = this.store
       .select('auth')
       .pipe(map((authState) => authState.user))
@@ -25,10 +27,14 @@ export class AppComponent implements OnInit, OnDestroy {
         this.isLoggedIn = !user ? false : true;
       });
   }
-
+  //
   ngOnDestroy() {
     if (this.userSub) {
       this.userSub.unsubscribe();
     }
+  }
+
+  autoLoginUser() {
+    this.store.dispatch(new AuthActions.AutoLogin());
   }
 }
