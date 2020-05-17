@@ -3,12 +3,16 @@ import { of } from 'rxjs';
 import { FirebaseError } from 'firebase';
 import * as AuthActions from './store/auth.actions';
 import { User } from './user.model';
+import * as fromApp from '../store/app.reducer';
+import { Store } from '@ngrx/store';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  constructor() {}
+  private tokenExpTimer: any;
+
+  constructor(private store: Store<fromApp.AppState>) {}
 
   //Auth ==================>
 
@@ -63,7 +67,23 @@ export class AuthService {
     localStorage.setItem('user', JSON.stringify(localUser));
   }
 
-  //TODO: auto login
+  setAutoLogoutTimer(expirationDuration: number) {
+    //can logout when token expires
+    //TODO: calculate timer from expires date,
+    this.tokenExpTimer = setTimeout(() => {
+      console.log('logout timer called');
+      this.store.dispatch(new AuthActions.Logout());
+    }, expirationDuration);
+  }
 
-  //TODO: auto logout
+  clearLogoutTimer() {
+    if (this.tokenExpTimer) {
+      clearTimeout(this.tokenExpTimer);
+      this.tokenExpTimer = null;
+    }
+  }
 }
+
+//TODO: auto login
+
+//TODO: auto logout

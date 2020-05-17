@@ -73,11 +73,30 @@ export class AuthEffects {
     tap((authSuccessAction: AuthActions.AuthenticateSuccess) => {
       if (authSuccessAction.payload.user) {
         //TODO: add auto login functionality; add auto logout timer
+
         this.authService.saveUserLocally(authSuccessAction.payload.user);
+        // this.authService.setAutoLogoutTimer(3000);
         this.router.navigate(['/payments']);
       }
     })
   );
+
+  @Effect({ dispatch: false })
+  authLogout = this.actions$.pipe(
+    ofType(AuthActions.LOGOUT),
+    switchMap(() => {
+      return from(this.afAuth.signOut());
+    }),
+    tap(() => {
+      this.authService.clearLogoutTimer();
+      localStorage.removeItem('userData');
+      console.log('user logged out');
+
+      this.router.navigate(['/login']); //redirects when user logs out
+    })
+  );
+
+  //TODO: auto login
 
   constructor(
     private actions$: Actions,
