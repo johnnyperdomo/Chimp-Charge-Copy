@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import * as fromApp from './store/app.reducer';
 import { Store } from '@ngrx/store';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-root',
@@ -17,6 +18,7 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(private store: Store<fromApp.AppState>) {}
 
   ngOnInit() {
+    //TODO: add auto login
     this.userSub = this.store
       .select('auth')
       .pipe(map((authState) => authState.user))

@@ -72,10 +72,10 @@ export class AuthEffects {
     ofType(AuthActions.AUTHENTICATE_SUCCESS),
     tap((authSuccessAction: AuthActions.AuthenticateSuccess) => {
       if (authSuccessAction.payload.user) {
-        //TODO: add auto login functionality; add auto logout timer
-
         this.authService.saveUserLocally(authSuccessAction.payload.user);
-        // this.authService.setAutoLogoutTimer(3000);
+        this.authService.setAutoLogoutTimer(
+          authSuccessAction.payload.user.expiresInMilliSeconds
+        );
         this.router.navigate(['/payments']);
       }
     })
@@ -89,9 +89,7 @@ export class AuthEffects {
     }),
     tap(() => {
       this.authService.clearLogoutTimer();
-      localStorage.removeItem('userData');
-      console.log('user logged out');
-
+      this.authService.removeUserLocally();
       this.router.navigate(['/login']); //redirects when user logs out
     })
   );

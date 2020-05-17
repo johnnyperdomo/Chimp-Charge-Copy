@@ -5,6 +5,7 @@ import * as AuthActions from './store/auth.actions';
 import { User } from './user.model';
 import * as fromApp from '../store/app.reducer';
 import { Store } from '@ngrx/store';
+import * as moment from 'moment';
 
 @Injectable({
   providedIn: 'root',
@@ -59,21 +60,24 @@ export class AuthService {
     token: string,
     expirationTime: string
   ) {
-    const newUser = new User(email, id, token, expirationTime);
-    return new AuthActions.AuthenticateSuccess({ user: newUser });
+    const authenticatedUser = new User(email, id, token, expirationTime);
+
+    return new AuthActions.AuthenticateSuccess({ user: authenticatedUser });
   }
 
   saveUserLocally(localUser: User) {
     localStorage.setItem('user', JSON.stringify(localUser));
   }
 
-  setAutoLogoutTimer(expirationDuration: number) {
-    //can logout when token expires
-    //TODO: calculate timer from expires date,
+  removeUserLocally() {
+    localStorage.removeItem('user');
+  }
+
+  setAutoLogoutTimer(millisecondsToExpiration: number) {
+    //can logout when token is set to expire
     this.tokenExpTimer = setTimeout(() => {
-      console.log('logout timer called');
       this.store.dispatch(new AuthActions.Logout());
-    }, expirationDuration);
+    }, millisecondsToExpiration);
   }
 
   clearLogoutTimer() {
