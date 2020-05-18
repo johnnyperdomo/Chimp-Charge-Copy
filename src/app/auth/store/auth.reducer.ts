@@ -43,7 +43,6 @@ export function authReducer(
         authError: action.payload, //error message -> firebase error
         loading: false,
       };
-      return;
     case AuthActions.CLEAR_ERROR:
       return {
         ...state,

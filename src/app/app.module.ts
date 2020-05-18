@@ -36,6 +36,11 @@ import { EffectsModule } from '@ngrx/effects';
 import { AuthEffects } from './auth/store/auth.effects';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
 
+import * as firebase from 'firebase/app';
+import { MerchantEffects } from './merchants/store/merchant.effects';
+
+firebase.initializeApp(environment.firebase);
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -68,7 +73,7 @@ import { StoreRouterConnectingModule } from '@ngrx/router-store';
     StoreModule.forRoot(fromApp.appReducer),
     StoreDevtoolsModule.instrument({ logOnly: environment.production }),
     StoreRouterConnectingModule.forRoot(),
-    EffectsModule.forRoot([AuthEffects]),
+    EffectsModule.forRoot([AuthEffects, MerchantEffects]),
   ],
   providers: [],
   bootstrap: [AppComponent],

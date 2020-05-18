@@ -44,16 +44,19 @@ export class SignUpComponent implements OnInit, OnDestroy {
   }
 
   authenticateUser(
-    fName: string,
-    lName: string,
+    firstName: string,
+    lastName: string,
     email: string,
     password: string
   ) {
     this.store.dispatch(
-      new AuthActions.SignupStart({ email: email, password: password })
+      new AuthActions.SignupStart({
+        email: email,
+        password: password,
+        firstName,
+        lastName,
+      })
     );
-
-    //TODO after authenticate, create user in firestore documents
   }
 
   clearError() {

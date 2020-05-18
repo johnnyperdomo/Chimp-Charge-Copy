@@ -7,6 +7,11 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
 import { User } from '../user.model';
+import { MerchantService } from 'src/app/merchants/merchants.service';
+import { Merchant } from 'src/app/merchants/merchant.model';
+
+let userFirstName: string = null;
+let userLastName: string = null;
 
 @Injectable()
 export class AuthEffects {
@@ -14,6 +19,8 @@ export class AuthEffects {
   authSignup = this.actions$.pipe(
     ofType(AuthActions.SIGNUP_START),
     switchMap((signupAction: AuthActions.SignupStart) => {
+      userFirstName = signupAction.payload.firstName;
+      userLastName = signupAction.payload.lastName;
       return from(
         this.afAuth.createUserWithEmailAndPassword(
           signupAction.payload.email,
@@ -32,6 +39,14 @@ export class AuthEffects {
               );
             })
           );
+        }),
+        tap((resData) => {
+          const newMerchant = new Merchant(
+            userFirstName,
+            userLastName,
+            resData.payload.user.id
+          );
+          this.merchantService.setMerchantInfo(newMerchant);
         }),
         catchError((errorRes) => {
           return this.authService.handleError(errorRes);
@@ -133,6 +148,7 @@ export class AuthEffects {
     private actions$: Actions,
     private afAuth: AngularFireAuth,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private merchantService: MerchantService
   ) {}
 }
