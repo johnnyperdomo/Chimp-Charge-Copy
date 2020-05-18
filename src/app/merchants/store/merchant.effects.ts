@@ -20,7 +20,7 @@ export class MerchantEffects {
           .set(parsedMerchant, { merge: true })
       ).pipe(
         map((user) => {
-          //TODO: dispatch success.then (if stripe billing ids exist, call items)
+          //TODO: dispatch success.then (if stripe billing ids exist, call billing)
           return of();
         }),
         catchError((errorRes) => {

@@ -1,6 +1,8 @@
 import { Action } from '@ngrx/store';
 import { Merchant } from '../merchant.model';
 
+//Merchant Metadata =======================================>
+
 export const SET_MERCHANT_INFO_START = '[Merchant] Set Merchant Info Start';
 export const SET_MERCHANT_INFO_SUCCESS = '[Merchant] Set Merchant Info Success';
 export const SET_MERCHANT_INFO_FAIL = '[Merchant] Set Merchant Info Fail';
@@ -43,6 +45,12 @@ export class GetMerchantInfoFail implements Action {
 
   constructor(public payload: string) {}
 }
+
+//Stripe Billing ==================================>
+//TODO: add stripe billing actions here
+
+//Stripe Connect =================================>
+//TODO: add stripe connect configuration here
 
 export type MerchantActions =
   | SetMerchantInfoStart

@@ -11,7 +11,6 @@ import * as AuthActions from './auth/store/auth.actions';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
-  //TODO: get auth state from firebase, this controls the component rendering: isLoggedIn
   isLoggedIn = false;
   userSub: Subscription;
 

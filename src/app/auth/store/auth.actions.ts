@@ -13,7 +13,6 @@ export class AuthenticateSuccess implements Action {
   readonly type = AUTHENTICATE_SUCCESS;
 
   constructor(public payload: { user: User; redirect: boolean }) {}
-  //pass in firebase User interface
 }
 
 export class Logout implements Action {

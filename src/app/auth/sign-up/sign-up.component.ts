@@ -71,5 +71,5 @@ export class SignUpComponent implements OnInit, OnDestroy {
     }
   }
 
-  //NEXT-UPDATE - add email verification with firebase
+  //NEXT-UPDATE - add email verification with firebase? maybe
 }
