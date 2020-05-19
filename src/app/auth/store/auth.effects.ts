@@ -78,6 +78,9 @@ export class AuthEffects {
             })
           );
         }),
+        tap((resData) => {
+          this.merchantService.getMerchantInfo(resData.payload.user.id);
+        }),
         catchError((errorRes) => {
           return this.authService.handleError(errorRes);
         })

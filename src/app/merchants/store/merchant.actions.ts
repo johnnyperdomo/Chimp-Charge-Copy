@@ -25,13 +25,13 @@ export class SetMerchantInfoSuccess implements Action {
 export class SetMerchantInfoFail implements Action {
   readonly type = SET_MERCHANT_INFO_FAIL;
 
-  constructor(public payload: string) {}
+  constructor(public payload: string) {} //error message
 }
 
 export class GetMerchantInfoStart implements Action {
   readonly type = GET_MERCHANT_INFO_START;
 
-  constructor(public payload: Merchant) {}
+  constructor(public payload: string) {} //uid
 }
 
 export class GetMerchantInfoSuccess implements Action {
@@ -43,7 +43,7 @@ export class GetMerchantInfoSuccess implements Action {
 export class GetMerchantInfoFail implements Action {
   readonly type = GET_MERCHANT_INFO_FAIL;
 
-  constructor(public payload: string) {}
+  constructor(public payload: string) {} //error message
 }
 
 //Stripe Billing ==================================>

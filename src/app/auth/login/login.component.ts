@@ -38,7 +38,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     const email = loginForm.value.email;
     const password = loginForm.value.password;
 
-    console.log(email, password);
     this.authenticateUser(email, password);
   }
 
