@@ -10,7 +10,7 @@ export class Plan {
   constructor(
     id: string,
     planName: string,
-    type: string,
+    type: string, //one-time vs recurring
     price: string,
     createdDate: string //TODO: should be date
   ) {

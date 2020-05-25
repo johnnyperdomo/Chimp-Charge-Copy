@@ -38,6 +38,7 @@ import { StoreRouterConnectingModule } from '@ngrx/router-store';
 
 import * as firebase from 'firebase/app';
 import { MerchantEffects } from './merchants/store/merchant.effects';
+import { PlanEditComponent } from './dashboard/plans/plan-edit/plan-edit.component';
 
 firebase.initializeApp(environment.firebase);
 
@@ -61,6 +62,7 @@ firebase.initializeApp(environment.firebase);
     SignUpComponent,
     LoginComponent,
     AuthComponent,
+    PlanEditComponent,
   ],
   imports: [
     BrowserModule,

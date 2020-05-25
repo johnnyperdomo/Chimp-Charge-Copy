@@ -1,0 +1,53 @@
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-10 col-xl-8">
+        <!-- header -->
+        <div class="header">
+          <div class="header-body">
+            <div class="row align-items-end">
+              <div class="col">
+                <h1 class="header-title">
+                  Create new plan
+                </h1>
+              </div>
+            </div>
+            <div class="row mt-2 mb-4">
+              <div class="col-12">
+                <!-- TODO :better messaging -->
+                <p class="text-muted my-auto">
+                  Create a one-time or recurring payment.
+                </p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <ul class="nav nav-tabs header-tabs mb-0">
+                  <li>
+                    <a
+                      class="text-center btn btn-secondary mr-3"
+                      routerLinkActive="active"
+                      [routerLink]="['/settings/account']"
+                    >
+                      One-time
+                    </a>
+                  </li>
+                  <!-- TODO: hide either list button if on edit mode, for unselected option -->
+                  <li>
+                    <a
+                      class="text-center btn btn-outline-secondary"
+                      routerLinkActive="active"
+                      [routerLink]="['/settings/billing']"
+                    >
+                      Subscription
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

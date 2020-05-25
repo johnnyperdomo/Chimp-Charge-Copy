@@ -15,6 +15,8 @@ import {
   redirectUnauthorizedTo,
   redirectLoggedInTo,
 } from '@angular/fire/auth-guard';
+import { PlanEditComponent } from './dashboard/plans/plan-edit/plan-edit.component';
+import { PlanListComponent } from './dashboard/plans/plan-list/plan-list.component';
 
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['login']); //if no logged in, restrict access
 const redirectLoggedInToPayments = () => redirectLoggedInTo(['payments']); //if logged in, block auth components
@@ -60,6 +62,21 @@ const routes: Routes = [
     component: PlansComponent,
     canActivate: [AngularFireAuthGuard],
     data: { authGuardPipe: redirectUnauthorizedToLogin },
+    children: [
+      { path: '', component: PlanListComponent },
+      { path: 'new', component: PlanEditComponent },
+      { path: ':id/edit', component: PlanEditComponent },
+    ],
+  },
+  {
+    path: 'plans',
+    component: PlansComponent,
+    canActivate: [AngularFireAuthGuard],
+    data: { authGuardPipe: redirectUnauthorizedToLogin },
+    children: [
+      { path: 'new', component: PlanEditComponent },
+      { path: ':id/edit', component: PlanEditComponent },
+    ],
   },
 
   //Settings

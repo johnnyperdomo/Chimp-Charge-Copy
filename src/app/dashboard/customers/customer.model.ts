@@ -16,7 +16,7 @@ export class Customer {
     customerEmail: string,
     totalTransactions: Number,
     totalPayments: string,
-    planName: string, //TODO: make this a one-to-many relationship, one customer can be on many subscriptions
+    planName: string, //TODO: make this a one-to-many relationship, one customer can be on many subscriptions //should be array of planids
     createdDate: string, //TODO: should be date
     recentTransaction: string, //TODO: should be date
     isSubscriber: Boolean
