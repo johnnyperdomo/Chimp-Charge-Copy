@@ -10,6 +10,7 @@ import { NgForm } from '@angular/forms';
   styleUrls: ['./plan-edit.component.scss'],
 })
 export class PlanEditComponent implements OnInit {
+  //TODO: add can deactivate child option, to save the user from accidently losing data.
   planType = PlanTypeEnum.recurring;
   billingInterval = BillingInterval.monthly;
 

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Plan } from '../plan.model';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-plan-list',
@@ -13,7 +14,11 @@ export class PlanListComponent implements OnInit {
     new Plan('tevfd4', 'Consultation Service', 'Recurring', '$850', '11/12/20'),
   ];
 
-  constructor() {}
+  constructor(private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {}
+
+  onCreatePlan() {
+    this.router.navigate(['new'], { relativeTo: this.route }); //relativeTo, appends to end of current route
+  }
 }
