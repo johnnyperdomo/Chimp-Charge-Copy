@@ -47,6 +47,124 @@
             </div>
           </div>
         </div>
+
+        <!-- Form -->
+        <!-- TODO: fix forms for plans -->
+        <form #planForm="ngForm" (ngSubmit)="onSubmit(planForm)">
+          <!-- Name -->
+          <!-- <div class="form-row"> -->
+          <div class="form-group">
+            <label for="planName">Plan Name</label>
+            <input
+              type="text"
+              id="planName"
+              class="form-control"
+              placeholder="i.e. Marketing Services"
+              ngModel
+              name="planName"
+              required
+              #planName="ngModel"
+            />
+            <span
+              class="help-block-invalid"
+              *ngIf="!planName.valid && planName.touched"
+            >
+              Please enter a valid planName.</span
+            >
+          </div>
+          <!-- Amount -->
+          <!-- TODO: add min/max length -->
+          <div class="form-group">
+            <label for="amount">Amount</label>
+            <input
+              type="number"
+              id="amount"
+              class="form-control"
+              placeholder="$"
+              ngModel
+              name="amount"
+              required
+              #amount="ngModel"
+              number
+            />
+            <span
+              class="help-block-invalid"
+              *ngIf="!amount.valid && amount.touched"
+            >
+              Please enter a valid amount.</span
+            >
+          </div>
+          <!-- </div> -->
+
+          <div class="form-group">
+            <label for="description">Description</label>
+            <textarea
+              id="description"
+              class="form-control"
+              name="description"
+            ></textarea>
+          </div>
+
+          <!-- Password -->
+          <div
+            class="form-group"
+            *ngIf="planType === planTypeEnum.subscription"
+          >
+            <div class="row">
+              <div class="col">
+                <label for="password">Password</label>
+              </div>
+              <!-- Help text -->
+              <div class="col-auto">
+                <a
+                  href="password-reset.html"
+                  class="form-text small text-muted"
+                >
+                  Forgot password?
+                </a>
+              </div>
+            </div>
+
+            <input
+              type="password"
+              id="password"
+              class="form-control form-control-appended"
+              name="password"
+              ngModel
+              placeholder="Enter your password"
+              required
+              minlength="6"
+              #password="ngModel"
+            />
+            <span
+              class="help-block-invalid"
+              *ngIf="!password.valid && password.touched"
+            >
+              Please enter a valid password.</span
+            >
+          </div>
+
+          <!-- Submit -->
+          <div class="row justify-content-center">
+            <div class="col-4">
+              <button
+                class="btn btn-lg btn-block btn-primary mb-3"
+                [disabled]="!planForm.valid"
+                type="submit"
+              >
+                Create Plan
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <!-- <div [ngSwitch]="planType">
+          <div *ngSwitchCase="planTypeEnum.onetime">One-time</div>
+          <div *ngSwitchCase="planTypeEnum.subscription">Subcription</div>
+          <div *ngSwitchDefault>
+            Error rendering content, try reloading page
+          </div>
+        </div> -->
       </div>
     </div>
   </div>
