@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PlanTypeEnum } from '../plan-type.enum';
+import { BillingInterval } from '../billing-interval.enum';
+
 import { NgForm } from '@angular/forms';
 
 @Component({
@@ -8,12 +10,22 @@ import { NgForm } from '@angular/forms';
   styleUrls: ['./plan-edit.component.scss'],
 })
 export class PlanEditComponent implements OnInit {
-  planTypeEnum = PlanTypeEnum;
-  planType = PlanTypeEnum.onetime;
+  planType = PlanTypeEnum.recurring;
+  billingInterval = BillingInterval.monthly;
 
   constructor() {}
 
   ngOnInit(): void {}
 
   onSubmit(planForm: NgForm) {}
+
+  onRecurringMode() {
+    this.planType = PlanTypeEnum.recurring;
+    console.log('recurring');
+  }
+
+  onOneTimeMode() {
+    this.planType = PlanTypeEnum.onetime;
+    console.log('onetime');
+  }
 }

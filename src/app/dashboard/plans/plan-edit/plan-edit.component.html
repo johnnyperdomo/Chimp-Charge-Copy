@@ -1,3 +1,8 @@
+<!-- TODO: add more complex options, like edit email sends, billing cycles, how to
+accept payment, upload images, check-boxes, add any info. check other apps for
+more information. Redirect url. -->
+
+<!-- TODO: maybe make this page into a popup modal? easier to make things -->
 <div class="main-content">
   <div class="container-fluid">
     <div class="row justify-content-center">
@@ -23,24 +28,24 @@
             <div class="row">
               <div class="col-12">
                 <ul class="nav nav-tabs header-tabs mb-0">
-                  <li>
-                    <a
-                      class="text-center btn btn-secondary mr-3"
-                      routerLinkActive="active"
-                      [routerLink]="['/settings/account']"
-                    >
-                      One-time
-                    </a>
-                  </li>
                   <!-- TODO: hide either list button if on edit mode, for unselected option -->
                   <li>
-                    <a
-                      class="text-center btn btn-outline-secondary"
-                      routerLinkActive="active"
-                      [routerLink]="['/settings/billing']"
+                    <button
+                      type="button"
+                      class="btn btn-secondary mr-3"
+                      (click)="onRecurringMode()"
                     >
-                      Subscription
-                    </a>
+                      Recurring
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      type="button"
+                      class="text-center btn btn-outline-secondary"
+                      (click)="onOneTimeMode()"
+                    >
+                      One-time
+                    </button>
                   </li>
                 </ul>
               </div>
@@ -94,7 +99,6 @@
               Please enter a valid amount.</span
             >
           </div>
-          <!-- </div> -->
 
           <div class="form-group">
             <label for="description">Description</label>
@@ -105,45 +109,30 @@
             ></textarea>
           </div>
 
-          <!-- Password -->
-          <div
-            class="form-group"
-            *ngIf="planType === planTypeEnum.subscription"
-          >
-            <div class="row">
-              <div class="col">
-                <label for="password">Password</label>
-              </div>
-              <!-- Help text -->
-              <div class="col-auto">
-                <a
-                  href="password-reset.html"
-                  class="form-text small text-muted"
-                >
-                  Forgot password?
-                </a>
-              </div>
+          <!-- Recurring options -->
+          <div *ngIf="planType === 'recurring'">
+            <!-- TODO: add custom billing interval ; add setup fee option-->
+            <div class="form-group">
+              <label for="billingInterval">Billing interval</label>
+              <select
+                name="billingInterval"
+                id="billingInterval"
+                class="custom-select"
+                [(ngModel)]="billingInterval"
+                required
+              >
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="quarterly">Every 3 Months</option>
+                <option value="semiannually">Every 6 Months</option>
+                <option value="yearly">Yearly</option>
+              </select>
             </div>
-
-            <input
-              type="password"
-              id="password"
-              class="form-control form-control-appended"
-              name="password"
-              ngModel
-              placeholder="Enter your password"
-              required
-              minlength="6"
-              #password="ngModel"
-            />
-            <span
-              class="help-block-invalid"
-              *ngIf="!password.valid && password.touched"
-            >
-              Please enter a valid password.</span
-            >
           </div>
 
+          <!-- TODO: change text based on state, 'save changes' or 'create one-time
+          payment' or 'create recurring payment' -->
           <!-- Submit -->
           <div class="row justify-content-center">
             <div class="col-4">

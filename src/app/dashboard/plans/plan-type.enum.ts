@@ -1,4 +1,4 @@
 export enum PlanTypeEnum {
-  subscription,
-  onetime,
+  recurring = 'recurring',
+  onetime = 'onetime',
 }
