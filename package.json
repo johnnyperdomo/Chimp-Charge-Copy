@@ -2,12 +2,10 @@
   "name": "chimp-charge",
   "version": "0.0.0",
   "scripts": {
-    "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "test": "ng test",
-    "lint": "ng lint",
-    "e2e": "ng e2e"
+    "deploy-functions-dev": "firebase deploy --only functions --project chimp-charge-developer",
+    "deploy-functions-prod": "firebase deploy --only functions --project chimp-charge"
   },
   "private": true,
   "dependencies": {
