@@ -7,5 +7,9 @@
         ]
       }
     }
+  },
+  "projects": {
+    "production": "chimp-charge",
+    "developer": "chimp-charge-developer"
   }
 }
