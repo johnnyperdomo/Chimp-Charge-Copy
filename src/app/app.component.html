@@ -2,6 +2,21 @@
 
 <app-header *ngIf="isLoggedIn"></app-header>
 
+<div
+  *ngIf="!isStripeConnectUser && isLoggedIn"
+  class="container mt-3 text-center"
+>
+  <div class="alert alert-warning" role="alert">
+    To finish verifying your account.
+    <a
+      href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_HJHAR3N08kCfY3SDqYQVpcw4xCj3KznY&scope=read_write"
+      class="alert-link"
+    >
+      <b>Click here to set up your stripe account.</b>
+    </a>
+  </div>
+</div>
+
 <div class="container">
   <div class="row">
     <div class="col-md-12">

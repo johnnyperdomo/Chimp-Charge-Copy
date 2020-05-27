@@ -11,8 +11,9 @@ import * as AuthActions from './auth/store/auth.actions';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
-  isLoggedIn = false;
+  isLoggedIn: boolean = false;
   userSub: Subscription;
+  isStripeConnectUser: boolean = false;
 
   constructor(private store: Store<fromApp.AppState>) {}
 
