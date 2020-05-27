@@ -17,6 +17,7 @@ import {
 } from '@angular/fire/auth-guard';
 import { PlanEditComponent } from './dashboard/plans/plan-edit/plan-edit.component';
 import { PlanListComponent } from './dashboard/plans/plan-list/plan-list.component';
+import { CheckoutComponent } from './checkout/checkout.component';
 
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['login']); //if no logged in, restrict access
 const redirectLoggedInToPayments = () => redirectLoggedInTo(['payments']); //if logged in, block auth components
@@ -97,6 +98,10 @@ const routes: Routes = [
       { path: 'payouts', component: PayoutsComponent },
     ],
   },
+
+  //checkout - for customers, no auth required
+  //TODO: if routed to this component, don't show dashboard header
+  { path: 'pay/:id', component: CheckoutComponent },
 
   //404 - Page not found
   { path: '**', redirectTo: '/payments' }, //TODO : make this a 404 page

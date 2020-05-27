@@ -1,0 +1,119 @@
+<!-- TODO: checkout card, make it look nice as heck  -->
+<!-- TODO: add terms of service, 'by clicking this you agree to have read our tos' -->
+<div class="main-content">
+  <div class="container-fluid">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-8 col-xl-6 mt-5">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-header-title">
+              <h4 class="card-header-title">
+                {{ merchantName }}
+              </h4>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <!-- Header -->
+            <div class="col-auto">
+              <h2 class="card-title">
+                {{ planName }}
+              </h2>
+              <p class="card-subtitle text-muted">{{ planDescription }}</p>
+              <h4 class="plan-details card-text mt-3 mb-4">
+                {{ price }} - Every Month
+              </h4>
+
+              <hr />
+
+              <form #checkoutForm="ngForm" (ngSubmit)="onSubmit(checkoutForm)">
+                <!-- Card Details -->
+
+                <div class="form-group">
+                  <h3 class="card-title my-3">Credit or debit card</h3>
+                  <input
+                    type="text"
+                    id="cardname"
+                    class="form-control"
+                    placeholder="Cardholder's Name"
+                    ngModel
+                    name="cardname"
+                    required
+                    #cardname="ngModel"
+                  />
+                  <br />
+                  <div class="card">
+                    <div class="card-body">
+                      <div #cardElement>
+                        <!-- A Stripe Element will be inserted here. -->
+                      </div>
+                      <!-- Used to display Element errors. -->
+                      <p *ngIf="cardErrors != null">{{ cardErrors }}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Customer Details -->
+                <div class="form-group">
+                  <h3 class="card-title my-3">Customer Details</h3>
+                  <input
+                    type="text"
+                    id="name"
+                    class="form-control"
+                    placeholder="Your Name"
+                    ngModel
+                    name="name"
+                    required
+                    #name="ngModel"
+                  />
+                  <br />
+                  <input
+                    type="email"
+                    id="email"
+                    class="form-control"
+                    placeholder="Your Email for receipt"
+                    ngModel
+                    name="email"
+                    required
+                    email
+                    #email="ngModel"
+                  />
+                  <span
+                    class="help-block-invalid"
+                    *ngIf="!email.valid && email.touched"
+                  >
+                    Please enter a valid email.</span
+                  >
+                </div>
+
+                <!-- TODO: add link to tos -->
+                <div class="form-check mb-3">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="tos"
+                    ngModel
+                    name="tos"
+                    #tos="ngModel"
+                    required
+                  />
+                  <label class="form-check-label" for="defaultCheck1">
+                    I accept the 'Terms of Service'
+                  </label>
+                </div>
+                <!-- Submit -->
+                <!--TODO: [disabled]="!checkoutForm.valid" -->
+                <button
+                  class="btn btn-lg btn-block btn-primary mb-3"
+                  type="submit"
+                >
+                  Pay {{ price }} every month
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
