@@ -4,6 +4,6 @@ export class Merchant {
     public lastName: string,
     public uid: string,
     public stripeBillingID: string = null,
-    public stripeAccountID: string = null
+    public stripeConnectID: string = null
   ) {}
 }
