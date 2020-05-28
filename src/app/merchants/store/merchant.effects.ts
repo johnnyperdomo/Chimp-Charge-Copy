@@ -25,14 +25,16 @@ export class MerchantEffects {
           return of();
         }),
         catchError((errorRes) => {
-          //TODO: catch error
-          return of();
+          //NEXT-UPDATE: handle error messages better like authService => 'Firestore Error'
+          return of(
+            new MerchantActions.SetMerchantInfoFail('Error: Please try again.')
+          );
         })
       );
     })
   );
 
-  @Effect({ dispatch: false }) //TODO: dispatch to true
+  @Effect()
   getMerchantInfo = this.actions$.pipe(
     ofType(MerchantActions.GET_MERCHANT_INFO_START),
     switchMap((userId: MerchantActions.GetMerchantInfoStart) => {
@@ -44,17 +46,17 @@ export class MerchantEffects {
           .get()
       ).pipe(
         map((merchantData) => {
-          //TODO: dispatch success; STRIPE
-
           const retrievedMerchant = this.merchantService.parseFirestoreMerchantData(
             merchantData.data()
           );
-
-          return of();
+          return new MerchantActions.GetMerchantInfoSuccess(retrievedMerchant);
         }),
         catchError((errorRes) => {
-          //TODO: catch error
-          return of();
+          //NEXT-UPDATE: handle error messages better like authService => 'Firestore Error'
+          //https://firebase.google.com/docs/reference/js/firebase.firestore#firestoreerrorcode
+          return of(
+            new MerchantActions.GetMerchantInfoFail('Error: Please try again.')
+          );
         })
       );
     })

@@ -3,9 +3,11 @@ import { Merchant } from '../merchant.model';
 
 //Merchant Metadata =======================================>
 
+//set - create items remotely, then push to store
 export const SET_MERCHANT_INFO_START = '[Merchant] Set Merchant Info Start';
 export const SET_MERCHANT_INFO_SUCCESS = '[Merchant] Set Merchant Info Success';
 export const SET_MERCHANT_INFO_FAIL = '[Merchant] Set Merchant Info Fail';
+//get - retrieve items from firebase then add to store
 export const GET_MERCHANT_INFO_START = '[Merchant] Get Merchant Info Start';
 export const GET_MERCHANT_INFO_SUCCESS = '[Merchant] Get Merchant Info Success';
 export const GET_MERCHANT_INFO_FAIL = '[Merchant] Get Merchant Info Fail';

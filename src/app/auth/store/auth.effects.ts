@@ -78,9 +78,6 @@ export class AuthEffects {
             })
           );
         }),
-        tap((resData) => {
-          this.merchantService.getMerchantInfo(resData.payload.user.id);
-        }),
         catchError((errorRes) => {
           return this.authService.handleError(errorRes);
         })
@@ -102,6 +99,9 @@ export class AuthEffects {
         this.authService.saveUserLocally(authSuccessAction.payload.user);
         this.router.navigate(['/payments']);
       }
+    }),
+    tap((authSuccessAction: AuthActions.AuthenticateSuccess) => {
+      this.merchantService.getMerchantInfo(authSuccessAction.payload.user.id);
     })
   );
 

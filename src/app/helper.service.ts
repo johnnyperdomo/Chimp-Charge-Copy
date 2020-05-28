@@ -1,17 +1,21 @@
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import { AngularFireFunctions } from '@angular/fire/functions';
+import { User } from './auth/user.model';
+import { MerchantService } from './merchants/merchants.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class HelperService {
-  constructor(private fireFunctions: AngularFireFunctions) {}
+  constructor(
+    private fireFunctions: AngularFireFunctions,
+    private merchantService: MerchantService
+  ) {}
 
-  async handleStripeOAuthConnection(query: Params) {
+  async handleStripeOAuthConnection(query: Params, user: User) {
     //TODO: If user gets back response from helper function, clear url parameters
 
-    //TODO: add value to store
     //TODO: add loading spinner so user can know you're waiting on a response, until await finished
     //TODO: handle different cases
 
@@ -41,9 +45,8 @@ export class HelperService {
 
         const stripeConnectID = responseToken.stripe_user_id;
 
-        console.log(
-          `successful, the stripe token user id is: ${stripeConnectID} `
-        );
+        this.merchantService.getMerchantInfo(user.id);
+
         return stripeConnectID;
       } catch (err) {
         console.log('error message is: ' + err);

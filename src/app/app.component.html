@@ -1,15 +1,17 @@
 <!-- TODO: Add Charge Chimp logo to top of auth pages -->
 
 <app-header *ngIf="isLoggedIn"></app-header>
-<!-- TODO: add client id from environments -->
 <div
-  *ngIf="!isStripeConnectUser && isLoggedIn"
+  *ngIf="isStripeConnectAuthorized == false && isLoggedIn"
   class="container mt-3 text-center"
 >
   <div class="alert alert-warning" role="alert">
     To finish verifying your account.
     <a
-      href="https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_HJHAR3N08kCfY3SDqYQVpcw4xCj3KznY&scope=read_write"
+      [href]="
+        'https://connect.stripe.com/oauth/authorize?response_type=code&client_id=' +
+        stripeConnectClientID
+      "
       class="alert-link"
     >
       <b>Click here to set up your stripe account.</b>

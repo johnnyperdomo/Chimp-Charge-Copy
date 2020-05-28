@@ -16,9 +16,6 @@ export const connectStandardIntegration = functions.https.onCall(
     try {
       const userId = context.auth?.uid;
       const userRef = db.doc(`merchants/${userId}`);
-      //   const userSnap = await userRef.get();
-      //   const userData = userSnap.data()!; //NEXT-UPDATE: create helper that gets or sets field value if it doesn't exist
-      console.log(data.authorization_code);
 
       const stripeResponse = await stripe.oauth.token({
         grant_type: 'authorization_code',
