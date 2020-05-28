@@ -1,3 +1,4 @@
+//Stripe connect api to manage connect user account payments
 import * as functions from 'firebase-functions';
 import * as express from 'express';
 
