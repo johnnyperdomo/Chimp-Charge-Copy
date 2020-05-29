@@ -17,9 +17,9 @@ export class CheckoutComponent implements OnInit {
 
   //TODO: add dynamic values
   merchantName = 'Johnny Perdomo';
-  planName = 'Marketing Services';
-  planDescription = 'Marketing services rendered for atlanta consulting inc.';
-  planType = 'One-Time';
+  linkName = 'Marketing Services';
+  linkDescription = 'Marketing services rendered for atlanta consulting inc.';
+  linkType = 'One-Time';
   price = '$10'; //stripe price
 
   constructor() {}

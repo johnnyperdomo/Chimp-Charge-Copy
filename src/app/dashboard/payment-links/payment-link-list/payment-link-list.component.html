@@ -1,3 +1,4 @@
+<!-- TODO: remove link ids from html -->
 <div class="main-content">
   <!-- header -->
   <div class="header">
@@ -5,16 +6,16 @@
       <div class="row align-items-end">
         <div class="col">
           <h1 class="header-title">
-            Plans
+            Payment Links
           </h1>
         </div>
         <div class="col-auto">
           <button
             type="button"
             class="btn btn-primary"
-            (click)="onCreatePlan()"
+            (click)="onCreatePaymentLink()"
           >
-            Create Plan
+            Create Payment Link
           </button>
         </div>
       </div>
@@ -30,12 +31,12 @@
             <!-- NEXT-UPDATE: add pagination to not show all results in 1 page, order by pages -->
             <th>
               <h5 class="text-muted mb-0">
-                Plan Name
+                Payment Link Name
               </h5>
             </th>
             <th>
               <h5 class="text-muted mb-0">
-                <u class="more-info" placement="top" ngbTooltip="Plan ID">ID</u>
+                <u class="more-info" placement="top" ngbTooltip="Link ID">ID</u>
               </h5>
             </th>
             <th>
@@ -57,29 +58,29 @@
         </thead>
         <tbody class="list">
           <!-- NEXT-UPDATE: Make table rows fully tappable, or just allow txn id to be a tappable link, then leads to more in-depth information about the payment -->
-          <tr *ngFor="let planEl of plans">
+          <tr *ngFor="let linkEl of paymentLinks">
             <td>
-              <h5 class="mb-0">{{ planEl.planName }}</h5>
+              <h5 class="mb-0">{{ linkEl.linkName }}</h5>
             </td>
-            <td>{{ planEl.id }}</td>
+            <td>{{ linkEl.id }}</td>
             <td>
               <h4 class="mb-0">
                 <span class="badge badge-light">
                   <!-- TODO: make badge 'light' when single, make badge 'outline-info'
                 when recurring ; or another color -->
-                  <b>{{ planEl.type }}</b>
+                  <b>{{ linkEl.type }}</b>
                 </span>
               </h4>
             </td>
             <td>
-              <h5 class="mb-0">{{ planEl.price }}</h5>
+              <h5 class="mb-0">{{ linkEl.price }}</h5>
               <!-- TODO: only show 'billed Monthly' if recurring type -->
               <p class="card-text small text-muted mb-0">
                 Billed Monthly
                 <!-- TODO: Should be dynamic based on pricing interval' -->
               </p>
             </td>
-            <td>{{ planEl.createdDate }}</td>
+            <td>{{ linkEl.createdDate }}</td>
           </tr>
         </tbody>
       </table>

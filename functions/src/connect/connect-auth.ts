@@ -31,7 +31,5 @@ export const connectStandardIntegration = functions.https.onCall(
 
       throw new functions.https.HttpsError('unknown', err);
     }
-
-    //get token, update firebase user
   }
 );

@@ -3,7 +3,7 @@ accept payment, upload images, check-boxes, add any info. check other apps for
 more information. Redirect url. -->
 
 <!-- TODO: maybe make this page into a popup modal? easier to make things -->
-<!-- TODO: add cancel button or back btn to go back to plans page -->
+<!-- TODO: add cancel button or back btn to go back to links page -->
 
 <div class="main-content">
   <div class="container-fluid">
@@ -15,7 +15,7 @@ more information. Redirect url. -->
             <div class="row align-items-end">
               <div class="col">
                 <h1 class="header-title">
-                  Create new plan
+                  Create new payment link
                 </h1>
               </div>
             </div>
@@ -56,27 +56,27 @@ more information. Redirect url. -->
         </div>
 
         <!-- Form -->
-        <!-- TODO: fix forms for plans -->
-        <form #planForm="ngForm" (ngSubmit)="onSubmit(planForm)">
+        <!-- TODO: fix forms for links -->
+        <form #linkForm="ngForm" (ngSubmit)="onSubmit(linkForm)">
           <!-- Name -->
           <!-- <div class="form-row"> -->
           <div class="form-group">
-            <label for="planName">Plan Name</label>
+            <label for="linkName">Payment Link Name</label>
             <input
               type="text"
-              id="planName"
+              id="linkName"
               class="form-control"
               placeholder="i.e. Marketing Services"
               ngModel
-              name="planName"
+              name="linkName"
               required
-              #planName="ngModel"
+              #linkName="ngModel"
             />
             <span
               class="help-block-invalid"
-              *ngIf="!planName.valid && planName.touched"
+              *ngIf="!linkName.valid && linkName.touched"
             >
-              Please enter a valid planName.</span
+              Please enter a valid Name.</span
             >
           </div>
           <!-- Amount -->
@@ -112,7 +112,7 @@ more information. Redirect url. -->
           </div>
 
           <!-- Recurring options -->
-          <div *ngIf="planType === 'recurring'">
+          <div *ngIf="linkType === 'recurring'">
             <!-- TODO: add custom billing interval ; add setup fee option-->
             <div class="form-group">
               <label for="billingInterval">Billing interval</label>
@@ -140,22 +140,14 @@ more information. Redirect url. -->
             <div class="col-4">
               <button
                 class="btn btn-lg btn-block btn-primary mb-3"
-                [disabled]="!planForm.valid"
+                [disabled]="!linkForm.valid"
                 type="submit"
               >
-                Create Plan
+                Create Payment Link
               </button>
             </div>
           </div>
         </form>
-
-        <!-- <div [ngSwitch]="planType">
-          <div *ngSwitchCase="planTypeEnum.onetime">One-time</div>
-          <div *ngSwitchCase="planTypeEnum.subscription">Subcription</div>
-          <div *ngSwitchDefault>
-            Error rendering content, try reloading page
-          </div>
-        </div> -->
       </div>
     </div>
   </div>

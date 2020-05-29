@@ -3,7 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { PaymentsComponent } from './dashboard/payments/payments.component';
 import { CustomersComponent } from './dashboard/customers/customers.component';
 import { SubscribersComponent } from './dashboard/subscribers/subscribers.component';
-import { PlansComponent } from './dashboard/plans/plans.component';
+import { PaymentLinksComponent } from './dashboard/payment-links/payment-links.component';
 import { SettingsComponent } from './dashboard/settings/settings.component';
 import { AccountComponent } from './dashboard/settings/account/account.component';
 import { BillingComponent } from './dashboard/settings/billing/billing.component';
@@ -15,8 +15,8 @@ import {
   redirectUnauthorizedTo,
   redirectLoggedInTo,
 } from '@angular/fire/auth-guard';
-import { PlanEditComponent } from './dashboard/plans/plan-edit/plan-edit.component';
-import { PlanListComponent } from './dashboard/plans/plan-list/plan-list.component';
+import { PaymentLinkEditComponent } from './dashboard/payment-links/payment-link-edit/payment-link-edit.component';
+import { PaymentLinkListComponent } from './dashboard/payment-links/payment-link-list/payment-link-list.component';
 import { CheckoutComponent } from './checkout/checkout.component';
 
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['login']); //if no logged in, restrict access
@@ -59,24 +59,24 @@ const routes: Routes = [
     data: { authGuardPipe: redirectUnauthorizedToLogin },
   },
   {
-    path: 'plans',
-    component: PlansComponent,
+    path: 'payment-links',
+    component: PaymentLinksComponent,
     canActivate: [AngularFireAuthGuard],
     data: { authGuardPipe: redirectUnauthorizedToLogin },
     children: [
-      { path: '', component: PlanListComponent },
-      { path: 'new', component: PlanEditComponent },
-      { path: ':id/edit', component: PlanEditComponent },
+      { path: '', component: PaymentLinkListComponent },
+      { path: 'new', component: PaymentLinkEditComponent },
+      { path: ':id/edit', component: PaymentLinkEditComponent },
     ],
   },
   {
-    path: 'plans',
-    component: PlansComponent,
+    path: 'payment-links',
+    component: PaymentLinksComponent,
     canActivate: [AngularFireAuthGuard],
     data: { authGuardPipe: redirectUnauthorizedToLogin },
     children: [
-      { path: 'new', component: PlanEditComponent },
-      { path: ':id/edit', component: PlanEditComponent },
+      { path: 'new', component: PaymentLinkEditComponent },
+      { path: ':id/edit', component: PaymentLinkEditComponent },
     ],
   },
 

@@ -7,7 +7,7 @@ import { Customer } from '../../customers/customer.model';
   styleUrls: ['./subscriber-list.component.scss'],
 })
 export class SubscriberListComponent implements OnInit {
-  //TODO: pseudo code => real code should grab array of customers from stripe api, and only return those who are subscribed to a plan, whether active or cancelled.
+  //TODO: pseudo code => real code should grab array of customers from stripe api, and only return those who are subscribed to a payment link, whether active or cancelled.
   subscribers: Customer[] = [
     new Customer(
       '123fsd',

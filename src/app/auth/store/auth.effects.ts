@@ -125,6 +125,12 @@ export class AuthEffects {
       const userData = this.authService.fetchUserLocally();
 
       if (!userData) {
+        //if user hasnt been logged out from firebase
+        if (this.afAuth.currentUser) {
+          console.log('force logged out from firebase');
+
+          return new AuthActions.Logout();
+        }
         return { type: 'null' }; //pseudo
       }
 

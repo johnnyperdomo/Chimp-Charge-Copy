@@ -5,7 +5,7 @@ export class Customer {
   public customerEmail: string;
   public totalTransactions: Number;
   public totalPayments: string;
-  public planName: string;
+  public linkName: string;
   public createdDate: string;
   public recentTransaction: string;
   public isSubscriber: Boolean;
@@ -16,7 +16,7 @@ export class Customer {
     customerEmail: string,
     totalTransactions: Number,
     totalPayments: string,
-    planName: string, //TODO: make this a one-to-many relationship, one customer can be on many subscriptions //should be array of planids
+    linkName: string, //TODO: make this a one-to-many relationship, one customer can be on many subscriptions //should be array of linkids
     createdDate: string, //TODO: should be date
     recentTransaction: string, //TODO: should be date
     isSubscriber: Boolean
@@ -26,7 +26,7 @@ export class Customer {
     this.customerEmail = customerEmail;
     this.totalTransactions = totalTransactions;
     this.totalPayments = totalPayments;
-    this.planName = planName;
+    this.linkName = linkName;
     this.createdDate = createdDate;
     this.recentTransaction = recentTransaction;
     this.isSubscriber = isSubscriber;

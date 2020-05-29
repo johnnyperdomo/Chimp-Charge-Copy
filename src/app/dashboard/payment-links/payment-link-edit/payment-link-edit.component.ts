@@ -1,32 +1,32 @@
 import { Component, OnInit } from '@angular/core';
-import { PlanTypeEnum } from '../plan-type.enum';
+import { PaymentLinkTypeEnum } from '../payment-link-type.enum';
 import { BillingInterval } from '../billing-interval.enum';
 
 import { NgForm } from '@angular/forms';
 
 @Component({
-  selector: 'app-plan-edit',
-  templateUrl: './plan-edit.component.html',
-  styleUrls: ['./plan-edit.component.scss'],
+  selector: 'app-payment-link-edit',
+  templateUrl: './payment-link-edit.component.html',
+  styleUrls: ['./payment-link-edit.component.scss'],
 })
-export class PlanEditComponent implements OnInit {
+export class PaymentLinkEditComponent implements OnInit {
   //TODO: add can deactivate child option, to save the user from accidently losing data.
-  planType = PlanTypeEnum.recurring;
+  linkType = PaymentLinkTypeEnum.recurring;
   billingInterval = BillingInterval.monthly;
 
   constructor() {}
 
   ngOnInit(): void {}
 
-  onSubmit(planForm: NgForm) {}
+  onSubmit(linkForm: NgForm) {}
 
   onRecurringMode() {
-    this.planType = PlanTypeEnum.recurring;
+    this.linkType = PaymentLinkTypeEnum.recurring;
     console.log('recurring');
   }
 
   onOneTimeMode() {
-    this.planType = PlanTypeEnum.onetime;
+    this.linkType = PaymentLinkTypeEnum.onetime;
     console.log('onetime');
   }
 }

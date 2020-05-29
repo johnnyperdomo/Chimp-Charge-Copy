@@ -1,21 +1,21 @@
 //TODO: pseudo code
 
-export class Plan {
+export class PaymentLink {
   public id: string;
-  public planName: string;
+  public linkName: string;
   public type: string;
   public price: string;
   public createdDate: string;
 
   constructor(
     id: string,
-    planName: string,
+    linkName: string,
     type: string, //one-time vs recurring
     price: string,
     createdDate: string //TODO: should be date
   ) {
     this.id = id;
-    this.planName = planName;
+    this.linkName = linkName;
     this.type = type;
     this.price = price;
     this.createdDate = createdDate;

@@ -8,7 +8,7 @@ import { HeaderComponent } from './dashboard/header/header.component';
 import { PaymentsComponent } from './dashboard/payments/payments.component';
 import { CustomersComponent } from './dashboard/customers/customers.component';
 import { SubscribersComponent } from './dashboard/subscribers/subscribers.component';
-import { PlansComponent } from './dashboard/plans/plans.component';
+import { PaymentLinksComponent } from './dashboard/payment-links/payment-links.component';
 import { SettingsComponent } from './dashboard/settings/settings.component';
 import { AccountComponent } from './dashboard/settings/account/account.component';
 import { BillingComponent } from './dashboard/settings/billing/billing.component';
@@ -16,7 +16,7 @@ import { PayoutsComponent } from './dashboard/settings/payouts/payouts.component
 import { PaymentListComponent } from './dashboard/payments/payment-list/payment-list.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CustomerListComponent } from './dashboard/customers/customer-list/customer-list.component';
-import { PlanListComponent } from './dashboard/plans/plan-list/plan-list.component';
+import { PaymentLinkListComponent } from './dashboard/payment-links/payment-link-list/payment-link-list.component';
 import { SubscriberListComponent } from './dashboard/subscribers/subscriber-list/subscriber-list.component';
 import { SignUpComponent } from './auth/sign-up/sign-up.component';
 import { LoginComponent } from './auth/login/login.component';
@@ -39,7 +39,7 @@ import { StoreRouterConnectingModule } from '@ngrx/router-store';
 
 import * as firebase from 'firebase/app';
 import { MerchantEffects } from './merchants/store/merchant.effects';
-import { PlanEditComponent } from './dashboard/plans/plan-edit/plan-edit.component';
+import { PaymentLinkEditComponent } from './dashboard/payment-links/payment-link-edit/payment-link-edit.component';
 import { CheckoutComponent } from './checkout/checkout.component';
 
 firebase.initializeApp(environment.firebase);
@@ -52,19 +52,19 @@ firebase.initializeApp(environment.firebase);
     PaymentsComponent,
     CustomersComponent,
     SubscribersComponent,
-    PlansComponent,
+    PaymentLinksComponent,
     SettingsComponent,
     AccountComponent,
     BillingComponent,
     PayoutsComponent,
     PaymentListComponent,
     CustomerListComponent,
-    PlanListComponent,
+    PaymentLinkListComponent,
     SubscriberListComponent,
     SignUpComponent,
     LoginComponent,
     AuthComponent,
-    PlanEditComponent,
+    PaymentLinkEditComponent,
     CheckoutComponent,
   ],
   imports: [
