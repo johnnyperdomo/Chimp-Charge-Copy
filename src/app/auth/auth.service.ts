@@ -5,6 +5,8 @@ import * as AuthActions from './store/auth.actions';
 import { User } from './user.model';
 import * as fromApp from '../store/app.reducer';
 import { Store } from '@ngrx/store';
+import { AngularFireAuth } from '@angular/fire/auth';
+import { first } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +14,10 @@ import { Store } from '@ngrx/store';
 export class AuthService {
   private tokenExpTimer: any;
 
-  constructor(private store: Store<fromApp.AppState>) {}
+  constructor(
+    private store: Store<fromApp.AppState>,
+    private afAuth: AngularFireAuth
+  ) {}
 
   //Auth ==================>
 
@@ -98,6 +103,10 @@ export class AuthService {
       clearTimeout(this.tokenExpTimer);
       this.tokenExpTimer = null;
     }
+  }
+
+  async getFirebaseUserAsync() {
+    return await this.afAuth.authState.pipe(first()).toPromise();
   }
 }
 

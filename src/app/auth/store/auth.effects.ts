@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { from } from 'rxjs';
+import { from, of } from 'rxjs';
 import {
   switchMap,
   catchError,
@@ -132,22 +132,14 @@ export class AuthEffects {
       const userData = this.authService.fetchUserLocally();
 
       if (!userData) {
-        //TODO: configure this better
-        //if user hasnt been logged out from firebase
-        const loggedInUser = this.afAuth.authState.pipe(first()).toPromise();
+        const loggedInUser = this.authService.getFirebaseUserAsync();
 
-        loggedInUser.then((user) => {
-          if (user) {
-            console.log('logged in');
-            console.log('force logged out from firebase');
-
-            return new AuthActions.Logout();
-          } else {
-            return { type: 'null' }; //pseudo: user logged out
-          }
-        });
-
-        return { type: 'null' }; //pseudo
+        //if user hasn't been logged out from firebase, but has been logged out locally
+        if (loggedInUser) {
+          return new AuthActions.Logout();
+        } else {
+          return { type: 'null' }; //pseudo: user logged out
+        }
       }
 
       const loadedUser = new User(
