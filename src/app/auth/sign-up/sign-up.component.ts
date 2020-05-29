@@ -1,4 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import * as fromApp from '../../store/app.reducer';
@@ -11,13 +17,24 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./sign-up.component.scss'],
 })
 export class SignUpComponent implements OnInit, OnDestroy {
+  @ViewChild('signupForm', { static: true }) signupForm: NgForm;
+
   isLoading = false;
   error: string = null;
   storeSub: Subscription;
+  changeDetectionSub: Subscription;
 
-  constructor(private store: Store<fromApp.AppState>) {}
+  constructor(
+    private store: Store<fromApp.AppState>,
+    private changeDetectionRef: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
+    this.changeDetectionSub = this.signupForm.valueChanges.subscribe(() => {
+      //manually detect changes in angular
+      this.changeDetectionRef.detectChanges();
+    });
+
     this.storeSub = this.store.select('auth').subscribe((authState) => {
       this.isLoading = authState.loading;
       this.error = authState.authError;
@@ -68,6 +85,10 @@ export class SignUpComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.storeSub) {
       this.storeSub.unsubscribe();
+    }
+
+    if (this.changeDetectionSub) {
+      this.changeDetectionSub.unsubscribe();
     }
   }
 

@@ -1,4 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ChangeDetectionStrategy,
+  ViewChild,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
@@ -11,13 +18,24 @@ import * as AuthActions from '../store/auth.actions';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit, OnDestroy {
+  @ViewChild('loginForm', { static: true }) loginForm: NgForm;
+
   isLoading = false;
   error: string = null;
   storeSub: Subscription;
+  changeDetectionSub: Subscription;
 
-  constructor(private store: Store<fromApp.AppState>) {}
+  constructor(
+    private store: Store<fromApp.AppState>,
+    private changeDetectionRef: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
+    this.changeDetectionSub = this.loginForm.valueChanges.subscribe(() => {
+      //manually detect changes in angular
+      this.changeDetectionRef.detectChanges();
+    });
+
     this.storeSub = this.store.select('auth').subscribe((authState) => {
       this.isLoading = authState.loading;
       this.error = authState.authError;
@@ -57,5 +75,10 @@ export class LoginComponent implements OnInit, OnDestroy {
     if (this.storeSub) {
       this.storeSub.unsubscribe();
     }
+
+    if (this.changeDetectionSub) {
+      this.changeDetectionSub.unsubscribe();
+    }
   }
 }
+//TODO: Navigation triggered outside Angular zone, did you forget to call 'ngZone.run()'? => when clicking signup button
