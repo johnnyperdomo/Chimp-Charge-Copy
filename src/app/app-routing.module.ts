@@ -101,7 +101,7 @@ const routes: Routes = [
 
   //checkout - for customers, no auth required
   //TODO: if routed to this component, don't show dashboard header
-  { path: 'pay/:id', component: CheckoutComponent },
+  { path: 'pay/:id', component: CheckoutComponent }, //TODO: user is being redirected
 
   //404 - Page not found
   { path: '**', redirectTo: '/payments' }, //TODO : make this a 404 page

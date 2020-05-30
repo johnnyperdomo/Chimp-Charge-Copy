@@ -1,5 +1,13 @@
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ElementRef,
+  ViewChild,
+  OnDestroy,
+} from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { v4 as uuidv4 } from 'uuid';
+import { environment } from 'src/environments/environment';
 
 declare var Stripe; // : stripe.StripeStatic;
 
@@ -10,6 +18,9 @@ declare var Stripe; // : stripe.StripeStatic;
 })
 export class CheckoutComponent implements OnInit {
   @ViewChild('cardElement', { static: true }) cardElement: ElementRef;
+  //TODO: add can deactivate child option, to save the user from accidently losing data.
+
+  idempotency_key = uuidv4(); //used to prevent duplicate charges; generated on component load
 
   stripe; // : stripe.Stripe;
   card;
@@ -25,7 +36,7 @@ export class CheckoutComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {
-    this.stripe = Stripe('pk_test_khkMMjikeE7R9TusvTgIOLv7000UOUZmeJ');
+    this.stripe = Stripe(environment.stripePublishableKey); //TODO:
     const elements = this.stripe.elements();
 
     this.card = elements.create('card');
@@ -37,6 +48,8 @@ export class CheckoutComponent implements OnInit {
   }
 
   onSubmit(checkoutForm: NgForm) {
+    //TODO: spam button to test for duplicate charges and idempotency key works
     console.log(checkoutForm.value);
+    console.log(this.idempotency_key);
   }
 }

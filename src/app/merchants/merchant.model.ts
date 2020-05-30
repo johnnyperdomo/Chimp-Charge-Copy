@@ -7,3 +7,6 @@ export class Merchant {
     public stripeConnectID: string = null
   ) {}
 }
+//TODO: things to add to model in firebase:
+//TODO: add payment status
+//TODO: membership type: yearly, monthly
