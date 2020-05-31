@@ -5,8 +5,11 @@ import * as AuthActions from './store/auth.actions';
 import { User } from './user.model';
 import * as fromApp from '../store/app.reducer';
 import { Store } from '@ngrx/store';
-import { AngularFireAuth } from '@angular/fire/auth';
+import { LocalStorage } from '@ngx-pwa/local-storage';
 import { first } from 'rxjs/operators';
+import { AngularFireAuth } from '@angular/fire/auth';
+import * as firebase from 'firebase/app';
+import * as moment from 'moment';
 
 @Injectable({
   providedIn: 'root',
@@ -16,6 +19,7 @@ export class AuthService {
 
   constructor(
     private store: Store<fromApp.AppState>,
+    private storage: LocalStorage,
     private afAuth: AngularFireAuth
   ) {}
 
@@ -70,26 +74,65 @@ export class AuthService {
     });
   }
 
-  saveUserLocally(localUser: User) {
-    localStorage.setItem('user', JSON.stringify(localUser));
-    console.log('saved user');
+  async saveUserLocally(localUser: User) {
+    // localStorage.setItem('user', JSON.stringify(localUser));
+    return await this.storage
+      .setItem('user', JSON.stringify(localUser))
+      .pipe(first())
+      .toPromise();
   }
 
   removeUserLocally() {
-    localStorage.removeItem('user');
+    this.storage.removeItem('user').subscribe((data) => {
+      console.log('successfully removed user from local Storage: ' + data);
+    });
   }
 
-  fetchUserLocally() {
-    const fetchedUser: {
+  async fetchUserLocally() {
+    //TODO: check data with json schema
+    const asyncFetch = await this.storage
+      .getItem('user')
+      .pipe(first())
+      .toPromise();
+
+    if (!asyncFetch) {
+      return null;
+    }
+
+    const user: {
       email: string;
       id: string;
       _token: string;
       _expirationDate: string;
-    } = JSON.parse(localStorage.getItem('user'));
+    } = JSON.parse(String(asyncFetch));
 
-    console.log('fetched user', fetchedUser);
+    console.log('fetched async user: ' + user.email);
 
-    return fetchedUser;
+    return user;
+  }
+
+  async validateFireUser() {
+    const user = await this.afAuth.authState.pipe(first()).toPromise();
+    const token = await this.afAuth.idTokenResult.pipe(first()).toPromise();
+
+    if (!user) {
+      return;
+    }
+
+    const now = moment();
+    const futureExpDate = moment(token.expirationTime);
+
+    //if token date doesn't exist, or timestamp is expired
+    if (!futureExpDate || now > futureExpDate) {
+      //if token is not valid, sign out
+      console.log('token is not valid, logout');
+
+      this.store.dispatch(new AuthActions.Logout());
+      return;
+    }
+
+    console.log('token is valid');
+    return;
   }
 
   setAutoLogoutTimer(millisecondsToExpiration: number) {

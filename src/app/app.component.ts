@@ -1,11 +1,5 @@
-import {
-  Component,
-  OnInit,
-  OnDestroy,
-  AfterContentInit,
-  SimpleChanges,
-} from '@angular/core';
-import { Subscription, Observable, Subject, BehaviorSubject } from 'rxjs';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subscription, Subject } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import * as fromApp from './store/app.reducer';
 import { Store } from '@ngrx/store';
@@ -68,8 +62,6 @@ export class AppComponent implements OnInit, OnDestroy {
     this.currentUser
       .pipe(
         mergeMap((retrievedUser) => {
-          console.log('retrieved user is: ' + retrievedUser);
-
           return this.route.queryParams.pipe(
             map((query) => {
               this.handleStripePayload(query, retrievedUser);
@@ -78,6 +70,8 @@ export class AppComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe();
+
+    this.authService.validateFireUser();
   }
 
   // TODO: we may not need this function, check back later: with try: catch
@@ -101,14 +95,8 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
-  autoLoginUser() {
-    //wait 100 millisecs for system to perform any changes
-    setTimeout(() => {
-      const localUser = this.authService.fetchUserLocally();
-      if (localUser) {
-        this.store.dispatch(new AuthActions.AutoLogin());
-      }
-    }, 100);
+  async autoLoginUser() {
+    this.store.dispatch(new AuthActions.AutoLogin());
   }
 
   ngOnDestroy() {
