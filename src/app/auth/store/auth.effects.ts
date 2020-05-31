@@ -126,7 +126,7 @@ export class AuthEffects {
     }),
     map((currentLocalStorageUser) => {
       if (!currentLocalStorageUser) {
-        return { type: 'null' }; //pseudo: user logged out
+        return { type: 'null' }; //pseudo: no user
       }
 
       const loadedUser = new User(
@@ -143,9 +143,10 @@ export class AuthEffects {
           user: loadedUser,
           redirect: false,
         });
+      } else {
+        //if token invalid, logout
+        return new AuthActions.Logout();
       }
-
-      return { type: 'null' }; //pseudo
     })
   );
 

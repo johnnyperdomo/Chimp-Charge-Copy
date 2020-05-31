@@ -75,7 +75,6 @@ export class AuthService {
   }
 
   async saveUserLocally(localUser: User) {
-    // localStorage.setItem('user', JSON.stringify(localUser));
     return await this.storage
       .setItem('user', JSON.stringify(localUser))
       .pipe(first())
@@ -111,29 +110,30 @@ export class AuthService {
     return user;
   }
 
-  async validateFireUser() {
-    const user = await this.afAuth.authState.pipe(first()).toPromise();
-    const token = await this.afAuth.idTokenResult.pipe(first()).toPromise();
+  //TODO: delete later
+  // async validateFireUser() {
+  //   const user = await this.afAuth.authState.pipe(first()).toPromise();
+  //   const token = await this.afAuth.idTokenResult.pipe(first()).toPromise();
 
-    if (!user) {
-      return;
-    }
+  //   if (!user) {
+  //     return;
+  //   }
 
-    const now = moment();
-    const futureExpDate = moment(token.expirationTime);
+  //   const now = moment();
+  //   const futureExpDate = moment(token.expirationTime);
 
-    //if token date doesn't exist, or timestamp is expired
-    if (!futureExpDate || now > futureExpDate) {
-      //if token is not valid, sign out
-      console.log('token is not valid, logout');
+  //   //if token date doesn't exist, or timestamp is expired
+  //   if (!futureExpDate || now > futureExpDate) {
+  //     //if token is not valid, sign out
+  //     console.log('token is not valid, logout');
 
-      this.store.dispatch(new AuthActions.Logout());
-      return;
-    }
+  //     this.store.dispatch(new AuthActions.Logout());
+  //     return;
+  //   }
 
-    console.log('token is valid');
-    return;
-  }
+  //   console.log('token is valid');
+  //   return;
+  // }
 
   setAutoLogoutTimer(millisecondsToExpiration: number) {
     //can logout when token is set to expire

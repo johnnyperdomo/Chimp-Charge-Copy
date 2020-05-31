@@ -31,7 +31,6 @@ export class AppComponent implements OnInit, OnDestroy {
     private store: Store<fromApp.AppState>,
     private route: ActivatedRoute,
     private helperService: HelperService,
-    private authService: AuthService,
     private zone: NgZone //listens to some event handlers in observable to update ui
   ) {}
 
@@ -70,8 +69,6 @@ export class AppComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe();
-
-    this.authService.validateFireUser();
   }
 
   // TODO: we may not need this function, check back later: with try: catch
