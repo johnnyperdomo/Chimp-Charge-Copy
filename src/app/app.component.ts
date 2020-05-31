@@ -1,6 +1,12 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  AfterContentInit,
+  SimpleChanges,
+} from '@angular/core';
+import { Subscription, Observable, Subject, BehaviorSubject } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
 import * as fromApp from './store/app.reducer';
 import { Store } from '@ngrx/store';
 import * as AuthActions from './auth/store/auth.actions';
@@ -9,6 +15,7 @@ import { HelperService } from './helper.service';
 import { environment } from 'src/environments/environment';
 import { User } from './auth/user.model';
 import { NgZone } from '@angular/core';
+import { AuthService } from './auth/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +26,7 @@ export class AppComponent implements OnInit, OnDestroy {
   stripeConnectClientID = environment.stripeConnectClientID;
 
   isLoggedIn: boolean = false;
-  currentUser: User;
+  currentUser = new Subject<User>();
   isStripeConnectAuthorized: boolean;
 
   userSub: Subscription;
@@ -30,6 +37,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private store: Store<fromApp.AppState>,
     private route: ActivatedRoute,
     private helperService: HelperService,
+    private authService: AuthService,
     private zone: NgZone //listens to some event handlers in observable to update ui
   ) {}
 
@@ -40,7 +48,7 @@ export class AppComponent implements OnInit, OnDestroy {
       .select('auth')
       .pipe(map((authState) => authState.user))
       .subscribe((user) => {
-        this.currentUser = user;
+        this.currentUser.next(user);
         this.isLoggedIn = !user ? false : true;
       });
 
@@ -57,17 +65,31 @@ export class AppComponent implements OnInit, OnDestroy {
         }
       });
 
-    this.querySub = this.route.queryParams.subscribe((query) => {
-      this.handleStripePayload(query);
-    });
+    this.currentUser
+      .pipe(
+        mergeMap((retrievedUser) => {
+          console.log('retrieved user is: ' + retrievedUser);
+
+          return this.route.queryParams.pipe(
+            map((query) => {
+              this.handleStripePayload(query, retrievedUser);
+            })
+          );
+        })
+      )
+      .subscribe();
   }
 
-  //TODO: we may not need this function, check back later: with try: catch
-  async handleStripePayload(query: Params) {
+  // TODO: we may not need this function, check back later: with try: catch
+  async handleStripePayload(query: Params, retrievedUser: User) {
+    if (!retrievedUser) {
+      return;
+    }
+
     try {
       const payload = await this.helperService.handleStripeOAuthConnection(
         query,
-        this.currentUser
+        retrievedUser
       );
 
       //TODO: trigger ui feedback for error or success
@@ -80,7 +102,13 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   autoLoginUser() {
-    this.store.dispatch(new AuthActions.AutoLogin());
+    //wait 100 millisecs for system to perform any changes
+    setTimeout(() => {
+      const localUser = this.authService.fetchUserLocally();
+      if (localUser) {
+        this.store.dispatch(new AuthActions.AutoLogin());
+      }
+    }, 100);
   }
 
   ngOnDestroy() {

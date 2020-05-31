@@ -19,6 +19,8 @@ export class HelperService {
     //TODO: add loading spinner so user can know you're waiting on a response, until await finished
     //TODO: handle different cases
 
+    console.log('user is from handle auth: ' + user);
+
     //successful queries
     const scope = await query.scope;
     const code = await query.code;

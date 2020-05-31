@@ -72,6 +72,7 @@ export class AuthService {
 
   saveUserLocally(localUser: User) {
     localStorage.setItem('user', JSON.stringify(localUser));
+    console.log('saved user');
   }
 
   removeUserLocally() {
@@ -104,10 +105,4 @@ export class AuthService {
       this.tokenExpTimer = null;
     }
   }
-
-  async getFirebaseUserAsync() {
-    return await this.afAuth.authState.pipe(first()).toPromise();
-  }
 }
-
-//TODO: auto login

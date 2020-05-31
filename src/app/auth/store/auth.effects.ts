@@ -128,14 +128,22 @@ export class AuthEffects {
   @Effect()
   autoLogin = this.actions$.pipe(
     ofType(AuthActions.AUTO_LOGIN),
-    map(() => {
+    switchMap(() => {
+      return from(this.afAuth.authState);
+    }),
+    map((currentUser) => {
+      console.log('auto login called');
+
       const userData = this.authService.fetchUserLocally();
+      console.log('user data from autologin is: ' + userData);
 
       if (!userData) {
-        const loggedInUser = this.authService.getFirebaseUserAsync();
+        console.log('should be empty user data: ' + userData);
 
         //if user hasn't been logged out from firebase, but has been logged out locally
-        if (loggedInUser) {
+        if (currentUser) {
+          console.log('what is the current user?: ' + currentUser.email);
+
           return new AuthActions.Logout();
         } else {
           return { type: 'null' }; //pseudo: user logged out
