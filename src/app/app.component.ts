@@ -109,4 +109,10 @@ export class AppComponent implements OnInit, OnDestroy {
       this.merchantSub.unsubscribe();
     }
   }
+
+  //NEXT-UPDATE: add pagination controls on front end, so don't present too much data to user which becomes overwhelming. Get all data first from server, manipuulate on client side
+
+  //NEXT-UPDATE: create reducers for all components, for better, single one source of truth
+
+  //TODO: maybe create unix epoch to human redable format using 'moment'. for firebase timestamp
 }

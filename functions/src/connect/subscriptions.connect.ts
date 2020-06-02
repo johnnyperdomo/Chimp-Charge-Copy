@@ -1,9 +1,9 @@
 //import * as functions from 'firebase-functions';
 
-// export const getTransactions = functions.https.onCall(
+// export const getSubscribers = functions.https.onCall(
 //   async (data, context) => {}
 // );
 
-// export const onRefundPayment = functions.https.onCall(
+// export const onCancelSubscriber = functions.https.onCall(
 //   async (data, context) => {}
 // );

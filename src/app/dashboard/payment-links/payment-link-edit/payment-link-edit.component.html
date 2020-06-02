@@ -81,6 +81,18 @@ more information. Redirect url. -->
               Please enter a valid Name.</span
             >
           </div>
+
+          <div class="form-group">
+            <label for="description">Description</label>
+            <textarea
+              id="description"
+              class="form-control"
+              ngModel
+              name="description"
+              #description="ngModel"
+            ></textarea>
+          </div>
+
           <!-- Amount -->
           <!-- TODO: add min/max length -->
           <div class="form-group">
@@ -102,15 +114,6 @@ more information. Redirect url. -->
             >
               Please enter a valid amount.</span
             >
-          </div>
-
-          <div class="form-group">
-            <label for="description">Description</label>
-            <textarea
-              id="description"
-              class="form-control"
-              name="description"
-            ></textarea>
           </div>
 
           <!-- Recurring options -->

@@ -20,11 +20,11 @@
               Created
             </h5>
           </th>
-          <th colspan="2">
+          <!-- NEXT-UPDATE: <th colspan="2">
             <h5 class="text-muted mb-0">
               Latest Transaction
             </h5>
-          </th>
+          </th> -->
         </tr>
       </thead>
       <tbody class="list">
@@ -44,7 +44,7 @@
             </p>
           </td>
           <td>{{ customerEl.createdDate }}</td>
-          <td>{{ customerEl.recentTransaction }}</td>
+          <!--NEXT-UPDATE <td>{{ customerEl.recentTransaction }}</td> -->
           <td class="text-right">
             <!-- Only show badge if subscriber -->
             <ng-container *ngIf="customerEl.isSubscriber">

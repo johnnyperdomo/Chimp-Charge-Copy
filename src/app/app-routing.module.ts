@@ -69,16 +69,6 @@ const routes: Routes = [
       { path: ':id/edit', component: PaymentLinkEditComponent },
     ],
   },
-  {
-    path: 'payment-links',
-    component: PaymentLinksComponent,
-    canActivate: [AngularFireAuthGuard],
-    data: { authGuardPipe: redirectUnauthorizedToLogin },
-    children: [
-      { path: 'new', component: PaymentLinkEditComponent },
-      { path: ':id/edit', component: PaymentLinkEditComponent },
-    ],
-  },
 
   //Settings
   {

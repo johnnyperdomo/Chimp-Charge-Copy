@@ -20,7 +20,7 @@ export class CheckoutComponent implements OnInit {
   @ViewChild('cardElement', { static: true }) cardElement: ElementRef;
   //TODO: add can deactivate child option, to save the user from accidently losing data.
 
-  idempotency_key = uuidv4(); //used to prevent duplicate charges; generated on component load
+  idempotencyKey = uuidv4(); //used to prevent duplicate charges; generated on component load
 
   stripe; // : stripe.Stripe;
   card;
@@ -50,6 +50,6 @@ export class CheckoutComponent implements OnInit {
   onSubmit(checkoutForm: NgForm) {
     //TODO: spam button to test for duplicate charges and idempotency key works
     console.log(checkoutForm.value);
-    console.log(this.idempotency_key);
+    console.log(this.idempotencyKey);
   }
 }

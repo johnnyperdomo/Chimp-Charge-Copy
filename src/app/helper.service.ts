@@ -55,4 +55,34 @@ export class HelperService {
     }
     return null;
   }
+
+  //TODO: adjust for recurring
+  async createPaymentLink(
+    productIdempotencyKey: string,
+    priceIdempotencyKey: string,
+    amount: number,
+    linkName: string,
+    description: string
+  ) {
+    const linkFunction = this.fireFunctions.httpsCallable(
+      'paymentLinks-onCreatePaymentLink'
+    );
+
+    try {
+      const createLink = await linkFunction({
+        productIdempotencyKey: productIdempotencyKey,
+        priceIdempotencyKey: priceIdempotencyKey,
+        amount: amount * 100, //TODO: remove this
+        productName: linkName,
+        productDesc: description,
+      }).toPromise();
+
+      console.log(createLink);
+
+      return createLink;
+    } catch (err) {
+      console.log('error message is: ' + err);
+      throw Error(err);
+    }
+  }
 }

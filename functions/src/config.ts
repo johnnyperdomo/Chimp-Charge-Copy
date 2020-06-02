@@ -4,3 +4,5 @@ import * as Stripe from 'stripe';
 export const stripe = new Stripe.Stripe(functions.config().stripe.secret, {
   apiVersion: '2020-03-02',
 });
+
+//TODO: add max netork retries on global stripe config
