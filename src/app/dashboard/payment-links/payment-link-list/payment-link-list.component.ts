@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PaymentLink } from '../payment-link.model';
 import { Router, ActivatedRoute } from '@angular/router';
+import { HelperService } from 'src/app/helper.service';
 
 @Component({
   selector: 'app-payment-link-list',
@@ -20,9 +21,24 @@ export class PaymentLinkListComponent implements OnInit {
     ),
   ];
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private helperService: HelperService
+  ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.retrievePaymentLinks();
+  }
+
+  async retrievePaymentLinks() {
+    try {
+      const links = await this.helperService.getPaymentLinks();
+      console.log('success front end, ');
+    } catch (err) {
+      console.log('error front end');
+    }
+  }
 
   onCreatePaymentLink() {
     this.router.navigate(['new'], { relativeTo: this.route }); //relativeTo, appends to end of current route

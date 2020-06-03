@@ -1,4 +1,8 @@
 // TODO: Pseudo code - update model
+
+//TODO: use firebase model:
+// customer: Stripe.Customer {}
+
 export class Customer {
   public id: string;
   public customerName: string;

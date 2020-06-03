@@ -28,6 +28,7 @@
     "firebase": "^7.14.3",
     "moment": "^2.25.3",
     "rxjs": "~6.5.4",
+    "stripe": "^8.55.0",
     "tslib": "^1.10.0",
     "uuid": "^8.1.0",
     "zone.js": "~0.10.2"
@@ -54,6 +55,7 @@
     "karma-jasmine": "~3.0.1",
     "karma-jasmine-html-reporter": "^1.4.2",
     "protractor": "~5.4.3",
+    "@types/stripe": "^7.13.23",
     "ts-node": "~8.3.0",
     "tslint": "~6.1.0",
     "typescript": "~3.8.3"

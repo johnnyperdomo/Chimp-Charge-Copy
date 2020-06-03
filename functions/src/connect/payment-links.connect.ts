@@ -6,10 +6,35 @@ import { Stripe } from 'stripe';
 const db = admin.firestore();
 
 //cloud functions exports ====================================>
-// export const getPaymentLinks = functions.https.onCall(async (data, context) => {
-//   //TODO: when getting list of prices, filter to make sure you only retrieve ones that exist on firebase too, which means they created from client
-//   //Maybe from metadata
-// });
+export const getPaymentLinks = functions.https.onCall(async (data, context) => {
+  //TODO: when getting list of prices, filter to make sure you only retrieve ones that exist on firebase too, which means they created from client; Maybe from metadata
+
+  if (!context.auth) {
+    throw new functions.https.HttpsError(
+      'failed-precondition',
+      'The function must be called ' + 'while authenticated.'
+    );
+  }
+
+  //TODO: get firebase payment links where it equals same merchantUID, to pass in as value
+
+  try {
+    const userId = context.auth?.uid;
+    const userRef = db.doc(`merchants/${userId}`);
+    const userSnap = await userRef.get();
+    const userData = userSnap.data()!;
+
+    const stripeConnectID = userData.stripeConnectID;
+
+    const allNewCustomers = await stripe.prices
+      .list({ expand: ['data.product'] }, { stripeAccount: stripeConnectID })
+      .autoPagingToArray({ limit: 10000 });
+
+    return allNewCustomers;
+  } catch (err) {
+    throw new functions.https.HttpsError('unknown', err);
+  }
+});
 
 export const onCreatePaymentLink = functions.https.onCall(
   async (data, context) => {
@@ -19,7 +44,7 @@ export const onCreatePaymentLink = functions.https.onCall(
     const productDesc: string = data.productDesc;
     const amount: number = data.amount;
 
-    console.log('product description in server is: ' + productDesc);
+    //TODO: product data is null, turn to undefined.
 
     if (!context.auth) {
       throw new functions.https.HttpsError(
@@ -54,19 +79,20 @@ export const onCreatePaymentLink = functions.https.onCall(
       );
 
       const newDoc = await db.collection('payment-links').add({
-        stripePriceID: price.id,
-        stripeProductID: product.id,
+        price: price,
+        product: product,
         merchantUID: merchantUID,
         lastUpdated: admin.firestore.Timestamp.now(),
       });
+      //TODO: you can query by maps -> price.priceID
 
-      const linkObject = {
-        product: product,
-        price: price,
-        document: newDoc,
-      };
+      // const linkObject = {
+      //   product: product,
+      //   price: price,
+      //   document: newDoc,
+      // };
 
-      return linkObject;
+      return newDoc;
     } catch (err) {
       throw new functions.https.HttpsError('unknown', err);
     }
@@ -98,7 +124,6 @@ async function createProduct(
       },
       { idempotencyKey: idempotencyKey, stripeAccount: connectID }
     );
-    console.log('returned product: ' + product);
     return product;
   } catch (err) {
     throw new Error('stripe: createProduct: ' + err);
@@ -126,8 +151,6 @@ async function createPrice(
       },
       { idempotencyKey: idempotencyKey, stripeAccount: connectID }
     );
-    console.log('returned price: ' + price);
-
     return price;
   } catch (err) {
     throw new Error('stripe: createPrice: ' + err);

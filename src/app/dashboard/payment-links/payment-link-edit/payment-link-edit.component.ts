@@ -27,7 +27,7 @@ export class PaymentLinkEditComponent implements OnInit {
     const linkName: string = linkForm.value.linkName;
     let description: string = linkForm.value.description;
 
-    //TODO: empty description throws error in stripe
+    //TODO: empty description(check link name) | null throws error in stripe: fix
     if (!description || description.length == 0) {
       description = undefined;
     }

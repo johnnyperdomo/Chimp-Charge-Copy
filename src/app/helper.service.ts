@@ -64,15 +64,15 @@ export class HelperService {
     linkName: string,
     description: string
   ) {
-    const linkFunction = this.fireFunctions.httpsCallable(
+    const createLinkFunction = this.fireFunctions.httpsCallable(
       'paymentLinks-onCreatePaymentLink'
     );
 
     try {
-      const createLink = await linkFunction({
+      const createLink = await createLinkFunction({
         productIdempotencyKey: productIdempotencyKey,
         priceIdempotencyKey: priceIdempotencyKey,
-        amount: amount * 100, //TODO: remove this
+        amount: amount * 100, //TODO: remove this; use dinero.js
         productName: linkName,
         productDesc: description,
       }).toPromise();
@@ -80,6 +80,21 @@ export class HelperService {
       console.log(createLink);
 
       return createLink;
+    } catch (err) {
+      console.log('error message is: ' + err);
+      throw Error(err);
+    }
+  }
+
+  async getPaymentLinks() {
+    const getLinksFunction = this.fireFunctions.httpsCallable(
+      'paymentLinks-getPaymentLinks'
+    );
+
+    try {
+      const paymentLinks = await getLinksFunction({}).toPromise();
+      console.log(paymentLinks);
+      return paymentLinks;
     } catch (err) {
       console.log('error message is: ' + err);
       throw Error(err);

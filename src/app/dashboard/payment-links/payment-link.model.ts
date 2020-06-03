@@ -1,4 +1,7 @@
 //TODO: pseudo code
+//TODO: use firebase model:
+// price: Stripe.Price {}
+// product: Stripe.Product
 
 export class PaymentLink {
   public id: string;
