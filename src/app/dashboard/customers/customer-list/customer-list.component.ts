@@ -1,5 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Customer } from '../customer.model';
+import { Subscription, BehaviorSubject } from 'rxjs';
+import { Merchant } from 'src/app/merchants/merchant.model';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { Store } from '@ngrx/store';
+import * as fromApp from '../../../store/app.reducer';
+import { map, filter, mergeMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-customer-list',
@@ -7,6 +13,10 @@ import { Customer } from '../customer.model';
   styleUrls: ['./customer-list.component.scss'],
 })
 export class CustomerListComponent implements OnInit {
+  merchantStoreSub: Subscription;
+  currentMerchantSub: Subscription;
+  currentMerchant = new BehaviorSubject<Merchant>(null);
+
   customers: Customer[] = [
     new Customer(
       '123fsd',
@@ -43,7 +53,33 @@ export class CustomerListComponent implements OnInit {
     ),
   ];
 
-  constructor() {}
+  constructor(
+    private db: AngularFirestore,
+    private store: Store<fromApp.AppState>
+  ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.merchantStoreSub = this.store
+      .select('merchant')
+      .pipe(map((merchantState) => merchantState.merchant))
+      .subscribe((payload) => {
+        this.currentMerchant.next(payload);
+      });
+
+    this.currentMerchantSub = this.currentMerchant
+      .pipe(
+        filter((payload) => payload !== null),
+        mergeMap((retrievedMerchant) => {
+          //only execute if merchant not null
+          //TODO: add <Customers> to collectionref
+          //TODO: , (ref) => ref.where('merchantUID', '==', retrievedMerchant.uid)
+          return this.db
+            .collection('customers')
+            .valueChanges({ idField: 'id' });
+        })
+      )
+      .subscribe((data) => {
+        console.log(data);
+      });
+  }
 }

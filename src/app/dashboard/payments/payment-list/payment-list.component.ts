@@ -1,5 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Payment } from '../payment.model';
+import { Subscription, BehaviorSubject } from 'rxjs';
+import { Merchant } from 'src/app/merchants/merchant.model';
+import { map, filter, mergeMap } from 'rxjs/operators';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { Store } from '@ngrx/store';
+import * as fromApp from '../../../store/app.reducer';
 
 @Component({
   selector: 'app-payment-list',
@@ -7,6 +13,10 @@ import { Payment } from '../payment.model';
   styleUrls: ['./payment-list.component.scss'],
 })
 export class PaymentListComponent implements OnInit {
+  merchantStoreSub: Subscription;
+  currentMerchantSub: Subscription;
+  currentMerchant = new BehaviorSubject<Merchant>(null);
+
   payments: Payment[] = [
     new Payment(
       '1Qsd23r',
@@ -50,7 +60,33 @@ export class PaymentListComponent implements OnInit {
     ),
   ];
 
-  constructor() {}
+  constructor(
+    private db: AngularFirestore,
+    private store: Store<fromApp.AppState>
+  ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.merchantStoreSub = this.store
+      .select('merchant')
+      .pipe(map((merchantState) => merchantState.merchant))
+      .subscribe((payload) => {
+        this.currentMerchant.next(payload);
+      });
+
+    this.currentMerchantSub = this.currentMerchant
+      .pipe(
+        filter((payload) => payload !== null),
+        mergeMap((retrievedMerchant) => {
+          //only execute if merchant not null
+          //TODO: add <Payments> to collectionref
+          //TODO: , (ref) => ref.where('merchantUID', '==', retrievedMerchant.uid)
+          return this.db
+            .collection('transactions')
+            .valueChanges({ idField: 'id' });
+        })
+      )
+      .subscribe((data) => {
+        console.log(data);
+      });
+  }
 }

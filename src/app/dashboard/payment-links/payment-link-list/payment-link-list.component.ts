@@ -1,7 +1,6 @@
 import { Component, OnInit, NgZone, OnDestroy } from '@angular/core';
 import { PaymentLink } from '../payment-link.model';
 import { Router, ActivatedRoute } from '@angular/router';
-import { HelperService } from 'src/app/helper.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { map, mergeMap, filter, take } from 'rxjs/operators';
 import * as fromApp from '../../../store/app.reducer';
@@ -19,7 +18,6 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
   paymentLinks: PaymentLink[] = [];
 
   merchantStoreSub: Subscription;
-
   currentMerchantSub: Subscription;
   currentMerchant = new BehaviorSubject<Merchant>(null);
 
@@ -27,8 +25,7 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private db: AngularFirestore,
-    private store: Store<fromApp.AppState>,
-    private zone: NgZone
+    private store: Store<fromApp.AppState>
   ) {}
 
   ngOnInit(): void {
