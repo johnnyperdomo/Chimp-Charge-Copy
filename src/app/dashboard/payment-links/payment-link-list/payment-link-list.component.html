@@ -56,26 +56,31 @@
           <tr *ngFor="let linkEl of paymentLinks">
             <td>
               <!-- TODO: add text wrapping and/or max text length, so that text isn't too long for screen -->
-              <h5 class="mb-0">{{ linkEl.linkName }}</h5>
+              <h5 class="mb-0">{{ linkEl.product.name }}</h5>
+              <p class="card-text small text-muted mb-0">
+                {{ linkEl.product.description }}
+              </p>
             </td>
             <td>
               <h4 class="mb-0">
                 <span class="badge badge-light">
                   <!-- TODO: make badge 'light' when single, make badge 'outline-info'
                 when recurring ; or another color -->
-                  <b>{{ linkEl.type }}</b>
+                  <b>{{ linkEl.linkType }}</b>
+                  <!-- //TODO: rename to be more clear on client side -->
                 </span>
               </h4>
             </td>
             <td>
-              <h5 class="mb-0">{{ linkEl.price }}</h5>
+              <h5 class="mb-0">{{ linkEl.priceAmount }}</h5>
               <!-- TODO: only show 'billed Monthly' if recurring type -->
               <p class="card-text small text-muted mb-0">
                 Billed Monthly
+
                 <!-- TODO: Should be dynamic based on pricing interval' -->
               </p>
             </td>
-            <td>{{ linkEl.createdDate }}</td>
+            <td>{{ linkEl.created }}</td>
           </tr>
         </tbody>
       </table>

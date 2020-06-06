@@ -9,7 +9,6 @@ import { HelperService } from './helper.service';
 import { environment } from 'src/environments/environment';
 import { User } from './auth/user.model';
 import { NgZone } from '@angular/core';
-import { AuthService } from './auth/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -25,7 +24,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   userSub: Subscription;
   merchantSub: Subscription;
-  querySub: Subscription;
+  currentUserSub: Subscription;
 
   constructor(
     private store: Store<fromApp.AppState>,
@@ -58,7 +57,7 @@ export class AppComponent implements OnInit, OnDestroy {
         }
       });
 
-    this.currentUser
+    this.currentUserSub = this.currentUser
       .pipe(
         mergeMap((retrievedUser) => {
           return this.route.queryParams.pipe(
@@ -101,8 +100,8 @@ export class AppComponent implements OnInit, OnDestroy {
       this.userSub.unsubscribe();
     }
 
-    if (this.querySub) {
-      this.querySub.unsubscribe();
+    if (this.currentUserSub) {
+      this.currentUserSub.unsubscribe();
     }
 
     if (this.merchantSub) {

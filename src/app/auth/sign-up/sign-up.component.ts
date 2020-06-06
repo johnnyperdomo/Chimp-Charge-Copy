@@ -47,6 +47,7 @@ export class SignUpComponent implements OnInit, OnDestroy {
     });
   }
 
+  //NEXT-UPDATE: remove business name/company name from signup form, add optional in accounts page
   onSubmit(signupForm: NgForm) {
     if (!signupForm.valid) {
       return;
@@ -54,6 +55,8 @@ export class SignUpComponent implements OnInit, OnDestroy {
 
     const firstName = signupForm.value.fName;
     const lastName = signupForm.value.lName;
+    //TODO: add business/company name option here
+
     const email = signupForm.value.email;
     const password = signupForm.value.password;
 

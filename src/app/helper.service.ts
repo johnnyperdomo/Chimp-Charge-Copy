@@ -85,19 +85,4 @@ export class HelperService {
       throw Error(err);
     }
   }
-
-  async getPaymentLinks() {
-    const getLinksFunction = this.fireFunctions.httpsCallable(
-      'paymentLinks-getPaymentLinks'
-    );
-
-    try {
-      const paymentLinks = await getLinksFunction({}).toPromise();
-      console.log(paymentLinks);
-      return paymentLinks;
-    } catch (err) {
-      console.log('error message is: ' + err);
-      throw Error(err);
-    }
-  }
 }
