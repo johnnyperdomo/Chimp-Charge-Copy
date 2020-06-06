@@ -9,6 +9,7 @@ import { Store } from '@ngrx/store';
 import { Subscription, BehaviorSubject } from 'rxjs';
 import { Merchant } from 'src/app/merchants/merchant.model';
 
+//NEXT-UPDATE: add sorting abilities, and pagination
 @Component({
   selector: 'app-payment-link-list',
   templateUrl: './payment-link-list.component.html',
@@ -47,33 +48,28 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
       .pipe(
         filter((payload) => payload !== null),
         mergeMap((retrievedMerchant) => {
-          //only execute if not null
+          //only execute if merchant not null
 
           return this.db
-            .collection('payment-links', (ref) =>
+            .collection<PaymentLink>('payment-links', (ref) =>
               ref.where('merchantUID', '==', retrievedMerchant.uid)
             )
-            .valueChanges({ id: 'propertyID' });
+            .valueChanges({ idField: 'id' });
         })
       )
-      .subscribe((data: any) => {
+      .subscribe((data) => {
         console.log(data);
 
-        this.paymentLinks.length = 0; //clear out array first
-        for (let index = 0; index < data.length; index++) {
-          const element = data[index];
-          this.zone.run(() => {
-            this.paymentLinks.push(
-              new PaymentLink(
-                element.id,
-                element.merchantUID,
-                element.product,
-                element.price,
-                element.lastUpdated
-              )
-            );
-          });
-        }
+        this.paymentLinks = data.map((item) => {
+          return new PaymentLink(
+            item.id,
+            item.merchantUID,
+            item.product,
+            item.price,
+            item.lastUpdated
+          );
+        });
+        console.log(this.paymentLinks);
       });
   }
 
@@ -85,6 +81,7 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
     if (this.merchantStoreSub) {
       this.merchantStoreSub.unsubscribe();
     }
+
     if (this.currentMerchantSub) {
       this.currentMerchantSub.unsubscribe();
     }
