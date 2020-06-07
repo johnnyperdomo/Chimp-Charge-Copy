@@ -5,36 +5,9 @@ import { Stripe } from 'stripe';
 
 const db = admin.firestore();
 
+//TODO: add function, when new payment intent webhook is succeeded, add transaction to sub-collection of firestore.paymentlink.transactions { transaction: Stripe.Transaction(successful ones) } to see how many transactions with this payment link. match payment intent with product id => think about saving only the trnxn id for this one, since collection is able to be read outside auth, unless....subcollection of trx can be locked.then (show full transaction detail)
+
 //cloud functions exports ====================================>
-export const getPaymentLinks = functions.https.onCall(async (data, context) => {
-  //TODO: when getting list of prices, filter to make sure you only retrieve ones that exist on firebase too, which means they created from client; Maybe from metadata
-
-  if (!context.auth) {
-    throw new functions.https.HttpsError(
-      'failed-precondition',
-      'The function must be called ' + 'while authenticated.'
-    );
-  }
-
-  //TODO: get firebase payment links where it equals same merchantUID, to pass in as value
-
-  try {
-    const userId = context.auth?.uid;
-    const userRef = db.doc(`merchants/${userId}`);
-    const userSnap = await userRef.get();
-    const userData = userSnap.data()!;
-
-    const stripeConnectID = userData.stripeConnectID;
-
-    const allNewCustomers = await stripe.prices
-      .list({ expand: ['data.product'] }, { stripeAccount: stripeConnectID })
-      .autoPagingToArray({ limit: 10000 });
-
-    return allNewCustomers;
-  } catch (err) {
-    throw new functions.https.HttpsError('unknown', err);
-  }
-});
 
 export const onCreatePaymentLink = functions.https.onCall(
   async (data, context) => {
@@ -103,11 +76,51 @@ export const onCreatePaymentLink = functions.https.onCall(
 //   async (data, context) => {}
 // );
 
-// export const onDeletePaymentLink = functions.https.onCall(
-//   async (data, context) => {}
-// );
+export const onDeletePaymentLink = functions.https.onCall(
+  async (data, context) => {
+    const priceID: string = data.priceID;
+    const productID: string = data.productID;
+    const connectID: string = data.connectID;
+    //const docID: string = data.docID;
+
+    if (!context.auth) {
+      throw new functions.https.HttpsError(
+        'failed-precondition',
+        'The function must be called ' + 'while authenticated.'
+      );
+    }
+
+    try {
+      const prodResponse = await archiveProduct(priceID, productID, connectID);
+
+      if (prodResponse.active === false) {
+        const query = await db
+          .collection('payment-links')
+          .where('product.id', '==', prodResponse.id)
+          .get();
+        const docID = query.docs[0].id;
+
+        const deleteDoc = await db
+          .collection('payment-links')
+          .doc(docID)
+          .delete();
+
+        return deleteDoc;
+      } else {
+        throw new functions.https.HttpsError(
+          'failed-precondition',
+          'Stripe.Product was not successfully archived, item is still active'
+        );
+      }
+    } catch (err) {
+      throw new functions.https.HttpsError('unknown', err);
+    }
+  }
+);
 
 //methods ===============================>
+
+//Products ==========================>
 async function createProduct(
   merchantUID: string,
   connectID: string,
@@ -127,6 +140,31 @@ async function createProduct(
     return product;
   } catch (err) {
     throw new Error('stripe: createProduct: ' + err);
+  }
+}
+
+async function archiveProduct(
+  priceID: string,
+  productID: string,
+  connectID: string
+) {
+  //set product to inactive, since can't delete product in api
+  try {
+    const archPrice = await archivePrice(priceID, connectID);
+
+    const response = await stripe.products.update(
+      productID,
+      { active: false },
+      { stripeAccount: connectID }
+    );
+    // const response = await stripe.products.del(productID, undefined, {
+    //   stripeAccount: connectID,
+    // });
+    console.log(archPrice);
+
+    return response;
+  } catch (err) {
+    throw new Error('stripe: updateProduct - archive: ' + err);
   }
 }
 
@@ -154,5 +192,24 @@ async function createPrice(
     return price;
   } catch (err) {
     throw new Error('stripe: createPrice: ' + err);
+  }
+}
+
+async function archivePrice(priceID: string, connectID: string) {
+  //sets price to inactive
+  try {
+    stripe.prices;
+    const response = await stripe.prices.update(
+      priceID,
+      {
+        active: false,
+      },
+      {
+        stripeAccount: connectID,
+      }
+    );
+    return response;
+  } catch (err) {
+    throw new Error('stripe: updatePrice - archive: ' + err);
   }
 }

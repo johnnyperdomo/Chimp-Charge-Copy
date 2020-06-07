@@ -7,6 +7,7 @@ import * as fromApp from '../../../store/app.reducer';
 import { Store } from '@ngrx/store';
 import { Subscription, BehaviorSubject } from 'rxjs';
 import { Merchant } from 'src/app/merchants/merchant.model';
+import { HelperService } from 'src/app/helper.service';
 
 //NEXT-UPDATE: add sorting abilities, and pagination
 @Component({
@@ -25,7 +26,8 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private db: AngularFirestore,
-    private store: Store<fromApp.AppState>
+    private store: Store<fromApp.AppState>,
+    private helperService: HelperService
   ) {}
 
   ngOnInit(): void {
@@ -88,8 +90,22 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
     console.log('edit clicked, ' + itemID);
   }
 
-  onDeleteLinkAtRow(itemID: string) {
-    console.log('delete clicked, ' + itemID);
+  async onDeleteLinkAtRow(itemID: string) {
+    const currentLink = this.paymentLinks.find((item) => item.id === itemID);
+    const merchant = this.currentMerchant.getValue();
+
+    try {
+      const response = await this.helperService.deletePaymentLink(
+        currentLink.price.id,
+        currentLink.product.id,
+        merchant.stripeConnectID
+      );
+      return response;
+    } catch (err) {
+      console.log(err);
+      //TODO: present error
+    }
+
     //TODO: add alert upon success
     //TODO: add modal to confirm deletion - ngbootstrap modal
   }

@@ -85,4 +85,28 @@ export class HelperService {
       throw Error(err);
     }
   }
+
+  async deletePaymentLink(
+    priceID: string,
+    productID: string,
+    connectID: string
+  ) {
+    const deleteLinkFunction = this.fireFunctions.httpsCallable(
+      'paymentLinks-onDeletePaymentLink'
+    );
+
+    try {
+      const deleteLink = await deleteLinkFunction({
+        priceID: priceID,
+        productID: productID,
+        connectID: connectID,
+      }).toPromise();
+
+      console.log(deleteLink);
+
+      return deleteLink;
+    } catch (err) {
+      throw Error(err);
+    }
+  }
 }

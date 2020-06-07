@@ -89,4 +89,8 @@ export class PaymentListComponent implements OnInit {
         console.log(data);
       });
   }
+
+  onRefundAtRow(itemID: string) {
+    console.log('refund clicked, ' + itemID);
+  }
 }
