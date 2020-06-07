@@ -30,6 +30,7 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     //TODO: //add loading spinner
+    //TODO: catch errors
     //NEXT-UPDATE// turn into ngrx reducer
     //NEXT-UPDATE: render content faster
     console.log('onit called');
@@ -72,6 +73,25 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
 
   onCreatePaymentLink() {
     this.router.navigate(['new'], { relativeTo: this.route }); //relativeTo, appends to end of current route
+  }
+
+  onViewLinkAtRow(itemID: string) {
+    console.log('view link, ' + itemID);
+  }
+
+  onCopyLinkAtRow(itemID: string) {
+    console.log('copied link, ' + itemID);
+    //TODO: add alert upon success
+  }
+
+  onEditLinkAtRow(itemID: string) {
+    console.log('edit clicked, ' + itemID);
+  }
+
+  onDeleteLinkAtRow(itemID: string) {
+    console.log('delete clicked, ' + itemID);
+    //TODO: add alert upon success
+    //TODO: add modal to confirm deletion - ngbootstrap modal
   }
 
   ngOnDestroy() {
