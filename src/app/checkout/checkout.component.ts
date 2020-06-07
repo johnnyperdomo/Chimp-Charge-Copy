@@ -8,6 +8,10 @@ import {
 import { NgForm } from '@angular/forms';
 import { v4 as uuidv4 } from 'uuid';
 import { environment } from 'src/environments/environment';
+import { ActivatedRoute } from '@angular/router';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { map, switchMap, catchError } from 'rxjs/operators';
+import { from } from 'rxjs';
 
 declare var Stripe; // : stripe.StripeStatic;
 
@@ -27,16 +31,56 @@ export class CheckoutComponent implements OnInit {
   cardErrors;
 
   //TODO: add dynamic values
-  merchantName = 'Johnny Perdomo';
-  linkName = 'Marketing Services';
-  linkDescription = 'Marketing services rendered for atlanta consulting inc.';
-  linkType = 'One-Time';
-  price = '$10'; //stripe price
+  merchantName: string;
+  linkName: string;
+  linkDescription: string;
+  linkType: string;
+  price: string; //stripe price
 
-  constructor() {}
+  constructor(private route: ActivatedRoute, private db: AngularFirestore) {}
 
   ngOnInit(): void {
-    this.stripe = Stripe(environment.stripePublishableKey); //TODO:
+    //TODO: add loading page before rendering checkout
+    //TODO: catchError, show 404 page if no data find with id
+    //TODO: add business name to checkout page
+    this.route.params
+      .pipe(
+        map((params) => {
+          return params['id'];
+        }),
+        switchMap((id) => {
+          console.log('id is => ' + id);
+
+          return from(this.db.collection('payment-links').doc(id).ref.get());
+        }),
+        switchMap((paymentLinkData) => {
+          const retrievedLink = paymentLinkData.data();
+          const merchantUID = retrievedLink.merchantUID;
+
+          this.price = retrievedLink.price.unit_amount;
+          this.linkType = retrievedLink.price.type;
+          this.linkName = retrievedLink.product.name;
+          this.linkDescription = retrievedLink.product.description;
+
+          console.log(retrievedLink);
+
+          return from(
+            this.db.collection('merchants').doc(merchantUID).ref.get()
+          );
+        })
+      )
+      .subscribe((merchantData) => {
+        const merchant = merchantData.data();
+        this.merchantName = merchant.firstName + merchant.lastName;
+        console.log(merchantData.data());
+        //TODO: Render content here => after data finishes loading
+      });
+
+    this.activeCard();
+  }
+
+  activeCard() {
+    this.stripe = Stripe(environment.stripePublishableKey);
     const elements = this.stripe.elements();
 
     this.card = elements.create('card');
