@@ -22,6 +22,7 @@ import { SignUpComponent } from './auth/sign-up/sign-up.component';
 import { LoginComponent } from './auth/login/login.component';
 import { AuthComponent } from './auth/auth.component';
 import { FormsModule } from '@angular/forms';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
@@ -70,6 +71,7 @@ firebase.initializeApp(environment.firebase);
   imports: [
     BrowserModule,
     AppRoutingModule,
+    ClipboardModule,
     NgbModule,
     FormsModule,
     AngularFireModule.initializeApp(environment.firebase),

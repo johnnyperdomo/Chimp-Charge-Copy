@@ -2,12 +2,13 @@ import { Component, OnInit, NgZone, OnDestroy } from '@angular/core';
 import { PaymentLink } from '../payment-link.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { map, mergeMap, filter, take } from 'rxjs/operators';
+import { map, mergeMap, filter } from 'rxjs/operators';
 import * as fromApp from '../../../store/app.reducer';
 import { Store } from '@ngrx/store';
 import { Subscription, BehaviorSubject } from 'rxjs';
 import { Merchant } from 'src/app/merchants/merchant.model';
 import { HelperService } from 'src/app/helper.service';
+import { PaymentLinkService } from '../payment-link.service';
 
 //NEXT-UPDATE: add sorting abilities, and pagination
 @Component({
@@ -27,7 +28,8 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
     private router: Router,
     private db: AngularFirestore,
     private store: Store<fromApp.AppState>,
-    private helperService: HelperService
+    private helperService: HelperService,
+    private linkService: PaymentLinkService
   ) {}
 
   ngOnInit(): void {
@@ -83,6 +85,9 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
 
   onCopyLinkAtRow(itemID: string) {
     console.log('copied link, ' + itemID);
+
+    this.linkService.copyPayLink(itemID);
+
     //TODO: add alert upon success
   }
 
