@@ -41,6 +41,7 @@ export class SignupStart implements Action {
       password: string;
       firstName: string;
       lastName: string;
+      businessName: string; //business Name
     }
   ) {}
 }

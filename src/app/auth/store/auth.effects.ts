@@ -12,6 +12,7 @@ import { Merchant } from 'src/app/merchants/merchant.model';
 
 let userFirstName: string = null;
 let userLastName: string = null;
+let userBusinessName: string = null;
 
 @Injectable()
 export class AuthEffects {
@@ -21,6 +22,7 @@ export class AuthEffects {
     switchMap((signupAction: AuthActions.SignupStart) => {
       userFirstName = signupAction.payload.firstName;
       userLastName = signupAction.payload.lastName;
+      userBusinessName = signupAction.payload.businessName;
       return from(
         this.afAuth.createUserWithEmailAndPassword(
           signupAction.payload.email,
@@ -44,6 +46,7 @@ export class AuthEffects {
           const newMerchant = new Merchant(
             userFirstName,
             userLastName,
+            userBusinessName,
             resData.payload.user.id
           );
           this.merchantService.setMerchantInfo(newMerchant);

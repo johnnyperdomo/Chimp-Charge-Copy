@@ -31,7 +31,7 @@ export class CheckoutComponent implements OnInit {
   cardErrors;
 
   //TODO: add dynamic values
-  merchantName: string;
+  businessName: string;
   linkName: string;
   linkDescription: string;
   linkType: string;
@@ -71,7 +71,7 @@ export class CheckoutComponent implements OnInit {
       )
       .subscribe((merchantData) => {
         const merchant = merchantData.data();
-        this.merchantName = merchant.firstName + merchant.lastName;
+        this.businessName = merchant.businessName;
         console.log(merchantData.data());
         //TODO: Render content here => after data finishes loading
       });

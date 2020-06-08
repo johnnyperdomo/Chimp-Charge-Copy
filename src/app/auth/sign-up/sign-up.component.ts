@@ -55,17 +55,20 @@ export class SignUpComponent implements OnInit, OnDestroy {
 
     const firstName = signupForm.value.fName;
     const lastName = signupForm.value.lName;
+    const businessName = signupForm.value.bizName;
+
     //TODO: add business/company name option here
 
     const email = signupForm.value.email;
     const password = signupForm.value.password;
 
-    this.authenticateUser(firstName, lastName, email, password);
+    this.authenticateUser(firstName, lastName, businessName, email, password);
   }
 
   authenticateUser(
     firstName: string,
     lastName: string,
+    businessName: string,
     email: string,
     password: string
   ) {
@@ -75,6 +78,7 @@ export class SignUpComponent implements OnInit, OnDestroy {
         password: password,
         firstName,
         lastName,
+        businessName: businessName,
       })
     );
   }

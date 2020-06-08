@@ -25,6 +25,7 @@ export class MerchantService {
     const parsedMerchant = new Merchant(
       data.firstName,
       data.lastName,
+      data.businessName,
       data.uid,
       data.stripeBillingID,
       data.stripeConnectID
