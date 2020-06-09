@@ -49,7 +49,6 @@ export class MerchantEffects {
           const retrievedMerchant = this.merchantService.parseFirestoreMerchantData(
             merchantData.data()
           );
-          console.log(retrievedMerchant);
 
           return new MerchantActions.GetMerchantInfoSuccess(retrievedMerchant);
         }),

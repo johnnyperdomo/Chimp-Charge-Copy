@@ -92,15 +92,15 @@ export class AuthEffects {
   authSuccess = this.actions$.pipe(
     ofType(AuthActions.AUTHENTICATE_SUCCESS),
     tap(async (authSuccessAction: AuthActions.AuthenticateSuccess) => {
-      if (
-        authSuccessAction.payload.user &&
-        authSuccessAction.payload.redirect === true
-      ) {
+      if (authSuccessAction.payload.user) {
         await this.authService.saveUserLocally(authSuccessAction.payload.user);
         this.authService.setAutoLogoutTimer(
           authSuccessAction.payload.user.expiresInMilliseconds
         );
-        this.router.navigate(['/payments']);
+
+        if (authSuccessAction.payload.redirect == true) {
+          this.router.navigate(['/payments']);
+        }
       }
     }),
     tap((authSuccessAction: AuthActions.AuthenticateSuccess) => {

@@ -62,6 +62,7 @@ export class AccountComponent implements OnInit {
     const firstName = accountForm.value.fName;
     const lastName = accountForm.value.lName;
     const businessName = accountForm.value.bizName;
+    //NEXT-UPDATE: add text: you must "update bizName in stripe also {insert link}""
 
     try {
       await this.db.collection('merchants').doc(this.merchant.uid).update({

@@ -8,6 +8,7 @@ import { passwordMatchValidator } from './security.validator';
 import { AngularFireAuth } from '@angular/fire/auth';
 import * as firebase from 'firebase/app';
 import * as AuthActions from '../../../auth/store/auth.actions';
+import { User } from 'src/app/auth/user.model';
 
 @Component({
   selector: 'app-security',
@@ -67,8 +68,24 @@ export class SecurityComponent implements OnInit {
       await currentUser.reauthenticateWithCredential(credentials);
 
       await currentUser.updateEmail(newEmail);
-      //TODO: UPDATE local auth reducer when this happens
-      //TODO: check local storage, if that updates when i update user
+      const newTokenResult = await currentUser.getIdTokenResult();
+
+      const updatedUser = new User(
+        currentUser.email,
+        currentUser.uid,
+        newTokenResult.token,
+        newTokenResult.expirationTime
+      );
+
+      //NEXT-UPDATE: error: redo this function, or fix: when changing email and dispatching action, page is redirected, not the intended response
+
+      //NEXT-UPDATE: add text: you must "update in stripe also {insert link}""
+      this.store.dispatch(
+        new AuthActions.AuthenticateSuccess({
+          user: updatedUser,
+          redirect: false,
+        })
+      );
     } catch (err) {
       console.log(err);
 

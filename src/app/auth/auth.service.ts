@@ -8,8 +8,6 @@ import { Store } from '@ngrx/store';
 import { LocalStorage } from '@ngx-pwa/local-storage';
 import { first } from 'rxjs/operators';
 import { AngularFireAuth } from '@angular/fire/auth';
-import * as firebase from 'firebase/app';
-import * as moment from 'moment';
 
 @Injectable({
   providedIn: 'root',
@@ -88,7 +86,6 @@ export class AuthService {
   }
 
   async fetchUserLocally() {
-    //TODO: check data with json schema
     const asyncFetch = await this.storage
       .getItem('user')
       .pipe(first())
@@ -109,31 +106,6 @@ export class AuthService {
 
     return user;
   }
-
-  //TODO: delete later
-  // async validateFireUser() {
-  //   const user = await this.afAuth.authState.pipe(first()).toPromise();
-  //   const token = await this.afAuth.idTokenResult.pipe(first()).toPromise();
-
-  //   if (!user) {
-  //     return;
-  //   }
-
-  //   const now = moment();
-  //   const futureExpDate = moment(token.expirationTime);
-
-  //   //if token date doesn't exist, or timestamp is expired
-  //   if (!futureExpDate || now > futureExpDate) {
-  //     //if token is not valid, sign out
-  //     console.log('token is not valid, logout');
-
-  //     this.store.dispatch(new AuthActions.Logout());
-  //     return;
-  //   }
-
-  //   console.log('token is valid');
-  //   return;
-  // }
 
   setAutoLogoutTimer(millisecondsToExpiration: number) {
     //can logout when token is set to expire
