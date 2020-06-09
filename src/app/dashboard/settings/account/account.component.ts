@@ -14,7 +14,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
   styleUrls: ['./account.component.scss'],
 })
 export class AccountComponent implements OnInit {
-  @ViewChild('accountForm', { static: true }) signupForm: NgForm;
+  @ViewChild('accountForm', { static: true }) accountForm: NgForm;
 
   firstName: string;
   lastName: string;
@@ -32,7 +32,7 @@ export class AccountComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.changeDetectionSub = this.signupForm.valueChanges.subscribe(() => {
+    this.changeDetectionSub = this.accountForm.valueChanges.subscribe(() => {
       //manually detect changes in angular
       this.changeDetectionRef.detectChanges();
     });

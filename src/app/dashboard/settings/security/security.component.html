@@ -1,1 +1,114 @@
-<p>security works!</p>
+<div class="container-fluid">
+  <div class="row justify-content-center">
+    <div class="col-12">
+      <!-- Email Form -->
+
+      <h2 class="mb-4">Change your email</h2>
+
+      <form #emailForm="ngForm" (ngSubmit)="onChangeEmail(emailForm)">
+        <!-- Email address -->
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input
+            type="email"
+            id="email"
+            class="form-control"
+            ngModel
+            [ngModel]="currentEmail"
+            name="email"
+            required
+            email
+            #email="ngModel"
+          />
+          <span
+            class="help-block-invalid"
+            *ngIf="!email.valid && email.touched"
+          >
+            Please enter a valid email.</span
+          >
+        </div>
+
+        <!-- Submit -->
+        <div class="row">
+          <div class="col-6 col-md-4">
+            <button
+              class="btn btn-block btn-primary mb-3"
+              [disabled]="!emailForm.valid"
+              type="submit"
+            >
+              Change Email
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <hr class="my-5" />
+
+      <!-- Password Form -->
+      <h2 class="mb-4">Change your password</h2>
+
+      <form
+        *ngIf="passwordForm"
+        [formGroup]="passwordForm"
+        (ngSubmit)="onChangePassword()"
+      >
+        <!-- Current Password -->
+        <div class="form-group">
+          <label for="currentPassword">Current Password</label>
+          <input
+            type="password"
+            id="currentPassword"
+            class="form-control"
+            placeholder="Enter current password"
+            formControlName="currentPassword"
+            name="currentPassword"
+            password
+          />
+        </div>
+
+        <!-- New Password -->
+        <div class="form-group">
+          <label for="newPassword">New Password</label>
+          <input
+            type="password"
+            id="newPassword"
+            class="form-control"
+            placeholder="Enter current password"
+            formControlName="newPassword"
+            password
+          />
+          <!-- TODO: present error message -->
+          <!-- <span
+            class="help-block-invalid"
+            *ngIf="!newPassword.valid && newPassword.touched"
+          >
+            Please enter a valid password.</span
+          > -->
+        </div>
+
+        <!-- Confirm New Password -->
+        <div class="form-group">
+          <label for="confirmPassword">Confirm New Password</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            class="form-control"
+            placeholder="Enter current password"
+            formControlName="confirmPassword"
+            password
+          />
+        </div>
+
+        <!-- Submit -->
+        <div class="row">
+          <div class="col-6 col-md-4">
+            <button class="btn btn-block btn-primary" type="submit">
+              <!-- TODO: .valid -->
+              Change Password
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

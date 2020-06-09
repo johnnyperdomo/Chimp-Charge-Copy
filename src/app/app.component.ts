@@ -113,5 +113,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   //NEXT-UPDATE: create reducers for all components, for better, single one source of truth
 
+  //NEXT-UPDATE: get all ngoninit observables and add them in a separate function to make code cleaner
+
   //TODO: maybe create unix epoch to human redable format using 'moment'. for firebase timestamp
 }

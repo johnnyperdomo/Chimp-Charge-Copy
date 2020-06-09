@@ -21,7 +21,7 @@ import { SubscriberListComponent } from './dashboard/subscribers/subscriber-list
 import { SignUpComponent } from './auth/sign-up/sign-up.component';
 import { LoginComponent } from './auth/login/login.component';
 import { AuthComponent } from './auth/auth.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 
 import { AngularFireModule } from '@angular/fire';
@@ -76,6 +76,7 @@ firebase.initializeApp(environment.firebase);
     ClipboardModule,
     NgbModule,
     FormsModule,
+    ReactiveFormsModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
     AngularFireAuthModule,
