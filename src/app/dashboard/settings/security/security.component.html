@@ -5,7 +5,11 @@
 
       <h2 class="mb-4">Change your email</h2>
 
-      <form #emailForm="ngForm" (ngSubmit)="onChangeEmail(emailForm)">
+      <form
+        novalidate
+        #emailForm="ngForm"
+        (ngSubmit)="onChangeEmail(emailForm)"
+      >
         <!-- Email address -->
         <div class="form-group">
           <label for="email">Email Address</label>

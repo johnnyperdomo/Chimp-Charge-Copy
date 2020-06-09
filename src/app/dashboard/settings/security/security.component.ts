@@ -1,10 +1,16 @@
 import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
-import { NgForm, FormGroup, FormControl, Validators } from '@angular/forms';
+import {
+  NgForm,
+  FormGroup,
+  FormControl,
+  Validators,
+  FormBuilder,
+} from '@angular/forms';
 import { Store } from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducer';
 import { Subscription, merge } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
-import { passwordMatchValidator } from './security.validator';
+import { PasswordValidation } from './security.validator';
 import { AngularFireAuth } from '@angular/fire/auth';
 import * as firebase from 'firebase/app';
 import * as AuthActions from '../../../auth/store/auth.actions';
@@ -28,7 +34,8 @@ export class SecurityComponent implements OnInit {
   constructor(
     private changeDetectionRef: ChangeDetectorRef,
     private store: Store<fromApp.AppState>,
-    private auth: AngularFireAuth
+    private auth: AngularFireAuth,
+    private formBuilder: FormBuilder
   ) {}
 
   ngOnInit(): void {
@@ -36,9 +43,6 @@ export class SecurityComponent implements OnInit {
 
     this.changeDetectionSub = this.formObservables().subscribe(() => {
       //manually detect changes in angular
-      console.log('changes detected');
-      console.log(this.currentEmail);
-
       this.changeDetectionRef.detectChanges();
     });
 
@@ -100,17 +104,16 @@ export class SecurityComponent implements OnInit {
   }
 
   setupPasswordForm() {
-    this.passwordForm = new FormGroup({
-      currentPassword: new FormControl('', [Validators.required]),
-      newPassword: new FormControl('', [
-        Validators.required,
-        Validators.minLength(6),
-      ]),
-      confirmPassword: new FormControl('', [
-        Validators.required,
-        Validators.minLength(6),
-      ]),
-    });
+    this.passwordForm = this.formBuilder.group(
+      {
+        currentPassword: ['', Validators.required],
+        newPassword: ['', [Validators.required, Validators.minLength(6)]],
+        confirmPassword: ['', [Validators.required, Validators.minLength(6)]],
+      },
+      {
+        validators: PasswordValidation.MatchPassword,
+      }
+    );
   }
 
   formObservables() {
