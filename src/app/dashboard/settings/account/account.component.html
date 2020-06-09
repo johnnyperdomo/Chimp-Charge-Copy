@@ -1,1 +1,72 @@
-<p>account works!</p>
+<div class="container-fluid">
+  <div class="row justify-content-center">
+    <div class="col-12">
+      <!-- Form -->
+      <form #accountForm="ngForm" (ngSubmit)="onSubmit(accountForm)">
+        <!-- First & Last Name -->
+        <div class="form-row">
+          <!-- First Name -->
+          <div class="col-12 col-md-6 mb-3">
+            <label for="fName">First Name</label>
+            <input
+              type="text"
+              id="fName"
+              ngModel
+              name="fName"
+              class="form-control"
+              [(ngModel)]="firstName"
+              required
+              #fName="ngModel"
+            />
+          </div>
+          <!-- Last Name -->
+          <div class="col-12 col-md-6 mb-3">
+            <label for="lName">Last Name</label>
+            <input
+              type="text"
+              id="lName"
+              ngModel
+              name="lName"
+              class="form-control"
+              [(ngModel)]="lastName"
+              required
+              #lName="ngModel"
+            />
+          </div>
+        </div>
+
+        <!-- Business Name -->
+        <div class="form-group">
+          <label class="mb-1" for="bizName">Business Name</label>
+          <small class="form-text text-muted">
+            This contact will be shown to others publicly, so choose it
+            carefully.
+          </small>
+          <input
+            type="text"
+            id="bizName"
+            name="bizName"
+            ngModel
+            class="form-control"
+            [(ngModel)]="businessName"
+            required
+            #bizName="ngModel"
+          />
+        </div>
+
+        <!-- Submit -->
+        <div class="row justify-content-center">
+          <div class="col-6 col-md-4">
+            <button
+              class="btn btn-lg btn-block btn-primary mb-3"
+              [disabled]="!accountForm.valid"
+              type="submit"
+            >
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

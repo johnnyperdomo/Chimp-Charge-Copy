@@ -18,6 +18,7 @@ import {
 import { PaymentLinkEditComponent } from './dashboard/payment-links/payment-link-edit/payment-link-edit.component';
 import { PaymentLinkListComponent } from './dashboard/payment-links/payment-link-list/payment-link-list.component';
 import { CheckoutComponent } from './checkout/checkout.component';
+import { SecurityComponent } from './dashboard/settings/security/security.component';
 
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['login']); //if no logged in, restrict access
 const redirectLoggedInToPayments = () => redirectLoggedInTo(['payments']); //if logged in, block auth components
@@ -84,6 +85,7 @@ const routes: Routes = [
     data: { authGuardPipe: redirectUnauthorizedToLogin },
     children: [
       { path: 'account', component: AccountComponent },
+      { path: 'security', component: SecurityComponent },
       { path: 'billing', component: BillingComponent },
       { path: 'payouts', component: PayoutsComponent },
     ],

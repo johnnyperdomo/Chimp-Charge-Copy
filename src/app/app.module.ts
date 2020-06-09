@@ -42,6 +42,7 @@ import * as firebase from 'firebase/app';
 import { MerchantEffects } from './merchants/store/merchant.effects';
 import { PaymentLinkEditComponent } from './dashboard/payment-links/payment-link-edit/payment-link-edit.component';
 import { CheckoutComponent } from './checkout/checkout.component';
+import { SecurityComponent } from './dashboard/settings/security/security.component';
 
 firebase.initializeApp(environment.firebase);
 
@@ -67,6 +68,7 @@ firebase.initializeApp(environment.firebase);
     AuthComponent,
     PaymentLinkEditComponent,
     CheckoutComponent,
+    SecurityComponent,
   ],
   imports: [
     BrowserModule,

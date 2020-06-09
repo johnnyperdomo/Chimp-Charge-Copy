@@ -57,8 +57,6 @@ export class SignUpComponent implements OnInit, OnDestroy {
     const lastName = signupForm.value.lName;
     const businessName = signupForm.value.bizName;
 
-    //TODO: add business/company name option here
-
     const email = signupForm.value.email;
     const password = signupForm.value.password;
 
