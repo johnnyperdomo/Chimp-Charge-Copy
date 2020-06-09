@@ -55,15 +55,9 @@ export const onCreatePaymentLink = functions.https.onCall(
         price: price,
         product: product,
         merchantUID: merchantUID,
+        connectID: stripeConnectID,
         lastUpdated: admin.firestore.Timestamp.now(),
       });
-      //TODO: you can query by maps -> price.priceID
-
-      // const linkObject = {
-      //   product: product,
-      //   price: price,
-      //   document: newDoc,
-      // };
 
       return newDoc;
     } catch (err) {

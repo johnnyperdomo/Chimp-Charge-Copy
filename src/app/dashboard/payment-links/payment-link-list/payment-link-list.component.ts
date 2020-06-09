@@ -54,7 +54,9 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
 
           return this.db
             .collection<PaymentLink>('payment-links', (ref) =>
-              ref.where('merchantUID', '==', retrievedMerchant.uid)
+              ref
+                .where('merchantUID', '==', retrievedMerchant.uid)
+                .where('connectID', '==', retrievedMerchant.stripeConnectID)
             )
             .valueChanges({ idField: 'id' });
         })
