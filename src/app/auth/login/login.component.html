@@ -1,7 +1,6 @@
-<!-- TODO: add terms of service, 'by clicking this you agree to have read our tos' -->
 <div class="container">
   <div class="row justify-content-center">
-    <div class="col-12 col-md-5 col-xl-4 my-5">
+    <div class="col-12 col-md-5 col-xl-4 my-6">
       <!-- Heading -->
       <h1 class="display-4 text-center mb-3">
         Login
@@ -44,7 +43,10 @@
             </div>
             <!-- Help text -->
             <div class="col-auto">
-              <a href="password-reset.html" class="form-text small text-muted">
+              <a
+                [routerLink]="['/forgot-password']"
+                class="form-text small text-muted"
+              >
                 Forgot password?
               </a>
             </div>

@@ -43,6 +43,7 @@ import { MerchantEffects } from './merchants/store/merchant.effects';
 import { PaymentLinkEditComponent } from './dashboard/payment-links/payment-link-edit/payment-link-edit.component';
 import { CheckoutComponent } from './checkout/checkout.component';
 import { SecurityComponent } from './dashboard/settings/security/security.component';
+import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.component';
 
 firebase.initializeApp(environment.firebase);
 
@@ -69,6 +70,7 @@ firebase.initializeApp(environment.firebase);
     PaymentLinkEditComponent,
     CheckoutComponent,
     SecurityComponent,
+    ForgotPasswordComponent,
   ],
   imports: [
     BrowserModule,

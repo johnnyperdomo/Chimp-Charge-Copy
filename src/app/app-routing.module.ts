@@ -19,6 +19,7 @@ import { PaymentLinkEditComponent } from './dashboard/payment-links/payment-link
 import { PaymentLinkListComponent } from './dashboard/payment-links/payment-link-list/payment-link-list.component';
 import { CheckoutComponent } from './checkout/checkout.component';
 import { SecurityComponent } from './dashboard/settings/security/security.component';
+import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.component';
 
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['login']); //if no logged in, restrict access
 const redirectLoggedInToPayments = () => redirectLoggedInTo(['payments']); //if logged in, block auth components
@@ -34,6 +35,12 @@ const routes: Routes = [
   {
     path: 'signup',
     component: SignUpComponent,
+    canActivate: [AngularFireAuthGuard],
+    data: { authGuardPipe: redirectLoggedInToPayments },
+  },
+  {
+    path: 'forgot-password',
+    component: ForgotPasswordComponent,
     canActivate: [AngularFireAuthGuard],
     data: { authGuardPipe: redirectLoggedInToPayments },
   },
