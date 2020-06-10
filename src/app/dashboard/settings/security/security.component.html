@@ -1,8 +1,8 @@
+<!-- //TODO: add hidden cancel buttons that show when user changes the current value, cancel to reset to current-default => then.hide() -->
 <div class="container-fluid">
   <div class="row justify-content-center">
     <div class="col-12">
       <!-- Email Form -->
-
       <h2 class="mb-4">Change your email</h2>
 
       <form
@@ -77,17 +77,20 @@
             type="password"
             id="newPassword"
             class="form-control"
-            placeholder="Enter current password"
+            placeholder="Enter new password"
             formControlName="newPassword"
             password
           />
-          <!-- TODO: present error message -->
-          <!-- <span
+          <!-- error messages -->
+          <span
             class="help-block-invalid"
-            *ngIf="!newPassword.valid && newPassword.touched"
+            *ngIf="
+              passwordForm.get('newPassword').hasError('minlength') &&
+              passwordForm.get('newPassword').touched
+            "
           >
-            Please enter a valid password.</span
-          > -->
+            Minimum of 6 characters.</span
+          >
         </div>
 
         <!-- Confirm New Password -->
@@ -97,16 +100,41 @@
             type="password"
             id="confirmPassword"
             class="form-control"
-            placeholder="Enter current password"
+            placeholder="Confirm new password"
             formControlName="confirmPassword"
             password
           />
+          <!-- error messages -->
+          <!-- minlength -->
+          <span
+            class="help-block-invalid"
+            *ngIf="
+              passwordForm.get('confirmPassword').hasError('minlength') &&
+              passwordForm.get('confirmPassword').touched
+            "
+          >
+            Minimum of 6 characters.</span
+          >
+          <!-- MatchPassword -->
+          <span
+            class="help-block-invalid"
+            *ngIf="
+              passwordForm.get('confirmPassword').hasError('MatchPassword') &&
+              passwordForm.get('confirmPassword').touched
+            "
+          >
+            The new password and confirmation password do not match.</span
+          >
         </div>
 
         <!-- Submit -->
         <div class="row">
           <div class="col-6 col-md-4">
-            <button class="btn btn-block btn-primary mb-3" type="submit">
+            <button
+              class="btn btn-block btn-primary mb-3"
+              [disabled]="!passwordForm.valid"
+              type="submit"
+            >
               <!-- TODO: .valid -->
               Change Password
             </button>

@@ -100,7 +100,17 @@ export class SecurityComponent implements OnInit {
   }
 
   onChangePassword() {
-    console.log(this.passwordForm.value);
+    const currentPassword = this.passwordForm.value.currentPassword;
+    const newPassword = this.passwordForm.value.newPassword;
+    const confirmPassword = this.passwordForm.value.confirmPassword;
+
+    if (!confirmPassword == newPassword) {
+      return;
+    }
+
+    //TODO: reauthenticate with current password and signin credentials
+
+    //TODO: reset password fields on success
   }
 
   setupPasswordForm() {
