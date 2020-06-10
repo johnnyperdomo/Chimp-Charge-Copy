@@ -96,11 +96,13 @@
             minlength="6"
             #password="ngModel"
           />
+
+          <!-- error messages -->
           <span
             class="help-block-invalid"
-            *ngIf="!password.valid && password.touched"
+            *ngIf="password.hasError('minlength') && password.touched"
           >
-            Please enter a valid password.</span
+            Minimum of 6 characters.</span
           >
         </div>
 
