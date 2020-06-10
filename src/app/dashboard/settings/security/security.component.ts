@@ -74,12 +74,7 @@ export class SecurityComponent implements OnInit {
       await currentUser.updateEmail(newEmail);
       const newTokenResult = await currentUser.getIdTokenResult();
 
-      const updatedUser = new User(
-        currentUser.email,
-        currentUser.uid,
-        newTokenResult.token,
-        newTokenResult.expirationTime
-      );
+      const updatedUser = this.getUpdatedUser(currentUser, newTokenResult);
 
       //NEXT-UPDATE: error: redo this function, or fix: when changing email and dispatching action, page is redirected, not the intended response
 
@@ -90,16 +85,16 @@ export class SecurityComponent implements OnInit {
           redirect: false,
         })
       );
+
+      //TODO: trigger success alert
     } catch (err) {
       console.log(err);
 
       //TODO: Present err
     }
-
-    console.log(emailForm.value.email);
   }
 
-  onChangePassword() {
+  async onChangePassword() {
     const currentPassword = this.passwordForm.value.currentPassword;
     const newPassword = this.passwordForm.value.newPassword;
     const confirmPassword = this.passwordForm.value.confirmPassword;
@@ -108,9 +103,35 @@ export class SecurityComponent implements OnInit {
       return;
     }
 
-    //TODO: reauthenticate with current password and signin credentials
+    let credentials = firebase.auth.EmailAuthProvider.credential(
+      this.currentEmail,
+      currentPassword
+    );
 
-    //TODO: reset password fields on success
+    try {
+      const currentUser = await this.auth.currentUser;
+      await currentUser.reauthenticateWithCredential(credentials);
+
+      await currentUser.updatePassword(newPassword);
+      const newTokenResult = await currentUser.getIdTokenResult();
+
+      const updatedUser = this.getUpdatedUser(currentUser, newTokenResult);
+
+      this.store.dispatch(
+        new AuthActions.AuthenticateSuccess({
+          user: updatedUser,
+          redirect: false,
+        })
+      );
+
+      //TODO: trigger success alert
+
+      this.passwordForm.reset();
+      console.log('success');
+    } catch (err) {
+      console.log(err);
+      //TODO: present error
+    }
   }
 
   setupPasswordForm() {
@@ -123,6 +144,18 @@ export class SecurityComponent implements OnInit {
       {
         validators: PasswordValidation.MatchPassword,
       }
+    );
+  }
+
+  getUpdatedUser(
+    currentUser: firebase.User,
+    newTokenResult: firebase.auth.IdTokenResult
+  ) {
+    return new User(
+      currentUser.email,
+      currentUser.uid,
+      newTokenResult.token,
+      newTokenResult.expirationTime
     );
   }
 
