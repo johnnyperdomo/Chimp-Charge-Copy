@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Subscription } from 'rxjs';
 import { AngularFireAuth } from '@angular/fire/auth';
 
 @Component({
@@ -15,7 +14,6 @@ export class ForgotPasswordComponent implements OnInit {
 
   constructor(private auth: AngularFireAuth) {}
 
-  //TODO: test reset email
   ngOnInit(): void {}
 
   onSubmit(forgotPasswordForm: NgForm) {

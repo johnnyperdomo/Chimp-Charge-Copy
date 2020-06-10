@@ -32,7 +32,7 @@ export class SecurityComponent implements OnInit {
   authStoreSub: Subscription;
 
   constructor(
-    private changeDetectionRef: ChangeDetectorRef,
+    private _cdr: ChangeDetectorRef,
     private store: Store<fromApp.AppState>,
     private auth: AngularFireAuth,
     private formBuilder: FormBuilder
@@ -43,7 +43,7 @@ export class SecurityComponent implements OnInit {
 
     this.changeDetectionSub = this.formObservables().subscribe(() => {
       //manually detect changes in angular
-      this.changeDetectionRef.detectChanges();
+      this._cdr.detectChanges();
     });
 
     this.authStoreSub = this.store

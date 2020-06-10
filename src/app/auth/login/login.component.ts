@@ -26,13 +26,13 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   constructor(
     private store: Store<fromApp.AppState>,
-    private changeDetectionRef: ChangeDetectorRef
+    private _cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.changeDetectionSub = this.loginForm.valueChanges.subscribe(() => {
       //manually detect changes in angular
-      this.changeDetectionRef.detectChanges();
+      this._cdr.detectChanges();
     });
 
     this.storeSub = this.store.select('auth').subscribe((authState) => {

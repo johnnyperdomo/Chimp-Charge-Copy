@@ -25,7 +25,7 @@ export class AccountComponent implements OnInit {
   merchantStoreSub: Subscription;
 
   constructor(
-    private changeDetectionRef: ChangeDetectorRef,
+    private _cdr: ChangeDetectorRef,
     private store: Store<fromApp.AppState>,
     private merchantService: MerchantService,
     private db: AngularFirestore
@@ -34,7 +34,7 @@ export class AccountComponent implements OnInit {
   ngOnInit(): void {
     this.changeDetectionSub = this.accountForm.valueChanges.subscribe(() => {
       //manually detect changes in angular
-      this.changeDetectionRef.detectChanges();
+      this._cdr.detectChanges();
     });
 
     this.merchantStoreSub = this.store
