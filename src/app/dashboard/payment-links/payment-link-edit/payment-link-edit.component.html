@@ -32,23 +32,31 @@ more information. Redirect url. -->
             <div class="row">
               <div class="col-12">
                 <ul class="nav nav-tabs header-tabs mb-0">
-                  <!-- TODO: hide either list button if on edit mode, for unselected option -->
+                  <!-- TODO: disable opposite option if editmode is true  -->
                   <li>
                     <button
                       type="button"
-                      class="btn btn-secondary mr-3"
-                      (click)="onRecurringMode()"
+                      class="btn mr-3"
+                      [ngClass]="{
+                        'btn-secondary': linkType === 'onetime',
+                        'btn-outline-secondary': linkType === 'recurring'
+                      }"
+                      (click)="onOneTimeMode()"
                     >
-                      Recurring
+                      One-time
                     </button>
                   </li>
                   <li>
                     <button
                       type="button"
-                      class="text-center btn btn-outline-secondary"
-                      (click)="onOneTimeMode()"
+                      class="btn"
+                      [ngClass]="{
+                        'btn-secondary': linkType === 'recurring',
+                        'btn-outline-secondary': linkType === 'onetime'
+                      }"
+                      (click)="onRecurringMode()"
                     >
-                      One-time
+                      Recurring
                     </button>
                   </li>
                 </ul>

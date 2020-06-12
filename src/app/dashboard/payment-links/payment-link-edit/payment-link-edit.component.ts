@@ -15,7 +15,7 @@ export class PaymentLinkEditComponent implements OnInit {
   priceIdempotencyKey: string = uuidv4();
 
   //TODO: add can deactivate child option, to save the user from accidently losing data.
-  linkType = PaymentLinkTypeEnum.recurring;
+  linkType = PaymentLinkTypeEnum.onetime;
   billingInterval = BillingInterval.monthly;
 
   constructor(private helperService: HelperService) {}
