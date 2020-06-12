@@ -17,6 +17,8 @@ export const onCreatePaymentLink = functions.https.onCall(
     const productDesc: string = data.productDesc;
     const amount: number = data.amount;
 
+    //TODO: if object is "" || null, return function -> should not finish running -> check for all cloud functions
+
     //TODO: product data is null, turn to undefined.
 
     if (!context.auth) {
@@ -34,6 +36,7 @@ export const onCreatePaymentLink = functions.https.onCall(
 
       const merchantUID = userData.uid;
       const stripeConnectID = userData.stripeConnectID;
+      //TODO: check if these objects are null, if so, return out of function
 
       const product = await createProduct(
         merchantUID,
@@ -76,6 +79,7 @@ export const onDeletePaymentLink = functions.https.onCall(
     const productID: string = data.productID;
     const connectID: string = data.connectID;
     //const docID: string = data.docID;
+    //TODO: maybe eliminate connectID, and use auth.connectID like how (createpaymentlink does), safer logic code. check if these objects are null, if so, return out of function
 
     if (!context.auth) {
       throw new functions.https.HttpsError(

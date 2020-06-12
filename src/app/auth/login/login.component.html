@@ -60,15 +60,8 @@
             ngModel
             placeholder="Enter your password"
             required
-            minlength="6"
             #password="ngModel"
           />
-          <span
-            class="help-block-invalid"
-            *ngIf="!password.valid && password.touched"
-          >
-            Please enter a valid password.</span
-          >
         </div>
 
         <div class="help-block-invalid form-group text-center" *ngIf="error">

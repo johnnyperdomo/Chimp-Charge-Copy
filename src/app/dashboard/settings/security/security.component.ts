@@ -58,14 +58,13 @@ export class SecurityComponent implements OnInit {
   }
 
   async onChangeEmail(emailForm: NgForm) {
-    //TODO: reauthenticate with popul modal like how stripe does it, ask for pw
-
     const newEmail = emailForm.value.email;
+    const confirmedPassword = emailForm.value.confirmCurrentPassword;
 
     let credentials = firebase.auth.EmailAuthProvider.credential(
       this.currentEmail,
-      '12345678'
-    ); //TODO: prompt to enter password
+      confirmedPassword
+    );
 
     try {
       const currentUser = await this.auth.currentUser;
@@ -84,6 +83,8 @@ export class SecurityComponent implements OnInit {
           redirect: false,
         })
       );
+
+      this.emailForm.controls['confirmCurrentPassword'].reset();
 
       //TODO: trigger success alert
     } catch (err) {

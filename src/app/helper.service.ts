@@ -56,6 +56,7 @@ export class HelperService {
     return null;
   }
 
+  //TODO: make sure someItems lik
   //TODO: adjust for recurring
   async createPaymentLink(
     productIdempotencyKey: string,

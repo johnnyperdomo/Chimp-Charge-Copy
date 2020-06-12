@@ -32,6 +32,21 @@
           >
         </div>
 
+        <!-- Password -->
+        <div class="form-group">
+          <label for="confirmCurrentPassword">Confirm Current Password</label>
+          <input
+            type="password"
+            id="confirmCurrentPassword"
+            class="form-control"
+            name="confirmCurrentPassword"
+            ngModel
+            placeholder="Enter your password"
+            required
+            #confirmCurrentPassword="ngModel"
+          />
+        </div>
+
         <!-- Submit -->
         <div class="row">
           <div class="col-6 col-md-4">
