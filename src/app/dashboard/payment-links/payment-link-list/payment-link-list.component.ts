@@ -100,19 +100,25 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
   async onDeleteLinkAtRow(itemID: string) {
     const currentLink = this.paymentLinks.find((item) => item.id === itemID);
 
-    try {
-      const response = await this.helperService.deletePaymentLink(
-        currentLink.price.id,
-        currentLink.product.id
-      );
-      return response;
-    } catch (err) {
-      console.log(err);
-      //TODO: present error
+    if (
+      confirm(
+        `Are you sure you want to delete the '${currentLink.product.name}' payment link? \n You will no longer be able to accept new payments with this link.`
+      )
+    ) {
+      try {
+        const response = await this.helperService.deletePaymentLink(
+          currentLink.price.id,
+          currentLink.product.id
+        );
+        return response;
+      } catch (err) {
+        console.log(err);
+        //TODO: present error
+      }
     }
 
     //TODO: add alert upon success
-    //TODO: add modal to confirm deletion - ngbootstrap modal
+    //NEXT-UPDATE: add modal to confirm deletion - ngbootstrap modal; js.confirm is ugly!!!
   }
 
   ngOnDestroy() {
