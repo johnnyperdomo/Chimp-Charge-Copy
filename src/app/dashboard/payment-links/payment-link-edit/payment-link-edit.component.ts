@@ -25,12 +25,7 @@ export class PaymentLinkEditComponent implements OnInit {
   onSubmit(linkForm: NgForm) {
     const amount: number = linkForm.value.amount;
     const linkName: string = linkForm.value.linkName;
-    let description: string = linkForm.value.description;
-
-    //TODO: empty description(check link name) | null throws error in stripe: fix
-    if (!description || description.length == 0) {
-      description = undefined;
-    }
+    const description: string = linkForm.value.description;
 
     console.log(this.productIdempotencyKey);
     console.log('amount, ' + linkForm.value.amount);

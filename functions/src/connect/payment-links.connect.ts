@@ -6,6 +6,7 @@ import { Stripe } from 'stripe';
 const db = admin.firestore();
 
 //TODO: add function, when new payment intent webhook is succeeded, add transaction to sub-collection of firestore.paymentlink.transactions { transaction: Stripe.Transaction(successful ones) } to see how many transactions with this payment link. match payment intent with product id => think about saving only the trnxn id for this one, since collection is able to be read outside auth, unless....subcollection of trx can be locked.then (show full transaction detail)
+//TODO: ^ or just add aggregation to root level
 
 //cloud functions exports ====================================>
 
@@ -14,12 +15,12 @@ export const onCreatePaymentLink = functions.https.onCall(
     const productIdempotencyKey: string = data.productIdempotencyKey; //used to prevent duplicates
     const priceIdempotencyKey: string = data.priceIdempotencyKey;
     const productName: string = data.productName;
-    const productDesc: string = data.productDesc;
+    let productDesc: string | undefined = data.productDesc; //optional value
     const amount: number = data.amount;
 
-    //TODO: if object is "" || null, return function -> should not finish running -> check for all cloud functions
-
-    //TODO: product data is null, turn to undefined.
+    if (productDesc === '' || null) {
+      productDesc = undefined; //need to pass undefined to stripe
+    }
 
     if (!context.auth) {
       throw new functions.https.HttpsError(
@@ -36,7 +37,13 @@ export const onCreatePaymentLink = functions.https.onCall(
 
       const merchantUID = userData.uid;
       const stripeConnectID = userData.stripeConnectID;
-      //TODO: check if these objects are null, if so, return out of function
+
+      if (!stripeConnectID) {
+        throw new functions.https.HttpsError(
+          'failed-precondition',
+          'The function must be called ' + 'with a valid stripe connect id.'
+        );
+      }
 
       const product = await createProduct(
         merchantUID,
@@ -69,6 +76,7 @@ export const onCreatePaymentLink = functions.https.onCall(
   }
 );
 
+//TODO:
 // export const onEditPaymentLink = functions.https.onCall(
 //   async (data, context) => {}
 // );
@@ -77,9 +85,6 @@ export const onDeletePaymentLink = functions.https.onCall(
   async (data, context) => {
     const priceID: string = data.priceID;
     const productID: string = data.productID;
-    const connectID: string = data.connectID;
-    //const docID: string = data.docID;
-    //TODO: maybe eliminate connectID, and use auth.connectID like how (createpaymentlink does), safer logic code. check if these objects are null, if so, return out of function
 
     if (!context.auth) {
       throw new functions.https.HttpsError(
@@ -89,7 +94,25 @@ export const onDeletePaymentLink = functions.https.onCall(
     }
 
     try {
-      const prodResponse = await archiveProduct(priceID, productID, connectID);
+      const userId = context.auth?.uid;
+      const userRef = db.doc(`merchants/${userId}`);
+      const userSnap = await userRef.get();
+      const userData = userSnap.data()!;
+
+      const stripeConnectID = userData.stripeConnectID;
+
+      if (!stripeConnectID) {
+        throw new functions.https.HttpsError(
+          'failed-precondition',
+          'The function must be called ' + 'with a valid stripe connect id.'
+        );
+      }
+
+      const prodResponse = await archiveProduct(
+        priceID,
+        productID,
+        stripeConnectID
+      );
 
       if (prodResponse.active === false) {
         const query = await db
@@ -148,17 +171,13 @@ async function archiveProduct(
 ) {
   //set product to inactive, since can't delete product in api
   try {
-    const archPrice = await archivePrice(priceID, connectID);
+    await archivePrice(priceID, connectID);
 
     const response = await stripe.products.update(
       productID,
       { active: false },
       { stripeAccount: connectID }
     );
-    // const response = await stripe.products.del(productID, undefined, {
-    //   stripeAccount: connectID,
-    // });
-    console.log(archPrice);
 
     return response;
   } catch (err) {
@@ -181,7 +200,7 @@ async function createPrice(
     const price = await stripe.prices.create(
       {
         unit_amount: amount,
-        currency: 'usd', //NEXT-UPDATE: add dynamic currencies
+        currency: 'usd', //NEXT-UPDATE: add dynamic currencies?
         product: productID,
         metadata: { firebase_merchant_uid: merchantUID },
       },
@@ -196,7 +215,6 @@ async function createPrice(
 async function archivePrice(priceID: string, connectID: string) {
   //sets price to inactive
   try {
-    stripe.prices;
     const response = await stripe.prices.update(
       priceID,
       {

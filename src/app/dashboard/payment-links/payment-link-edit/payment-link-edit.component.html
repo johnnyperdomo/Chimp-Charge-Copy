@@ -70,9 +70,8 @@ more information. Redirect url. -->
         <form #linkForm="ngForm" (ngSubmit)="onSubmit(linkForm)">
           <!-- Name -->
           <!-- <div class="form-row"> -->
-          <!-- TODO: 'name of your product or service' -->
           <div class="form-group">
-            <label for="linkName">Payment Link Name</label>
+            <label for="linkName">Name of your product or service</label>
             <input
               type="text"
               id="linkName"
@@ -87,7 +86,7 @@ more information. Redirect url. -->
               class="help-block-invalid"
               *ngIf="!linkName.valid && linkName.touched"
             >
-              Please enter a valid Name.</span
+              Please enter a valid link name.</span
             >
           </div>
           <!-- TODO: 'quick descr. of your product or service' -->
@@ -96,6 +95,7 @@ more information. Redirect url. -->
             <textarea
               id="description"
               class="form-control"
+              placeholder="A brief description of your product or service (optional)"
               ngModel
               name="description"
               #description="ngModel"

@@ -99,13 +99,11 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
 
   async onDeleteLinkAtRow(itemID: string) {
     const currentLink = this.paymentLinks.find((item) => item.id === itemID);
-    const merchant = this.currentMerchant.getValue();
 
     try {
       const response = await this.helperService.deletePaymentLink(
         currentLink.price.id,
-        currentLink.product.id,
-        merchant.stripeConnectID
+        currentLink.product.id
       );
       return response;
     } catch (err) {

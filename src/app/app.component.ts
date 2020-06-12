@@ -41,7 +41,7 @@ export class AppComponent implements OnInit, OnDestroy {
       .pipe(map((authState) => authState.user))
       .subscribe((user) => {
         this.currentUser.next(user);
-        this.isLoggedIn = !user ? false : true;
+        this.isLoggedIn = !user ? false : true; //TODO: this isn't being called on new sign up
       });
 
     this.merchantSub = this.store

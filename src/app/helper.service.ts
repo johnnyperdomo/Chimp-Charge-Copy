@@ -56,7 +56,6 @@ export class HelperService {
     return null;
   }
 
-  //TODO: make sure someItems lik
   //TODO: adjust for recurring
   async createPaymentLink(
     productIdempotencyKey: string,
@@ -87,11 +86,7 @@ export class HelperService {
     }
   }
 
-  async deletePaymentLink(
-    priceID: string,
-    productID: string,
-    connectID: string
-  ) {
+  async deletePaymentLink(priceID: string, productID: string) {
     const deleteLinkFunction = this.fireFunctions.httpsCallable(
       'paymentLinks-onDeletePaymentLink'
     );
@@ -100,7 +95,6 @@ export class HelperService {
       const deleteLink = await deleteLinkFunction({
         priceID: priceID,
         productID: productID,
-        connectID: connectID,
       }).toPromise();
 
       console.log(deleteLink);
