@@ -72,7 +72,7 @@ export class HelperService {
       const createLink = await createLinkFunction({
         productIdempotencyKey: productIdempotencyKey,
         priceIdempotencyKey: priceIdempotencyKey,
-        amount: amount * 100, //TODO: remove this; use dinero.js
+        amount: amount,
         productName: linkName,
         productDesc: description,
       }).toPromise();

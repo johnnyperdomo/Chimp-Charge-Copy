@@ -4,6 +4,8 @@ import { BillingInterval } from '../billing-interval.enum';
 import { v4 as uuidv4 } from 'uuid';
 import { NgForm } from '@angular/forms';
 import { HelperService } from 'src/app/helper.service';
+import * as MoneyFormatter from 'src/app/accounting';
+
 //TODO: implement change detection ref to manually watch form changes
 @Component({
   selector: 'app-payment-link-edit',
@@ -18,7 +20,7 @@ export class PaymentLinkEditComponent implements OnInit {
   linkType = PaymentLinkTypeEnum.onetime;
   billingInterval = BillingInterval.monthly;
 
-  //NEXT-UPDATE:
+  //NEXT-UPDATE: add success page url
   constructor(private helperService: HelperService) {}
 
   ngOnInit(): void {}
@@ -33,7 +35,10 @@ export class PaymentLinkEditComponent implements OnInit {
     console.log('product name, ' + linkForm.value.linkName);
     console.log('description, ' + description);
     console.log('billing interval, ' + this.billingInterval);
-    this.createPaymentLink(amount, linkName, description);
+
+    const minorCurrency = MoneyFormatter.convertStandardToMinorUnit(amount);
+
+    this.createPaymentLink(minorCurrency, linkName, description);
   }
 
   onRecurringMode() {

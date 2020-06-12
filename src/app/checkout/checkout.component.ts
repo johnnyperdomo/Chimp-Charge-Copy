@@ -12,6 +12,7 @@ import { ActivatedRoute } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { map, switchMap, catchError } from 'rxjs/operators';
 import { from } from 'rxjs';
+import * as MoneyFormatter from 'src/app/accounting';
 
 declare var Stripe; // : stripe.StripeStatic;
 
@@ -57,7 +58,11 @@ export class CheckoutComponent implements OnInit {
           const retrievedLink = paymentLinkData.data();
           const merchantUID = retrievedLink.merchantUID;
 
-          this.price = retrievedLink.price.unit_amount;
+          const formattedPrice = MoneyFormatter.convertMinorUnitToStandard(
+            retrievedLink.price.unit_amount
+          );
+
+          this.price = formattedPrice;
           this.linkType = retrievedLink.price.type;
           this.linkName = retrievedLink.product.name;
           this.linkDescription = retrievedLink.product.description;

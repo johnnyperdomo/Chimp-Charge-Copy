@@ -1,8 +1,5 @@
-//TODO: pseudo code
-//TODO: use firebase model:
-// price: Stripe.Price {}
-// product: Stripe.Product
 import { Stripe } from 'stripe';
+import * as MoneyFormatter from 'src/app/accounting';
 
 export class PaymentLink {
   public id: string;
@@ -16,7 +13,7 @@ export class PaymentLink {
     merchantUID: string,
     product: Stripe.Product, //one-time vs recurring
     price: Stripe.Price,
-    lastUpdated: Date //TODO: should be date
+    lastUpdated: Date
   ) {
     this.id = id;
     this.merchantUID = merchantUID;
@@ -38,7 +35,7 @@ export class PaymentLink {
 
   get priceAmount() {
     //i.e. $350.00
-    return this.price.unit_amount; //TODO: parse using dinero.js
+    return MoneyFormatter.convertMinorUnitToStandard(this.price.unit_amount);
   }
 
   get billingInterval() {
