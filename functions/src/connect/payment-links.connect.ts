@@ -35,13 +35,26 @@ export const onCreatePaymentLink = functions.https.onCall(
       const userSnap = await userRef.get();
       const userData = userSnap.data()!;
 
+      const eventIDQuery = await db
+        .collection('payment-links')
+        .where('eventID', '==', productIdempotencyKey)
+        .get();
+
+      if (!(eventIDQuery.docs.length === 0)) {
+        //if eventID already exists, function has already been processed
+        throw new functions.https.HttpsError(
+          'already-exists',
+          'This payment link has already been created'
+        );
+      }
+
       const merchantUID = userData.uid;
       const stripeConnectID = userData.stripeConnectID;
 
       if (!stripeConnectID) {
         throw new functions.https.HttpsError(
           'failed-precondition',
-          'The function must be called ' + 'with a valid stripe connect id.'
+          'The function must be called with a valid stripe connect id.'
         );
       }
 
@@ -67,6 +80,7 @@ export const onCreatePaymentLink = functions.https.onCall(
         merchantUID: merchantUID,
         connectID: stripeConnectID,
         lastUpdated: admin.firestore.Timestamp.now(),
+        eventID: productIdempotencyKey, //check if this event has already been processed
       });
 
       return newDoc;

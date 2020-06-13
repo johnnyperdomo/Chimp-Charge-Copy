@@ -47,6 +47,7 @@
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "^12.11.1",
     "@types/stripe": "^7.13.23",
+    "@types/uuid": "^8.0.0",
     "codelyzer": "^5.1.2",
     "firebase-tools": "^7.12.1",
     "fuzzy": "^0.1.3",

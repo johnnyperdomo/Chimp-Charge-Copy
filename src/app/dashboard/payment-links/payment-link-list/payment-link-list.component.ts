@@ -19,6 +19,8 @@ import { PaymentLinkService } from '../payment-link.service';
 export class PaymentLinkListComponent implements OnInit, OnDestroy {
   paymentLinks: PaymentLink[] = [];
 
+  isLoading: boolean = false;
+
   merchantStoreSub: Subscription;
   currentMerchantSub: Subscription;
   currentMerchant = new BehaviorSubject<Merchant>(null);
@@ -58,7 +60,7 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
                 ref
                   .where('merchantUID', '==', retrievedMerchant.uid)
                   .where('connectID', '==', retrievedMerchant.stripeConnectID)
-                  .orderBy('lastUpdated', 'desc') //sort: newest to last
+                  .orderBy('product.created', 'desc') //sort: newest to last
             )
             .valueChanges({ idField: 'id' });
         })
@@ -105,11 +107,13 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
         `Are you sure you want to delete the '${currentLink.product.name}' payment link? \n You will no longer be able to accept new payments with this link.`
       )
     ) {
+      this.isLoading = true;
       try {
         const response = await this.helperService.deletePaymentLink(
           currentLink.price.id,
           currentLink.product.id
         );
+        this.isLoading = false;
         return response;
       } catch (err) {
         console.log(err);

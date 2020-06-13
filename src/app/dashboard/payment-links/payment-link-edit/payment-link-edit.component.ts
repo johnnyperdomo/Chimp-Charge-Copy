@@ -1,12 +1,12 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { PaymentLinkTypeEnum } from '../payment-link-type.enum';
-import { BillingInterval } from '../billing-interval.enum';
 import { v4 as uuidv4 } from 'uuid';
-import { NgForm, FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HelperService } from 'src/app/helper.service';
 import * as MoneyFormatter from 'src/app/accounting';
 import { Subscription } from 'rxjs';
 import { PriceValidation } from './payment-link-edit.validator';
+import { Router } from '@angular/router';
 
 //NEXT-UPDATE: add can deactivate child option, to save the user from accidently losing data.
 //NEXT-UPDATE: add success page url
@@ -16,7 +16,7 @@ import { PriceValidation } from './payment-link-edit.validator';
   templateUrl: './payment-link-edit.component.html',
   styleUrls: ['./payment-link-edit.component.scss'],
 })
-export class PaymentLinkEditComponent implements OnInit {
+export class PaymentLinkEditComponent implements OnInit, OnDestroy {
   paymentLinkEditForm: FormGroup;
 
   productIdempotencyKey: string = uuidv4();
@@ -24,12 +24,16 @@ export class PaymentLinkEditComponent implements OnInit {
 
   changeDetectionSub: Subscription;
 
+  isLoading: boolean = false;
+  error: string;
+
   linkType = PaymentLinkTypeEnum.onetime;
 
   constructor(
     private helperService: HelperService,
     private formBuilder: FormBuilder,
-    private _cdr: ChangeDetectorRef
+    private _cdr: ChangeDetectorRef,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -46,6 +50,8 @@ export class PaymentLinkEditComponent implements OnInit {
     const amount: number = this.paymentLinkEditForm.value.amount;
     const linkName: string = this.paymentLinkEditForm.value.linkName;
     const description: string = this.paymentLinkEditForm.value.description;
+
+    console.log(this.productIdempotencyKey);
 
     const minorCurrency = MoneyFormatter.convertStandardToMinorUnit(amount);
 
@@ -67,6 +73,7 @@ export class PaymentLinkEditComponent implements OnInit {
     linkName: string,
     description: string
   ) {
+    this.isLoading = true;
     try {
       await this.helperService.createPaymentLink(
         this.productIdempotencyKey,
@@ -75,9 +82,15 @@ export class PaymentLinkEditComponent implements OnInit {
         linkName,
         description
       );
-      console.log('success from front end,');
+
+      this.isLoading = false;
+      this.router.navigate(['payment-links']);
     } catch (err) {
-      console.log('any errors from payment link component, ' + err);
+      this.error = err.message;
+
+      setTimeout(() => {
+        this.error = null;
+      }, 5000);
     }
   }
 
@@ -93,5 +106,11 @@ export class PaymentLinkEditComponent implements OnInit {
         validators: PriceValidation.ConfirmPriceRange,
       }
     );
+  }
+
+  ngOnDestroy() {
+    if (this.changeDetectionSub) {
+      this.changeDetectionSub.unsubscribe();
+    }
   }
 }

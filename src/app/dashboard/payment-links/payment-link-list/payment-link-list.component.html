@@ -44,7 +44,9 @@
   </div>
 
   <!-- Payment Links  -->
-
+  <div *ngIf="isLoading" class="row justify-content-center mb-3">
+    <div class="spinner-border text-primary" role="status"></div>
+  </div>
   <div class="card">
     <div class="table-responsive">
       <table class="table table-sm table-nowrap card-table">

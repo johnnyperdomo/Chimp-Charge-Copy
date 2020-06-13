@@ -17,8 +17,7 @@ export class AuthService {
 
   constructor(
     private store: Store<fromApp.AppState>,
-    private storage: LocalStorage,
-    private afAuth: AngularFireAuth
+    private storage: LocalStorage
   ) {}
 
   //Auth ==================>
