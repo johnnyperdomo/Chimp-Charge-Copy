@@ -43,9 +43,21 @@
           />
         </div>
 
+        <div class="help-block-invalid form-group" *ngIf="changeEmailError">
+          {{ changeEmailError }}
+        </div>
         <!-- Submit -->
         <div class="row">
+          <!-- Loading Spinner -->
+
           <div class="col-6 col-md-4">
+            <div
+              *ngIf="isChangeEmailLoading"
+              class="row justify-content-center mb-3"
+            >
+              <div class="spinner-border text-primary" role="status"></div>
+            </div>
+
             <button
               class="btn btn-block btn-primary mb-3"
               [disabled]="!emailForm.valid"
@@ -141,9 +153,21 @@
           >
         </div>
 
+        <div class="help-block-invalid form-group" *ngIf="changePasswordError">
+          {{ changePasswordError }}
+        </div>
         <!-- Submit -->
         <div class="row">
           <div class="col-6 col-md-4">
+            <!-- Loading Spinner -->
+
+            <div
+              *ngIf="isChangePasswordLoading"
+              class="row justify-content-center mb-3"
+            >
+              <div class="spinner-border text-primary" role="status"></div>
+            </div>
+
             <button
               class="btn btn-block btn-primary mb-3"
               [disabled]="!passwordForm.valid"

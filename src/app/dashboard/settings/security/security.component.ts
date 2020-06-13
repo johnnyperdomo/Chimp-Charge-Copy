@@ -21,6 +21,11 @@ export class SecurityComponent implements OnInit {
 
   currentEmail: string;
 
+  changeEmailError: string;
+  changePasswordError: string;
+  isChangeEmailLoading: boolean = false;
+  isChangePasswordLoading: boolean = false;
+
   changeDetectionSub: Subscription;
   authStoreSub: Subscription;
 
@@ -59,6 +64,8 @@ export class SecurityComponent implements OnInit {
       confirmedPassword
     );
 
+    this.isChangeEmailLoading = true;
+
     try {
       const currentUser = await this.auth.currentUser;
       await currentUser.reauthenticateWithCredential(credentials);
@@ -77,13 +84,18 @@ export class SecurityComponent implements OnInit {
         })
       );
 
+      this.isChangeEmailLoading = false;
       this.emailForm.controls['confirmCurrentPassword'].reset();
 
       //TODO: trigger success alert
     } catch (err) {
       console.log(err);
+      this.changeEmailError = err;
+      this.isChangeEmailLoading = false;
 
-      //TODO: Present err
+      setTimeout(() => {
+        this.changeEmailError = null;
+      }, 5000);
     }
   }
 
@@ -101,6 +113,7 @@ export class SecurityComponent implements OnInit {
       currentPassword
     );
 
+    this.isChangePasswordLoading = true;
     try {
       const currentUser = await this.auth.currentUser;
       await currentUser.reauthenticateWithCredential(credentials);
@@ -118,12 +131,17 @@ export class SecurityComponent implements OnInit {
       );
 
       //TODO: trigger success alert
-
+      this.isChangePasswordLoading = false;
       this.passwordForm.reset();
+
       console.log('success');
     } catch (err) {
-      console.log(err);
-      //TODO: present error
+      this.changePasswordError = err;
+      this.isChangePasswordLoading = false;
+
+      setTimeout(() => {
+        this.changePasswordError = null;
+      }, 5000);
     }
   }
 

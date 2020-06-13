@@ -87,6 +87,7 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
       this.router.navigate(['payment-links']);
     } catch (err) {
       this.error = err.message;
+      this.isLoading = false;
 
       setTimeout(() => {
         this.error = null;
