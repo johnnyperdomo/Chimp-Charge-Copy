@@ -87,10 +87,9 @@
             <td>
               <h4 class="mb-0">
                 <span class="badge badge-light">
-                  <!-- TODO: make badge 'light' when single, make badge 'outline-info'
+                  <!-- NEXT-UPDATE: make badge 'light' when single, make badge 'outline-info' [ngclass]
                 when recurring ; or another color -->
                   <b>{{ linkEl.linkType }}</b>
-                  <!-- //TODO: rename to be more clear on client side -->
                 </span>
               </h4>
             </td>
@@ -98,7 +97,7 @@
               <h5 class="mb-0">{{ linkEl.priceAmount }}</h5>
               <!-- TODO: only show 'billed Monthly' if recurring type -->
               <p class="card-text small text-muted mb-0">
-                Billed Monthly
+                <!-- {{ linkEl.billingInterval }} -->
                 <!-- TODO: Should be dynamic based on pricing interval' -->
               </p>
             </td>
@@ -142,14 +141,6 @@
                   >
                     Delete Link
                   </button>
-                  <!-- <button
-                    type="button"
-                    data-toggle="modal"
-                    data-target="#confirm-link-deletion-modal"
-                    class="dropdown-item"
-                  >
-                    Delete Link
-                  </button> -->
                 </div>
               </div>
             </td>

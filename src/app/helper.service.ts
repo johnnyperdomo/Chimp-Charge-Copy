@@ -77,8 +77,6 @@ export class HelperService {
         productDesc: description,
       }).toPromise();
 
-      console.log(createLink);
-
       return createLink;
     } catch (err) {
       console.log('error message is: ' + err);
@@ -96,8 +94,6 @@ export class HelperService {
         priceID: priceID,
         productID: productID,
       }).toPromise();
-
-      console.log(deleteLink);
 
       return deleteLink;
     } catch (err) {

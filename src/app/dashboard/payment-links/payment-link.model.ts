@@ -1,5 +1,6 @@
 import { Stripe } from 'stripe';
 import * as MoneyFormatter from 'src/app/accounting';
+import * as moment from 'moment';
 
 export class PaymentLink {
   public id: string;
@@ -24,8 +25,9 @@ export class PaymentLink {
 
   get created() {
     //product.created => Date()
-    //TODO: use moment js to parse date
-    return 'June 17, 2020'; //
+    const createdDate = this.product.created; //unix epoch
+    const formattedDate = moment.unix(createdDate).format('MMMM Do, YYYY');
+    return formattedDate;
   }
 
   get linkType() {

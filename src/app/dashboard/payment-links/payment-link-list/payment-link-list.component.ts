@@ -37,7 +37,6 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
     //TODO: catch errors
     //NEXT-UPDATE// turn into ngrx reducer
     //NEXT-UPDATE: render content faster
-    console.log('onit called');
 
     this.merchantStoreSub = this.store
       .select('merchant')
@@ -51,19 +50,20 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
         filter((payload) => payload !== null),
         mergeMap((retrievedMerchant) => {
           //only execute if merchant not null
-          //TODO: sort by most recent created
+
           return this.db
-            .collection<PaymentLink>('payment-links', (ref) =>
-              ref
-                .where('merchantUID', '==', retrievedMerchant.uid)
-                .where('connectID', '==', retrievedMerchant.stripeConnectID)
+            .collection<PaymentLink>(
+              'payment-links',
+              (ref) =>
+                ref
+                  .where('merchantUID', '==', retrievedMerchant.uid)
+                  .where('connectID', '==', retrievedMerchant.stripeConnectID)
+                  .orderBy('lastUpdated', 'desc') //sort: newest to last
             )
             .valueChanges({ idField: 'id' });
         })
       )
       .subscribe((data) => {
-        console.log(data);
-
         this.paymentLinks = data.map((item) => {
           return new PaymentLink(
             item.id,
@@ -78,7 +78,7 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
   }
 
   onCreatePaymentLink() {
-    this.router.navigate(['new'], { relativeTo: this.route }); //relativeTo, appends to end of current route
+    this.router.navigate(['new'], { relativeTo: this.route });
   }
 
   onViewLinkAtRow(itemID: string) {

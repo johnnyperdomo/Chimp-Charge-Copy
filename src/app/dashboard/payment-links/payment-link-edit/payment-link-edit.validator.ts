@@ -9,8 +9,6 @@ export class PriceValidation {
       amountControl.value
     );
 
-    console.log(amountControl.hasError('PriceOutOfRange'));
-
     if (minorUnit < 50 || minorUnit > 99999999) {
       //$0.50 - $999,999.99 usd
 
