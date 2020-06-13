@@ -14,7 +14,7 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {}
 
   onSignOut() {
-    //NEXT-UPDATE, add a 'successfully logged out alert'
+    //FUTURE-UPDATE, add a 'successfully logged out alert'
     this.store.dispatch(new AuthActions.Logout());
   }
 }

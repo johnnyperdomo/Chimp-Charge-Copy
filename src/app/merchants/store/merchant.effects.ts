@@ -25,7 +25,7 @@ export class MerchantEffects {
           return of();
         }),
         catchError((errorRes) => {
-          //NEXT-UPDATE: handle error messages better like authService => 'Firestore Error'
+          //FUTURE-UPDATE: handle error messages better like authService => 'Firestore Error'
           return of(
             new MerchantActions.SetMerchantInfoFail('Error: Please try again.')
           );
@@ -53,7 +53,7 @@ export class MerchantEffects {
           return new MerchantActions.GetMerchantInfoSuccess(retrievedMerchant);
         }),
         catchError((errorRes) => {
-          //NEXT-UPDATE: handle error messages better like authService => 'Firestore Error'
+          //FUTURE-UPDATE: handle error messages better like authService => 'Firestore Error'
           //https://firebase.google.com/docs/reference/js/firebase.firestore#firestoreerrorcode
           return of(
             new MerchantActions.GetMerchantInfoFail('Error: Please try again.')

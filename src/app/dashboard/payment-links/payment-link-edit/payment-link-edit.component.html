@@ -1,4 +1,4 @@
-<!-- NEXT-UPDATE: add more complex options, like edit email sends, billing cycles, how to
+<!-- FUTURE-UPDATE: add more complex options, like edit email sends, billing cycles, how to
 accept payment, upload images, check-boxes, add any info. check other apps for
 more information. Redirect url. -->
 
@@ -107,7 +107,7 @@ more information. Redirect url. -->
           <!-- Amount -->
           <!-- TODO: add min/max length -->
 
-          <!-- //NEXT-UPDATE: better input mask -->
+          <!-- //FUTURE-UPDATE: better input mask -->
           <div class="form-group">
             <label for="amount">Amount</label>
 
@@ -160,7 +160,7 @@ more information. Redirect url. -->
                 <option value="daily">Daily</option>
                 <option value="weekly">Weekly</option>
                 <option value="monthly">Monthly</option>
-                <!-- NEXT-UPDATE: add support for quarterly,annually. they require more setup -->
+                <!-- FUTURE-UPDATE: add support for quarterly,annually. they require more setup -->
                 <!-- <option value="quarterly">Every 3 Months</option>
                 <option value="semiannually">Every 6 Months</option> -->
                 <option value="yearly">Yearly</option>
@@ -168,7 +168,7 @@ more information. Redirect url. -->
             </div>
           </div>
 
-          <!-- NEXT-UPDATE: change text based on state, 'save changes' or 'create one-time
+          <!-- FUTURE-UPDATE: change text based on state, 'save changes' or 'create one-time
           payment' or 'create recurring payment' -->
 
           <div class="help-block-invalid form-group text-center" *ngIf="error">
@@ -183,7 +183,7 @@ more information. Redirect url. -->
                 <div class="spinner-border text-primary" role="status"></div>
               </div>
 
-              <!-- NEXT-UPDATE: don't let user spam create button -->
+              <!-- FUTURE-UPDATE: don't let user spam create button -->
               <button
                 class="btn btn-lg btn-block btn-primary mb-3"
                 [disabled]="!paymentLinkEditForm.valid"

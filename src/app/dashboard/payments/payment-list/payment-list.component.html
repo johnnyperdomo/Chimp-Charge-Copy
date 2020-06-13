@@ -3,8 +3,8 @@
     <table class="table table-sm table-nowrap card-table">
       <thead>
         <tr>
-          <!-- NEXT-UPDATE: add sort order, filters in table header for payment data-->
-          <!-- NEXT-UPDATE: add pagination to not show all results in 1 page, order by pages -->
+          <!-- FUTURE-UPDATE: add sort order, filters in table header for payment data-->
+          <!-- FUTURE-UPDATE: add pagination to not show all results in 1 page, order by pages -->
           <th>
             <h5 class="text-muted mb-0">
               Customer
@@ -40,7 +40,7 @@
         </tr>
       </thead>
       <tbody class="list">
-        <!-- NEXT-UPDATE: Make table rows fully tappable, or just allow txn id to be a tappable link, then leads to more in-depth information about the payment -->
+        <!-- FUTURE-UPDATE: Make table rows fully tappable, or just allow txn id to be a tappable link, then leads to more in-depth information about the payment -->
         <tr *ngFor="let paymentEl of payments">
           <td>
             <h5 class="mb-0">{{ paymentEl.customerName }}</h5>
@@ -73,7 +73,7 @@
           <!-- //TODO: pass in real id -->
 
           <!-- //TODO: use a simple js alert -->
-          <!-- NEXT-UPDATE: add refund confirmation modal, if available for refund, "sure you want to refund?", if not available for refund => "sorry refund not available" -->
+          <!-- FUTURE-UPDATE: add refund confirmation modal, if available for refund, "sure you want to refund?", if not available for refund => "sorry refund not available" -->
           <td class="text-right">
             <button
               type="button"

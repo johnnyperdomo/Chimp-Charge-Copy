@@ -62,7 +62,7 @@ export class AccountComponent implements OnInit {
     const firstName = accountForm.value.fName;
     const lastName = accountForm.value.lName;
     const businessName = accountForm.value.bizName;
-    //NEXT-UPDATE: add text: you must "update bizName in stripe also {insert link}""
+    //FUTURE-UPDATE: add text: you must "update bizName in stripe also {insert link}""
 
     try {
       await this.db.collection('merchants').doc(this.merchant.uid).update({
@@ -71,7 +71,7 @@ export class AccountComponent implements OnInit {
         businessName,
       });
 
-      //NEXT-UPDATE: reconfigure function, cuz this tries to get data from server again, instead of just getting it locally; there's lag on client side
+      //FUTURE-UPDATE: reconfigure function, cuz this tries to get data from server again, instead of just getting it locally; there's lag on client side
       this.merchantService.getMerchantInfo(this.merchant.uid);
     } catch (err) {
       console.log(err);

@@ -106,6 +106,7 @@ export class AuthService {
     return user;
   }
 
+  //FUTURE-UPDATE:
   setAutoLogoutTimer(millisecondsToExpiration: number) {
     //can logout when token is set to expire
     this.tokenExpTimer = setTimeout(() => {

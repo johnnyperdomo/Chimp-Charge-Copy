@@ -12,6 +12,13 @@ const db = admin.firestore();
 
 export const onCreatePaymentLink = functions.https.onCall(
   async (data, context) => {
+    if (!context.auth) {
+      throw new functions.https.HttpsError(
+        'failed-precondition',
+        'The function must be called ' + 'while authenticated.'
+      );
+    }
+
     const productIdempotencyKey: string = data.productIdempotencyKey; //used to prevent duplicates
     const priceIdempotencyKey: string = data.priceIdempotencyKey;
     const productName: string = data.productName;
@@ -20,13 +27,6 @@ export const onCreatePaymentLink = functions.https.onCall(
 
     if (productDesc === '' || null) {
       productDesc = undefined; //need to pass undefined to stripe
-    }
-
-    if (!context.auth) {
-      throw new functions.https.HttpsError(
-        'failed-precondition',
-        'The function must be called ' + 'while authenticated.'
-      );
     }
 
     try {
@@ -97,15 +97,15 @@ export const onCreatePaymentLink = functions.https.onCall(
 
 export const onDeletePaymentLink = functions.https.onCall(
   async (data, context) => {
-    const priceID: string = data.priceID;
-    const productID: string = data.productID;
-
     if (!context.auth) {
       throw new functions.https.HttpsError(
         'failed-precondition',
         'The function must be called ' + 'while authenticated.'
       );
     }
+
+    const priceID: string = data.priceID;
+    const productID: string = data.productID;
 
     try {
       const userId = context.auth?.uid;
@@ -208,13 +208,13 @@ async function createPrice(
   productID: string,
   recurring?: Stripe.Price.Recurring
 ) {
-  //NEXT-UPDATE: might have to change unit_amount calculation if in different currencies
+  //FUTURE-UPDATE: might have to change unit_amount calculation if in different currencies
 
   try {
     const price = await stripe.prices.create(
       {
         unit_amount: amount,
-        currency: 'usd', //NEXT-UPDATE: add dynamic currencies?
+        currency: 'usd', //FUTURE-UPDATE: add dynamic currencies?
         product: productID,
         metadata: { firebase_merchant_uid: merchantUID },
       },

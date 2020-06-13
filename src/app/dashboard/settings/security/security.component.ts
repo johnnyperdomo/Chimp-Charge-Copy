@@ -75,8 +75,8 @@ export class SecurityComponent implements OnInit {
 
       const updatedUser = this.getUpdatedUser(currentUser, newTokenResult);
 
-      //NEXT-UPDATE: error: redo this function(this.store.dispatch), or fix: when changing email and dispatching action, page is redirected, not the intended response
-      //NEXT-UPDATE: add text: you must "update in stripe also {insert link}""
+      //FUTURE-UPDATE: error: redo this function(this.store.dispatch), or fix: when changing email and dispatching action, page is redirected, not the intended response
+      //FUTURE-UPDATE: add text: you must "update in stripe also {insert link}""
       this.store.dispatch(
         new AuthActions.AuthenticateSuccess({
           user: updatedUser,

@@ -39,7 +39,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.isLoading = authState.loading;
       this.error = authState.authError;
 
-      //NEXT-UPDATE: add loading spinner
+      //FUTURE-UPDATE: add loading spinner
 
       if (authState.authError) {
         this.clearError();

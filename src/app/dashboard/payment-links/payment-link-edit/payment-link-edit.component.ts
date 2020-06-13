@@ -8,8 +8,8 @@ import { Subscription } from 'rxjs';
 import { PriceValidation } from './payment-link-edit.validator';
 import { Router } from '@angular/router';
 
-//NEXT-UPDATE: add can deactivate child option, to save the user from accidently losing data.
-//NEXT-UPDATE: add success page url
+//FUTURE-UPDATE: add can deactivate child option, to save the user from accidently losing data.
+//FUTURE-UPDATE: add success page url
 
 @Component({
   selector: 'app-payment-link-edit',

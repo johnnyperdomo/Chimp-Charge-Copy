@@ -10,7 +10,7 @@ import { Merchant } from 'src/app/merchants/merchant.model';
 import { HelperService } from 'src/app/helper.service';
 import { PaymentLinkService } from '../payment-link.service';
 
-//NEXT-UPDATE: add sorting abilities, and pagination
+//FUTURE-UPDATE: add sorting abilities, and pagination
 @Component({
   selector: 'app-payment-link-list',
   templateUrl: './payment-link-list.component.html',
@@ -37,8 +37,8 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     //TODO: //add loading spinner
     //TODO: catch errors
-    //NEXT-UPDATE// turn into ngrx reducer
-    //NEXT-UPDATE: render content faster
+    //FUTURE-UPDATE// turn into ngrx reducer
+    //FUTURE-UPDATE: render content faster
 
     this.merchantStoreSub = this.store
       .select('merchant')
@@ -122,7 +122,7 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
     }
 
     //TODO: add alert upon success
-    //NEXT-UPDATE: add modal to confirm deletion - ngbootstrap modal; js.confirm is ugly!!!
+    //FUTURE-UPDATE: add modal to confirm deletion - ngbootstrap modal; js.confirm is ugly!!!
   }
 
   ngOnDestroy() {

@@ -39,7 +39,7 @@ export class SignUpComponent implements OnInit, OnDestroy {
       this.isLoading = authState.loading;
       this.error = authState.authError;
 
-      //NEXT-UPDATE: add loading spinner
+      //FUTURE-UPDATE: add loading spinner
 
       if (authState.authError) {
         this.clearError();
@@ -47,7 +47,7 @@ export class SignUpComponent implements OnInit, OnDestroy {
     });
   }
 
-  //NEXT-UPDATE: remove business name/company name from signup form, add optional in accounts page - less friction: when you add onboarding instructions
+  //FUTURE-UPDATE: remove business name/company name from signup form, add optional in accounts page - less friction: when you add onboarding instructions
   onSubmit(signupForm: NgForm) {
     if (!signupForm.valid) {
       return;
@@ -97,5 +97,5 @@ export class SignUpComponent implements OnInit, OnDestroy {
     }
   }
 
-  //NEXT-UPDATE - add email verification with firebase? maybe
+  //FUTURE-UPDATE - add email verification with firebase? maybe
 }

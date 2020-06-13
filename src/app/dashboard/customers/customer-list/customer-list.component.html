@@ -3,8 +3,8 @@
     <table class="table table-sm table-nowrap card-table">
       <thead>
         <tr>
-          <!-- NEXT-UPDATE: add sort order, filters in table header for payment data-->
-          <!-- NEXT-UPDATE: add pagination to not show all results in 1 page, order by pages -->
+          <!-- FUTURE-UPDATE: add sort order, filters in table header for payment data-->
+          <!-- FUTURE-UPDATE: add pagination to not show all results in 1 page, order by pages -->
           <th>
             <h5 class="text-muted mb-0">
               Name
@@ -20,7 +20,7 @@
               Created
             </h5>
           </th>
-          <!-- NEXT-UPDATE: <th colspan="2">
+          <!-- FUTURE-UPDATE: <th colspan="2">
             <h5 class="text-muted mb-0">
               Latest Transaction
             </h5>
@@ -28,7 +28,7 @@
         </tr>
       </thead>
       <tbody class="list">
-        <!-- NEXT-UPDATE: Make table rows fully tappable, or just allow txn id to be a tappable link, then leads to more in-depth information about the payment -->
+        <!-- FUTURE-UPDATE: Make table rows fully tappable, or just allow txn id to be a tappable link, then leads to more in-depth information about the payment -->
         <tr *ngFor="let customerEl of customers">
           <td>
             <h5 class="mb-0">{{ customerEl.customerName }}</h5>
@@ -44,7 +44,7 @@
             </p>
           </td>
           <td>{{ customerEl.createdDate }}</td>
-          <!--NEXT-UPDATE <td>{{ customerEl.recentTransaction }}</td> -->
+          <!--FUTURE-UPDATE <td>{{ customerEl.recentTransaction }}</td> -->
           <td class="text-right">
             <!-- Only show badge if subscriber -->
             <ng-container *ngIf="customerEl.isSubscriber">

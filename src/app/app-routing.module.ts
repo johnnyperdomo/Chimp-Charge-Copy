@@ -103,7 +103,7 @@ const routes: Routes = [
   { path: 'pay/:id', component: CheckoutComponent }, //TODO: user is being redirected
 
   //404 - Page not found
-  //NEXT-UPDATE: make really nice 404 pages => creative/funny
+  //FUTURE-UPDATE: make really nice 404 pages => creative/funny
   { path: '**', redirectTo: '/payments' }, //TODO : make this a 404 page
 ];
 
