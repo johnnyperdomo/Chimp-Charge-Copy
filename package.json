@@ -27,6 +27,7 @@
     "@ngx-pwa/local-storage": "^9.0.3",
     "accounting": "^0.4.1",
     "bootstrap": "^4.4.0",
+    "currency.js": "^1.2.2",
     "firebase": "^7.14.3",
     "moment": "^2.25.3",
     "rxjs": "~6.5.4",

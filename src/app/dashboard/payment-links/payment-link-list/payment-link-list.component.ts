@@ -51,7 +51,7 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
         filter((payload) => payload !== null),
         mergeMap((retrievedMerchant) => {
           //only execute if merchant not null
-
+          //TODO: sort by most recent created
           return this.db
             .collection<PaymentLink>('payment-links', (ref) =>
               ref

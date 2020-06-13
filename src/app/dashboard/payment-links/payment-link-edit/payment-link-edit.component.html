@@ -89,7 +89,7 @@ more information. Redirect url. -->
               Please enter a valid link name.</span
             >
           </div>
-          <!-- TODO: 'quick descr. of your product or service' -->
+
           <div class="form-group">
             <label for="description">Description</label>
             <textarea
@@ -104,19 +104,33 @@ more information. Redirect url. -->
 
           <!-- Amount -->
           <!-- TODO: add min/max length -->
+
+          <!-- //NEXT-UPDATE: better input mask -->
           <div class="form-group">
             <label for="amount">Amount</label>
-            <input
-              type="number"
-              id="amount"
-              class="form-control"
-              placeholder="$"
-              ngModel
-              name="amount"
-              required
-              #amount="ngModel"
-              number
-            />
+
+            <div class="input-group input-group-merge">
+              <input
+                type="number"
+                id="amount"
+                class="form-control form-control-prepended"
+                [ngClass]="{
+                  'is-invalid': !amount.valid && amount.touched
+                }"
+                placeholder="10.00"
+                ngModel
+                name="amount"
+                required
+                #amount="ngModel"
+                number
+              />
+              <div class="input-group-prepend">
+                <div class="input-group-text">
+                  <span class="fe fe-dollar-sign"></span>
+                </div>
+              </div>
+            </div>
+
             <span
               class="help-block-invalid"
               *ngIf="!amount.valid && amount.touched"
