@@ -66,10 +66,13 @@ more information. Redirect url. -->
         </div>
 
         <!-- Form -->
-        <!-- TODO: fix forms for links -->
-        <form #linkForm="ngForm" (ngSubmit)="onSubmit(linkForm)">
+        <form
+          *ngIf="paymentLinkEditForm"
+          [formGroup]="paymentLinkEditForm"
+          (ngSubmit)="onSubmit()"
+        >
           <!-- Name -->
-          <!-- <div class="form-row"> -->
+
           <div class="form-group">
             <label for="linkName">Name of your product or service</label>
             <input
@@ -77,14 +80,15 @@ more information. Redirect url. -->
               id="linkName"
               class="form-control"
               placeholder="i.e. Marketing Services"
-              ngModel
-              name="linkName"
-              required
-              #linkName="ngModel"
+              formControlName="linkName"
             />
+
             <span
               class="help-block-invalid"
-              *ngIf="!linkName.valid && linkName.touched"
+              *ngIf="
+                !paymentLinkEditForm.get('linkName').valid &&
+                paymentLinkEditForm.get('linkName').touched
+              "
             >
               Please enter a valid link name.</span
             >
@@ -96,9 +100,7 @@ more information. Redirect url. -->
               id="description"
               class="form-control"
               placeholder="A brief description of your product or service (optional)"
-              ngModel
-              name="description"
-              #description="ngModel"
+              formControlName="description"
             ></textarea>
           </div>
 
@@ -115,13 +117,12 @@ more information. Redirect url. -->
                 id="amount"
                 class="form-control form-control-prepended"
                 [ngClass]="{
-                  'is-invalid': !amount.valid && amount.touched
+                  'is-invalid':
+                    !paymentLinkEditForm.get('amount').valid &&
+                    paymentLinkEditForm.get('amount').touched
                 }"
                 placeholder="10.00"
-                ngModel
-                name="amount"
-                required
-                #amount="ngModel"
+                formControlName="amount"
                 number
               />
               <div class="input-group-prepend">
@@ -131,11 +132,17 @@ more information. Redirect url. -->
               </div>
             </div>
 
+            <!-- error messages -->
+
+            <!-- Out of price range -->
             <span
               class="help-block-invalid"
-              *ngIf="!amount.valid && amount.touched"
+              *ngIf="
+                paymentLinkEditForm.get('amount').hasError('PriceOutOfRange') &&
+                paymentLinkEditForm.get('amount').touched
+              "
             >
-              Please enter a valid amount.</span
+              Enter a valid amount between $0.50 - $999,999.99</span
             >
           </div>
 
@@ -148,8 +155,7 @@ more information. Redirect url. -->
                 name="billingInterval"
                 id="billingInterval"
                 class="custom-select"
-                [(ngModel)]="billingInterval"
-                required
+                formControlName="billingInterval"
               >
                 <option value="daily">Daily</option>
                 <option value="weekly">Weekly</option>
@@ -168,7 +174,7 @@ more information. Redirect url. -->
             <div class="col-8 col-sm-6 col-md-4">
               <button
                 class="btn btn-lg btn-block btn-primary mb-3"
-                [disabled]="!linkForm.valid"
+                [disabled]="!paymentLinkEditForm.valid"
                 type="submit"
               >
                 Create Payment Link

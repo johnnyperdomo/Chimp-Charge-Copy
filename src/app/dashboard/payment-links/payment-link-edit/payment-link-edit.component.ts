@@ -1,40 +1,51 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { PaymentLinkTypeEnum } from '../payment-link-type.enum';
 import { BillingInterval } from '../billing-interval.enum';
 import { v4 as uuidv4 } from 'uuid';
-import { NgForm } from '@angular/forms';
+import { NgForm, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HelperService } from 'src/app/helper.service';
 import * as MoneyFormatter from 'src/app/accounting';
+import { Subscription } from 'rxjs';
+import { PriceValidation } from './payment-link-edit.validator';
 
-//TODO: implement change detection ref to manually watch form changes
+//NEXT-UPDATE: add can deactivate child option, to save the user from accidently losing data.
+//NEXT-UPDATE: add success page url
+
 @Component({
   selector: 'app-payment-link-edit',
   templateUrl: './payment-link-edit.component.html',
   styleUrls: ['./payment-link-edit.component.scss'],
 })
 export class PaymentLinkEditComponent implements OnInit {
-  productIdempotencyKey: string = uuidv4(); //used to prevent duplicate charges; generated on component load
+  paymentLinkEditForm: FormGroup;
+
+  productIdempotencyKey: string = uuidv4();
   priceIdempotencyKey: string = uuidv4();
 
-  //TODO: add can deactivate child option, to save the user from accidently losing data.
+  changeDetectionSub: Subscription;
+
   linkType = PaymentLinkTypeEnum.onetime;
-  billingInterval = BillingInterval.monthly;
 
-  //NEXT-UPDATE: add success page url
-  constructor(private helperService: HelperService) {}
+  constructor(
+    private helperService: HelperService,
+    private formBuilder: FormBuilder,
+    private _cdr: ChangeDetectorRef
+  ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.setupLinkEditForm();
 
-  onSubmit(linkForm: NgForm) {
-    const amount: number = linkForm.value.amount;
-    const linkName: string = linkForm.value.linkName;
-    const description: string = linkForm.value.description;
+    this.changeDetectionSub = this.paymentLinkEditForm.valueChanges.subscribe(
+      () => {
+        this._cdr.detectChanges();
+      }
+    );
+  }
 
-    console.log(this.productIdempotencyKey);
-    console.log('amount, ' + linkForm.value.amount);
-    console.log('product name, ' + linkForm.value.linkName);
-    console.log('description, ' + description);
-    console.log('billing interval, ' + this.billingInterval);
+  onSubmit() {
+    const amount: number = this.paymentLinkEditForm.value.amount;
+    const linkName: string = this.paymentLinkEditForm.value.linkName;
+    const description: string = this.paymentLinkEditForm.value.description;
 
     const minorCurrency = MoneyFormatter.convertStandardToMinorUnit(amount);
 
@@ -56,10 +67,8 @@ export class PaymentLinkEditComponent implements OnInit {
     linkName: string,
     description: string
   ) {
-    console.log('desc, ' + description);
-
     try {
-      const createLink = await this.helperService.createPaymentLink(
+      await this.helperService.createPaymentLink(
         this.productIdempotencyKey,
         this.priceIdempotencyKey,
         amount,
@@ -72,5 +81,17 @@ export class PaymentLinkEditComponent implements OnInit {
     }
   }
 
-  //TODO: use 'dinero.js' to convert user inputs with stripe lowest currency: 50 = 5000. //fromFloat; standard
+  setupLinkEditForm() {
+    this.paymentLinkEditForm = this.formBuilder.group(
+      {
+        linkName: ['', Validators.required],
+        description: [''],
+        amount: [null, [Validators.required]],
+        billingInterval: ['monthly', [Validators.required]],
+      },
+      {
+        validators: PriceValidation.ConfirmPriceRange,
+      }
+    );
+  }
 }

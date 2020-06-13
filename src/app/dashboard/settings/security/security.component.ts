@@ -1,11 +1,5 @@
 import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
-import {
-  NgForm,
-  FormGroup,
-  FormControl,
-  Validators,
-  FormBuilder,
-} from '@angular/forms';
+import { NgForm, FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducer';
 import { Subscription, merge } from 'rxjs';
@@ -23,7 +17,6 @@ import { User } from 'src/app/auth/user.model';
 })
 export class SecurityComponent implements OnInit {
   @ViewChild('emailForm', { static: true }) emailForm: NgForm;
-  //@ViewChild('passwordForm', { static: true }) passwordForm: NgForm;
   passwordForm: FormGroup;
 
   currentEmail: string;
