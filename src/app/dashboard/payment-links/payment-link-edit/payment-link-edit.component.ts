@@ -51,11 +51,22 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
     const linkName: string = this.paymentLinkEditForm.value.linkName;
     const description: string = this.paymentLinkEditForm.value.description;
 
-    console.log(this.productIdempotencyKey);
+    const billingInterval = this.paymentLinkEditForm.value.billingInterval;
+    console.log(billingInterval);
 
     const minorCurrency = MoneyFormatter.convertStandardToMinorUnit(amount);
 
-    this.createPaymentLink(minorCurrency, linkName, description);
+    if (this.linkType === PaymentLinkTypeEnum.onetime) {
+      this.createPaymentLink(minorCurrency, linkName, description);
+    } else {
+      //recurring
+      this.createPaymentLink(
+        minorCurrency,
+        linkName,
+        description,
+        billingInterval
+      );
+    }
   }
 
   onRecurringMode() {
@@ -71,7 +82,8 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
   async createPaymentLink(
     amount: number,
     linkName: string,
-    description: string
+    description: string,
+    interval: string = null
   ) {
     this.isLoading = true;
     try {
@@ -80,7 +92,8 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
         this.priceIdempotencyKey,
         amount,
         linkName,
-        description
+        description,
+        interval
       );
 
       this.isLoading = false;
@@ -101,7 +114,7 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
         linkName: ['', Validators.required],
         description: [''],
         amount: [null, [Validators.required]],
-        billingInterval: ['monthly', [Validators.required]],
+        billingInterval: ['month', [Validators.required]],
       },
       {
         validators: PriceValidation.ConfirmPriceRange,

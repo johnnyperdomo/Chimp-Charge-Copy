@@ -62,7 +62,8 @@ export class HelperService {
     priceIdempotencyKey: string,
     amount: number,
     linkName: string,
-    description: string
+    description: string,
+    interval: string
   ) {
     const createLinkFunction = this.fireFunctions.httpsCallable(
       'paymentLinks-onCreatePaymentLink'
@@ -75,7 +76,10 @@ export class HelperService {
         amount: amount,
         productName: linkName,
         productDesc: description,
+        interval: interval,
       }).toPromise();
+
+      console.log(createLink);
 
       return createLink;
     } catch (err) {

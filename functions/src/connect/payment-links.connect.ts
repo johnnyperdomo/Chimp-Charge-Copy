@@ -22,11 +22,16 @@ export const onCreatePaymentLink = functions.https.onCall(
     const productIdempotencyKey: string = data.productIdempotencyKey; //used to prevent duplicates
     const priceIdempotencyKey: string = data.priceIdempotencyKey;
     const productName: string = data.productName;
-    let productDesc: string | undefined = data.productDesc; //optional value
+    let productDesc: string | undefined = data.productDesc; //optional
+    let interval: string | undefined = data.interval; //optional
     const amount: number = data.amount;
 
     if (productDesc === '' || null) {
       productDesc = undefined; //need to pass undefined to stripe
+    }
+
+    if (interval === '' || null) {
+      interval = undefined; //need to pass undefined to stripe
     }
 
     try {
@@ -71,7 +76,8 @@ export const onCreatePaymentLink = functions.https.onCall(
         stripeConnectID,
         priceIdempotencyKey,
         amount,
-        product.id
+        product.id,
+        interval
       );
 
       const newDoc = await db.collection('payment-links').add({
@@ -206,21 +212,38 @@ async function createPrice(
   idempotencyKey: string,
   amount: number,
   productID: string,
-  recurring?: Stripe.Price.Recurring
+  recurringInterval?: string
 ) {
   //FUTURE-UPDATE: might have to change unit_amount calculation if in different currencies
 
+  //FUTURE-UPDATE: make function better, this is ugly code
   try {
-    const price = await stripe.prices.create(
-      {
-        unit_amount: amount,
-        currency: 'usd', //FUTURE-UPDATE: add dynamic currencies?
-        product: productID,
-        metadata: { firebase_merchant_uid: merchantUID },
-      },
-      { idempotencyKey: idempotencyKey, stripeAccount: connectID }
-    );
-    return price;
+    if (recurringInterval) {
+      const price = await stripe.prices.create(
+        {
+          unit_amount: amount,
+          currency: 'usd', //FUTURE-UPDATE: add dynamic currencies?
+          product: productID,
+          recurring: {
+            interval: getStripeIntervalFromString(recurringInterval),
+          },
+          metadata: { firebase_merchant_uid: merchantUID },
+        },
+        { idempotencyKey: idempotencyKey, stripeAccount: connectID }
+      );
+      return price;
+    } else {
+      const price = await stripe.prices.create(
+        {
+          unit_amount: amount,
+          currency: 'usd', //FUTURE-UPDATE: add dynamic currencies?
+          product: productID,
+          metadata: { firebase_merchant_uid: merchantUID },
+        },
+        { idempotencyKey: idempotencyKey, stripeAccount: connectID }
+      );
+      return price;
+    }
   } catch (err) {
     throw new Error('stripe: createPrice: ' + err);
   }
@@ -241,5 +264,26 @@ async function archivePrice(priceID: string, connectID: string) {
     return response;
   } catch (err) {
     throw new Error('stripe: updatePrice - archive: ' + err);
+  }
+}
+
+function getStripeIntervalFromString(
+  interval: string
+): Stripe.Price.Recurring.Interval {
+  switch (interval) {
+    case 'day':
+      return 'day';
+
+    case 'month':
+      return 'month';
+
+    case 'week':
+      return 'week';
+
+    case 'year':
+      return 'year';
+
+    default:
+      return 'month';
   }
 }
