@@ -12,7 +12,7 @@ export class PaymentLinkService {
     private clipboard: Clipboard
   ) {}
 
-  async copyPayLink(id: string) {
+  copyPayLink(id: string) {
     const scheme = 'https://';
     const hostName = this.location.hostname;
     const path = `/pay/${id}`;
@@ -23,12 +23,12 @@ export class PaymentLinkService {
       const port = this.location.port;
       const devURL = `${hostName}:${port}${path}`;
 
-      this.clipboard.copy(devURL);
+      return devURL;
     } else {
       //Production mode
       const payURL = `${scheme}${hostName}${path}`;
 
-      this.clipboard.copy(payURL);
+      return payURL;
     }
   }
 }

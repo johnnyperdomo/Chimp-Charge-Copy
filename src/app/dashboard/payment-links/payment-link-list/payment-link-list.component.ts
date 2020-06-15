@@ -9,6 +9,7 @@ import { Subscription, BehaviorSubject } from 'rxjs';
 import { Merchant } from 'src/app/merchants/merchant.model';
 import { HelperService } from 'src/app/helper.service';
 import { PaymentLinkService } from '../payment-link.service';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 //FUTURE-UPDATE: add sorting abilities, and pagination
 @Component({
@@ -31,7 +32,8 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
     private db: AngularFirestore,
     private store: Store<fromApp.AppState>,
     private helperService: HelperService,
-    private linkService: PaymentLinkService
+    private linkService: PaymentLinkService,
+    private clipboard: Clipboard
   ) {}
 
   ngOnInit(): void {
@@ -85,12 +87,16 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
 
   onViewLinkAtRow(itemID: string) {
     console.log('view link, ' + itemID);
+
+    const payLink = this.linkService.copyPayLink(itemID);
+    window.open(payLink); //TODO: make sure page loads on production
   }
 
   onCopyLinkAtRow(itemID: string) {
     console.log('copied link, ' + itemID);
 
-    this.linkService.copyPayLink(itemID);
+    const payLink = this.linkService.copyPayLink(itemID);
+    this.clipboard.copy(payLink);
 
     //TODO: add alert upon success
   }
