@@ -103,6 +103,7 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
 
   onEditLinkAtRow(itemID: string) {
     console.log('edit clicked, ' + itemID);
+    this.router.navigate([`${itemID}/edit`], { relativeTo: this.route });
   }
 
   async onDeleteLinkAtRow(itemID: string) {

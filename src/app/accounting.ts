@@ -16,3 +16,8 @@ export function convertStandardToMinorUnit(amount: number) {
   const minorPrice = currency(amount).multiply(100).format(); //stripe needs values in minor currency unit
   return accounting.unformat(minorPrice); //1,234 => 1234
 }
+
+export function unformatAmount(amount: number) {
+  //use to parse unformatted amount in form
+  return currency(amount).divide(100).value;
+}

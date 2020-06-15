@@ -6,7 +6,9 @@ import { HelperService } from 'src/app/helper.service';
 import * as MoneyFormatter from 'src/app/accounting';
 import { Subscription } from 'rxjs';
 import { PriceValidation } from './payment-link-edit.validator';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute, Params } from '@angular/router';
+import { AngularFirestore } from '@angular/fire/firestore';
+import * as accounting from 'src/app/accounting';
 
 //FUTURE-UPDATE: add can deactivate child option, to save the user from accidently losing data.
 //FUTURE-UPDATE: add success page url
@@ -23,9 +25,13 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
   priceIdempotencyKey: string = uuidv4();
 
   changeDetectionSub: Subscription;
+  routeSub: Subscription;
 
   isLoading: boolean = false;
   error: string;
+
+  linkID: string;
+  editMode: boolean = false;
 
   linkType = PaymentLinkTypeEnum.onetime;
 
@@ -33,11 +39,22 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
     private helperService: HelperService,
     private formBuilder: FormBuilder,
     private _cdr: ChangeDetectorRef,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute,
+    private db: AngularFirestore
   ) {}
 
   ngOnInit(): void {
-    this.setupLinkEditForm();
+    this.routeSub = this.route.params.subscribe((params: Params) => {
+      //+ turns string into number
+      this.linkID = params['id'];
+      this.editMode = params['id'] != null; //edit mode is true, if id does not equal null. only with id
+
+      console.log('edit mode ', this.editMode);
+      console.log('link ', this.linkID);
+
+      this.setupLinkEditForm();
+    });
 
     this.changeDetectionSub = this.paymentLinkEditForm.valueChanges.subscribe(
       () => {
@@ -71,12 +88,10 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
 
   onRecurringMode() {
     this.linkType = PaymentLinkTypeEnum.recurring;
-    console.log('recurring');
   }
 
   onOneTimeMode() {
     this.linkType = PaymentLinkTypeEnum.onetime;
-    console.log('onetime');
   }
 
   async createPaymentLink(
@@ -108,7 +123,7 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
     }
   }
 
-  setupLinkEditForm() {
+  async setupLinkEditForm() {
     this.paymentLinkEditForm = this.formBuilder.group(
       {
         linkName: ['', Validators.required],
@@ -120,6 +135,49 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
         validators: PriceValidation.ConfirmPriceRange,
       }
     );
+
+    if (this.editMode) {
+      try {
+        console.log('in here');
+
+        const linkSnapshot = await this.db
+          .doc(`payment-links/${this.linkID}`)
+          .get()
+          .toPromise();
+
+        const linkData = linkSnapshot.data();
+
+        const name = linkData.product.name;
+        const desc = linkData.product.description;
+        const amount = linkData.price.unit_amount;
+
+        const priceType = linkData.price.type;
+
+        console.log(linkData);
+
+        this.paymentLinkEditForm.patchValue({
+          linkName: name,
+          description: desc,
+          amount: accounting.unformatAmount(amount),
+        });
+
+        if (priceType === 'one_time') {
+          this.onOneTimeMode();
+        } else if (priceType === 'recurring') {
+          this.onRecurringMode();
+
+          const recurringInterval = linkData.price.recurring.interval;
+
+          this.paymentLinkEditForm.patchValue({
+            billingInterval: recurringInterval,
+          });
+        }
+      } catch (err) {
+        //FUTURE-UPDATE: handle this error better
+        this.router.navigate(['/payment-links/new']);
+        console.log(err);
+      }
+    }
   }
 
   ngOnDestroy() {

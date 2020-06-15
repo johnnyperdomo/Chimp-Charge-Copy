@@ -37,6 +37,7 @@ more information. Redirect url. -->
                     <button
                       type="button"
                       class="btn mr-3"
+                      [disabled]="editMode && linkType === 'recurring'"
                       [ngClass]="{
                         'btn-secondary': linkType === 'onetime',
                         'btn-outline-secondary': linkType === 'recurring'
@@ -50,6 +51,7 @@ more information. Redirect url. -->
                     <button
                       type="button"
                       class="btn"
+                      [disabled]="editMode && linkType === 'onetime'"
                       [ngClass]="{
                         'btn-secondary': linkType === 'recurring',
                         'btn-outline-secondary': linkType === 'onetime'
@@ -105,9 +107,10 @@ more information. Redirect url. -->
           </div>
 
           <!-- Amount -->
-          <!-- TODO: add min/max length -->
 
           <!-- //FUTURE-UPDATE: better input mask -->
+
+          <!-- TODO: disable amount on reccuring price: [attr.disabled]="editMode" -->
           <div class="form-group">
             <label for="amount">Amount</label>
 
