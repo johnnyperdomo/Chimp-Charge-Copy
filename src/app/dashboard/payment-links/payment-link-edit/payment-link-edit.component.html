@@ -2,11 +2,6 @@
 accept payment, upload images, check-boxes, add any info. check other apps for
 more information. Redirect url. -->
 
-<!-- TODO: maybe make this page into a popup modal? easier to make things -->
-<!-- TODO: add cancel button or back btn to go back to links page -->
-
-<!-- TODO: maybe add manual change detection -->
-
 <div class="main-content">
   <div class="container-fluid">
     <div class="row justify-content-center">
@@ -16,23 +11,27 @@ more information. Redirect url. -->
           <div class="header-body">
             <div class="row align-items-end">
               <div class="col">
-                <h1 class="header-title">
-                  Create new payment link
+                <h1 *ngIf="editMode; else createMode" class="header-title">
+                  Edit Payment Link
                 </h1>
+
+                <ng-template #createMode>
+                  <h1 class="header-title">Create new payment link</h1>
+                </ng-template>
               </div>
             </div>
             <div class="row mt-2 mb-4">
               <div class="col-12">
                 <!-- TODO :better messaging -->
-                <p class="text-muted my-auto">
-                  Create a one-time or recurring payment.
+                <p *ngIf="!editMode" class="text-muted my-auto">
+                  Create a one-time or recurring payment link that you can share
+                  with your customers.
                 </p>
               </div>
             </div>
             <div class="row">
               <div class="col-12">
                 <ul class="nav nav-tabs header-tabs mb-0">
-                  <!-- TODO: disable opposite option if editmode is true  -->
                   <li>
                     <button
                       type="button"
@@ -108,15 +107,17 @@ more information. Redirect url. -->
 
           <!-- Amount -->
 
-          <!-- //FUTURE-UPDATE: better input mask -->
+          <!-- //FUTURE-UPDATE: better input mask: add some ,000, while typing -->
 
-          <!-- TODO: disable amount on reccuring price: [attr.disabled]="editMode" -->
           <div class="form-group">
             <label for="amount">Amount</label>
 
             <div class="input-group input-group-merge">
               <input
                 type="number"
+                [attr.disabled]="
+                  editMode && linkType === 'recurring' ? '' : null
+                "
                 id="amount"
                 class="form-control form-control-prepended"
                 [ngClass]="{
@@ -129,11 +130,23 @@ more information. Redirect url. -->
                 number
               />
               <div class="input-group-prepend">
-                <div class="input-group-text">
-                  <span class="fe fe-dollar-sign"></span>
+                <div
+                  class="input-group-text"
+                  [ngClass]="{
+                    'input-disabled': editMode && linkType === 'recurring'
+                  }"
+                >
+                  <span class="fe fe-dollar-sign white"></span>
                 </div>
               </div>
             </div>
+            <small
+              *ngIf="editMode && linkType === 'recurring'"
+              class="form-text text-muted mt-2"
+            >
+              Once you create a 'recurring' payment link, you can't change it's
+              price or billing frequency
+            </small>
 
             <!-- error messages -->
 
@@ -151,7 +164,7 @@ more information. Redirect url. -->
 
           <!-- Recurring options -->
           <div *ngIf="linkType === 'recurring'">
-            <!-- TODO: add custom billing interval ; add setup fee option-->
+            <!-- FUTURE-UPDATE: add custom billing interval ; add setup fee option-->
             <div class="form-group">
               <label for="billingInterval">Billing interval</label>
               <select
@@ -159,6 +172,9 @@ more information. Redirect url. -->
                 id="billingInterval"
                 class="custom-select"
                 formControlName="billingInterval"
+                [attr.disabled]="
+                  editMode && linkType === 'recurring' ? '' : null
+                "
               >
                 <option value="day">Daily</option>
                 <option value="week">Weekly</option>
@@ -168,6 +184,9 @@ more information. Redirect url. -->
                 <option value="semiannually">Every 6 Months</option> -->
                 <option value="year">Yearly</option>
               </select>
+              <small class="form-text text-muted mt-2">
+                How often your customers get charged automatically
+              </small>
             </div>
           </div>
 
@@ -177,8 +196,20 @@ more information. Redirect url. -->
           <div class="help-block-invalid form-group text-center" *ngIf="error">
             {{ error }}
           </div>
-          <!-- Submit -->
+
           <div class="row justify-content-center">
+            <!-- Cancel Button -->
+            <div *ngIf="editMode" class="col-8 col-sm-6 col-md-4">
+              <button
+                type="button"
+                class="btn btn-lg btn-block btn-white mb-3"
+                (click)="onCancelEditMode()"
+              >
+                Cancel
+              </button>
+            </div>
+
+            <!-- Submit -->
             <div class="col-8 col-sm-6 col-md-4">
               <!-- Loading Spinner -->
 
@@ -187,6 +218,7 @@ more information. Redirect url. -->
               </div>
 
               <!-- FUTURE-UPDATE: don't let user spam create button -->
+              <!-- FUTURE-UPDATE: change text depending on editmode or not -->
               <button
                 class="btn btn-lg btn-block btn-primary mb-3"
                 [disabled]="!paymentLinkEditForm.valid"

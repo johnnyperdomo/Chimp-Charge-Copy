@@ -1,3 +1,23 @@
+$disabled-color: #d0d3dc;
+
 textarea {
   resize: none;
+}
+
+input:disabled {
+  background-color: $disabled-color;
+  color: #12263f;
+  opacity: 1;
+}
+
+div.input-disabled {
+  background-color: $disabled-color;
+  color: #12263f;
+  opacity: 1;
+}
+
+select:disabled {
+  background-color: $disabled-color;
+  color: #12263f;
+  opacity: 1;
 }

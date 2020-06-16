@@ -13,6 +13,8 @@ import * as accounting from 'src/app/accounting';
 //FUTURE-UPDATE: add can deactivate child option, to save the user from accidently losing data.
 //FUTURE-UPDATE: add success page url
 
+// FUTURE-UPDATE: add loading spinner before setting up form if getting data from firebase on editMode, for good ux
+
 @Component({
   selector: 'app-payment-link-edit',
   templateUrl: './payment-link-edit.component.html',
@@ -48,11 +50,7 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
     this.routeSub = this.route.params.subscribe((params: Params) => {
       //+ turns string into number
       this.linkID = params['id'];
-      this.editMode = params['id'] != null; //edit mode is true, if id does not equal null. only with id
-
-      console.log('edit mode ', this.editMode);
-      console.log('link ', this.linkID);
-
+      this.editMode = params['id'] != null;
       this.setupLinkEditForm();
     });
 
@@ -84,6 +82,10 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
         billingInterval
       );
     }
+  }
+
+  onCancelEditMode() {
+    this.router.navigate(['/payment-links']);
   }
 
   onRecurringMode() {
@@ -138,8 +140,6 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
 
     if (this.editMode) {
       try {
-        console.log('in here');
-
         const linkSnapshot = await this.db
           .doc(`payment-links/${this.linkID}`)
           .get()
@@ -152,8 +152,6 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
         const amount = linkData.price.unit_amount;
 
         const priceType = linkData.price.type;
-
-        console.log(linkData);
 
         this.paymentLinkEditForm.patchValue({
           linkName: name,
@@ -173,7 +171,7 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
           });
         }
       } catch (err) {
-        //FUTURE-UPDATE: handle this error better
+        //FUTURE-UPDATE: handle this error better: "couldn't load content" try again
         this.router.navigate(['/payment-links/new']);
         console.log(err);
       }
