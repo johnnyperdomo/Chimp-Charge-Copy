@@ -56,7 +56,6 @@ export class HelperService {
     return null;
   }
 
-  //TODO: adjust for recurring
   async createPaymentLink(
     productIdempotencyKey: string,
     priceIdempotencyKey: string,
@@ -86,6 +85,15 @@ export class HelperService {
       console.log('error message is: ' + err);
       throw Error(err);
     }
+  }
+
+  //TODO:
+  async editPaymentLink(
+    productID: string,
+    linkName: string,
+    description: string
+  ) {
+    //can only edit amount on 'one-time payments
   }
 
   async deletePaymentLink(priceID: string, productID: string) {

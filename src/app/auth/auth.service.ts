@@ -106,7 +106,7 @@ export class AuthService {
     return user;
   }
 
-  //FUTURE-UPDATE: add auto logout message
+  //FUTURE-UPDATE: add auto logout message; maybe session expired how 'payhere' does it
   setAutoLogoutTimer(millisecondsToExpiration: number) {
     //can logout when token is set to expire
     this.tokenExpTimer = setTimeout(() => {

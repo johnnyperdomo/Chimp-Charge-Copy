@@ -115,9 +115,7 @@ more information. Redirect url. -->
             <div class="input-group input-group-merge">
               <input
                 type="number"
-                [attr.disabled]="
-                  editMode && linkType === 'recurring' ? '' : null
-                "
+                [attr.disabled]="editMode ? '' : null"
                 id="amount"
                 class="form-control form-control-prepended"
                 [ngClass]="{
@@ -133,19 +131,16 @@ more information. Redirect url. -->
                 <div
                   class="input-group-text"
                   [ngClass]="{
-                    'input-disabled': editMode && linkType === 'recurring'
+                    'input-disabled': editMode
                   }"
                 >
                   <span class="fe fe-dollar-sign white"></span>
                 </div>
               </div>
             </div>
-            <small
-              *ngIf="editMode && linkType === 'recurring'"
-              class="form-text text-muted mt-2"
-            >
-              Once you create a 'recurring' payment link, you can't change it's
-              price or billing frequency
+            <small *ngIf="editMode" class="form-text text-muted mt-2">
+              Once you create a payment link, you can't change it's price or
+              billing frequency
             </small>
 
             <!-- error messages -->
@@ -198,8 +193,9 @@ more information. Redirect url. -->
           </div>
 
           <div class="row justify-content-center">
+            <!-- FUTURE-UPDATE: maybe add deactivate child, if user goes back or clicks cancel, to prevent accidental deletion -->
             <!-- Cancel Button -->
-            <div *ngIf="editMode" class="col-8 col-sm-6 col-md-4">
+            <div class="col-8 col-sm-6 col-md-4">
               <button
                 type="button"
                 class="btn btn-lg btn-block btn-white mb-3"

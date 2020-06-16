@@ -72,13 +72,13 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
     const minorCurrency = MoneyFormatter.convertStandardToMinorUnit(amount);
 
     if (this.linkType === PaymentLinkTypeEnum.onetime) {
-      this.createPaymentLink(minorCurrency, linkName, description);
+      this.createPaymentLink(linkName, description, minorCurrency);
     } else {
       //recurring
       this.createPaymentLink(
-        minorCurrency,
         linkName,
         description,
+        minorCurrency,
         billingInterval
       );
     }
@@ -97,9 +97,9 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
   }
 
   async createPaymentLink(
-    amount: number,
     linkName: string,
     description: string,
+    amount: number,
     interval: string = null
   ) {
     this.isLoading = true;
@@ -122,6 +122,17 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         this.error = null;
       }, 5000);
+    }
+  }
+
+  async editPaymentLink(linkName: string, description: string, amount: number) {
+    this.isLoading = true;
+    try {
+      this.isLoading = false;
+      this.router.navigate(['payment-links']);
+    } catch (err) {
+      this.error = err.message;
+      this.isLoading = false;
     }
   }
 

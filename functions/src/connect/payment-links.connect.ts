@@ -184,6 +184,30 @@ async function createProduct(
   }
 }
 
+//TODO: edit mode:
+
+async function editProduct(
+  productID: string,
+  connectID: string,
+  name: string,
+  description?: string
+) {
+  try {
+    const response = await stripe.products.update(
+      productID,
+      {
+        name: name,
+        description: description,
+      },
+      { stripeAccount: connectID }
+    );
+
+    return response;
+  } catch (err) {
+    throw new Error('stripe: updateProduct: ' + err);
+  }
+}
+
 async function archiveProduct(
   priceID: string,
   productID: string,
@@ -205,7 +229,8 @@ async function archiveProduct(
   }
 }
 
-//TODO: make for recurring payment
+//Price ==========================>
+
 async function createPrice(
   merchantUID: string,
   connectID: string,
