@@ -89,11 +89,26 @@ export class HelperService {
 
   //TODO:
   async editPaymentLink(
-    productID: string,
+    paymentlinkID: string,
     linkName: string,
     description: string
   ) {
     //can only edit amount on 'one-time payments
+    const editLinkFunction = this.fireFunctions.httpsCallable(
+      'paymentLinks-onEditPaymentLink'
+    );
+
+    try {
+      const editLink = await editLinkFunction({
+        paymentlinkID: paymentlinkID,
+        productName: linkName,
+        productDesc: description,
+      }).toPromise();
+
+      return editLink;
+    } catch (err) {
+      throw Error(err);
+    }
   }
 
   async deletePaymentLink(priceID: string, productID: string) {

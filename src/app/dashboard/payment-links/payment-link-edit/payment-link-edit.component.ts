@@ -48,7 +48,6 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.routeSub = this.route.params.subscribe((params: Params) => {
-      //+ turns string into number
       this.linkID = params['id'];
       this.editMode = params['id'] != null;
       this.setupLinkEditForm();
@@ -67,20 +66,22 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
     const description: string = this.paymentLinkEditForm.value.description;
 
     const billingInterval = this.paymentLinkEditForm.value.billingInterval;
-    console.log(billingInterval);
-
     const minorCurrency = MoneyFormatter.convertStandardToMinorUnit(amount);
 
-    if (this.linkType === PaymentLinkTypeEnum.onetime) {
-      this.createPaymentLink(linkName, description, minorCurrency);
+    if (this.editMode) {
+      this.editPaymentLink(linkName, description);
     } else {
-      //recurring
-      this.createPaymentLink(
-        linkName,
-        description,
-        minorCurrency,
-        billingInterval
-      );
+      if (this.linkType === PaymentLinkTypeEnum.onetime) {
+        this.createPaymentLink(linkName, description, minorCurrency);
+      } else {
+        //recurring
+        this.createPaymentLink(
+          linkName,
+          description,
+          minorCurrency,
+          billingInterval
+        );
+      }
     }
   }
 
@@ -125,14 +126,31 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
     }
   }
 
-  async editPaymentLink(linkName: string, description: string, amount: number) {
+  async editPaymentLink(linkName: string, description: string) {
     this.isLoading = true;
+
     try {
+      if (!this.linkID) {
+        throw Error(
+          'Invalid payment link ID, please try again or choose another payment link to edit'
+        );
+      }
+
+      await this.helperService.editPaymentLink(
+        this.linkID,
+        linkName,
+        description
+      );
+
       this.isLoading = false;
       this.router.navigate(['payment-links']);
     } catch (err) {
       this.error = err.message;
       this.isLoading = false;
+
+      setTimeout(() => {
+        this.error = null;
+      }, 5000);
     }
   }
 

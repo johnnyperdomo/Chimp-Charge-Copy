@@ -56,10 +56,17 @@ export const onCreatePaymentLink = functions.https.onCall(
       const merchantUID = userData.uid;
       const stripeConnectID = userData.stripeConnectID;
 
+      if (!merchantUID) {
+        throw new functions.https.HttpsError(
+          'not-found',
+          'Merchant ID not found'
+        );
+      }
+
       if (!stripeConnectID) {
         throw new functions.https.HttpsError(
-          'failed-precondition',
-          'The function must be called with a valid stripe connect id.'
+          'not-found',
+          'Stripe Connect ID not found'
         );
       }
 
@@ -96,10 +103,69 @@ export const onCreatePaymentLink = functions.https.onCall(
   }
 );
 
-//TODO:
-// export const onEditPaymentLink = functions.https.onCall(
-//   async (data, context) => {}
-// );
+export const onEditPaymentLink = functions.https.onCall(
+  async (data, context) => {
+    if (!context.auth) {
+      throw new functions.https.HttpsError(
+        'failed-precondition',
+        'The function must be called ' + 'while authenticated.'
+      );
+    }
+
+    const paymentlinkID: string = data.paymentlinkID;
+    const productName: string = data.productName;
+    let productDesc: string = data.productDesc; //optional
+
+    if (productDesc === '' || null) {
+      productDesc = ''; //passing in 'undefined' to edit doesn't cause change
+    }
+
+    try {
+      const userId = context.auth?.uid;
+      const userRef = db.doc(`merchants/${userId}`);
+      const userSnap = await userRef.get();
+      const userData = userSnap.data()!;
+
+      const merchantUID = userData.uid;
+      const stripeConnectID = userData.stripeConnectID;
+
+      if (!merchantUID) {
+        throw new functions.https.HttpsError(
+          'not-found',
+          'Merchant ID not found'
+        );
+      }
+
+      if (!stripeConnectID) {
+        throw new functions.https.HttpsError(
+          'not-found',
+          'Stripe Connect ID not found'
+        );
+      }
+
+      const paymentLinkRef = db.doc(`payment-links/${paymentlinkID}`);
+      const paymentLinkData = (await paymentLinkRef.get()).data()!;
+
+      const productID = paymentLinkData.product.id;
+
+      const updateProduct = await editProduct(
+        productID,
+        stripeConnectID,
+        productName,
+        productDesc
+      );
+
+      const updatePaymentLinkDoc = paymentLinkRef.update({
+        product: updateProduct,
+        lastUpdated: admin.firestore.Timestamp.now(),
+      });
+
+      return updatePaymentLinkDoc;
+    } catch (err) {
+      throw new functions.https.HttpsError('unknown', err);
+    }
+  }
+);
 
 export const onDeletePaymentLink = functions.https.onCall(
   async (data, context) => {
@@ -123,8 +189,8 @@ export const onDeletePaymentLink = functions.https.onCall(
 
       if (!stripeConnectID) {
         throw new functions.https.HttpsError(
-          'failed-precondition',
-          'The function must be called ' + 'with a valid stripe connect id.'
+          'not-found',
+          'Stripe Connect ID not found'
         );
       }
 
@@ -184,13 +250,11 @@ async function createProduct(
   }
 }
 
-//TODO: edit mode:
-
 async function editProduct(
   productID: string,
   connectID: string,
   name: string,
-  description?: string
+  description: string
 ) {
   try {
     const response = await stripe.products.update(

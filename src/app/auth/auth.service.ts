@@ -106,7 +106,7 @@ export class AuthService {
     return user;
   }
 
-  //FUTURE-UPDATE: add auto logout message; maybe session expired how 'payhere' does it
+  //FUTURE-UPDATE: add auto logout message; maybe session expired how 'payhere' does it, and make user reauthenticate with firebase
   setAutoLogoutTimer(millisecondsToExpiration: number) {
     //can logout when token is set to expire
     this.tokenExpTimer = setTimeout(() => {
