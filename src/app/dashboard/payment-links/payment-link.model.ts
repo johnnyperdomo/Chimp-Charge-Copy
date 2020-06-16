@@ -41,7 +41,30 @@ export class PaymentLink {
   }
 
   get billingInterval() {
-    //i.e. monthly
-    return this.price.recurring.interval; //TODO:
+    //i.e. Billed monthly
+    const recurring = this.price.recurring;
+
+    if (!recurring) {
+      //if recurring is null, 'interval' won't exist => exit
+      return;
+    }
+
+    const interval = recurring.interval;
+
+    if (interval)
+      switch (this.price.recurring.interval) {
+        case 'day':
+          return 'daily';
+        case 'month':
+          return 'monthly';
+        case 'week':
+          return 'weekly';
+        case 'year':
+          return 'yearly';
+        default:
+          return;
+      }
+
+    return;
   }
 }
