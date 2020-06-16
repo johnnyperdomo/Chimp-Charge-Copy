@@ -48,19 +48,20 @@ export class PaymentLink {
       //if recurring is null, 'interval' won't exist => exit
       return;
     }
+    console.log(recurring);
 
     const interval = recurring.interval;
 
     if (interval)
       switch (this.price.recurring.interval) {
         case 'day':
-          return 'daily';
+          return 'Daily';
         case 'month':
-          return 'monthly';
+          return 'Monthly';
         case 'week':
-          return 'weekly';
+          return 'Weekly';
         case 'year':
-          return 'yearly';
+          return 'Yearly';
         default:
           return;
       }
