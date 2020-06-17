@@ -211,5 +211,9 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
     if (this.changeDetectionSub) {
       this.changeDetectionSub.unsubscribe();
     }
+
+    if (this.routeSub) {
+      this.routeSub.unsubscribe();
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Customer } from '../customer.model';
 import { Subscription, BehaviorSubject } from 'rxjs';
 import { Merchant } from 'src/app/merchants/merchant.model';
@@ -12,7 +12,7 @@ import { map, filter, mergeMap } from 'rxjs/operators';
   templateUrl: './customer-list.component.html',
   styleUrls: ['./customer-list.component.scss'],
 })
-export class CustomerListComponent implements OnInit {
+export class CustomerListComponent implements OnInit, OnDestroy {
   merchantStoreSub: Subscription;
   currentMerchantSub: Subscription;
   currentMerchant = new BehaviorSubject<Merchant>(null);
@@ -81,5 +81,19 @@ export class CustomerListComponent implements OnInit {
       .subscribe((data) => {
         console.log(data);
       });
+  }
+
+  ngOnDestroy() {
+    if (this.merchantStoreSub) {
+      this.merchantStoreSub.unsubscribe();
+    }
+
+    if (this.currentMerchant) {
+      this.currentMerchant.unsubscribe();
+    }
+
+    if (this.currentMerchantSub) {
+      this.currentMerchantSub.unsubscribe();
+    }
   }
 }

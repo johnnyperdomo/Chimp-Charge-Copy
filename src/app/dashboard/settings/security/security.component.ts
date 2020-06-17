@@ -1,4 +1,10 @@
-import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ChangeDetectorRef,
+  OnDestroy,
+} from '@angular/core';
 import { NgForm, FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import * as fromApp from '../../../store/app.reducer';
@@ -15,7 +21,7 @@ import { User } from 'src/app/auth/user.model';
   templateUrl: './security.component.html',
   styleUrls: ['./security.component.scss'],
 })
-export class SecurityComponent implements OnInit {
+export class SecurityComponent implements OnInit, OnDestroy {
   @ViewChild('emailForm', { static: true }) emailForm: NgForm;
   passwordForm: FormGroup;
 
@@ -175,5 +181,15 @@ export class SecurityComponent implements OnInit {
     const passwordObs = this.passwordForm.valueChanges;
 
     return merge(emailObs, passwordObs);
+  }
+
+  ngOnDestroy() {
+    if (this.authStoreSub) {
+      this.authStoreSub.unsubscribe();
+    }
+
+    if (this.changeDetectionSub) {
+      this.changeDetectionSub.unsubscribe();
+    }
   }
 }

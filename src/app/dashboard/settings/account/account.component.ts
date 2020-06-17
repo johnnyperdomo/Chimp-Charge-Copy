@@ -1,4 +1,10 @@
-import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ChangeDetectorRef,
+  OnDestroy,
+} from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import * as fromApp from '../../../store/app.reducer';
@@ -13,7 +19,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
   templateUrl: './account.component.html',
   styleUrls: ['./account.component.scss'],
 })
-export class AccountComponent implements OnInit {
+export class AccountComponent implements OnInit, OnDestroy {
   @ViewChild('accountForm', { static: true }) accountForm: NgForm;
 
   firstName: string;
@@ -79,5 +85,15 @@ export class AccountComponent implements OnInit {
     }
 
     //TODO: present alert on success
+  }
+
+  ngOnDestroy() {
+    if (this.merchantStoreSub) {
+      this.merchantStoreSub.unsubscribe();
+    }
+
+    if (this.changeDetectionSub) {
+      this.changeDetectionSub.unsubscribe();
+    }
   }
 }

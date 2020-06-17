@@ -140,5 +140,9 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
     if (this.currentMerchantSub) {
       this.currentMerchantSub.unsubscribe();
     }
+
+    if (this.currentMerchant) {
+      this.currentMerchant.unsubscribe();
+    }
   }
 }

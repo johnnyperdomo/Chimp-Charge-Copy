@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Payment } from '../payment.model';
 import { Subscription, BehaviorSubject } from 'rxjs';
 import { Merchant } from 'src/app/merchants/merchant.model';
@@ -12,7 +12,7 @@ import * as fromApp from '../../../store/app.reducer';
   templateUrl: './payment-list.component.html',
   styleUrls: ['./payment-list.component.scss'],
 })
-export class PaymentListComponent implements OnInit {
+export class PaymentListComponent implements OnInit, OnDestroy {
   merchantStoreSub: Subscription;
   currentMerchantSub: Subscription;
   currentMerchant = new BehaviorSubject<Merchant>(null);
@@ -92,5 +92,19 @@ export class PaymentListComponent implements OnInit {
 
   onRefundAtRow(itemID: string) {
     console.log('refund clicked, ' + itemID);
+  }
+
+  ngOnDestroy() {
+    if (this.merchantStoreSub) {
+      this.merchantStoreSub.unsubscribe();
+    }
+
+    if (this.currentMerchant) {
+      this.currentMerchant.unsubscribe();
+    }
+
+    if (this.currentMerchantSub) {
+      this.currentMerchantSub.unsubscribe();
+    }
   }
 }
