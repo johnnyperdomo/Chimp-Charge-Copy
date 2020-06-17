@@ -48,7 +48,6 @@ export class PaymentLink {
       //if recurring is null, 'interval' won't exist => exit
       return;
     }
-    console.log(recurring);
 
     const interval = recurring.interval;
 

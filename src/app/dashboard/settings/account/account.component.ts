@@ -81,7 +81,8 @@ export class AccountComponent implements OnInit, OnDestroy {
       this.merchantService.getMerchantInfo(this.merchant.uid);
     } catch (err) {
       console.log(err);
-      //TODO: present error
+      alert(err + ' - Try Again.');
+      //FUTURE-UPDATE: present error
     }
 
     //TODO: present alert on success

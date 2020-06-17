@@ -123,8 +123,9 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
         this.isLoading = false;
         return response;
       } catch (err) {
+        alert(err + ' - Try Again');
         console.log(err);
-        //TODO: present error
+        //FUTURE-UPDATE: present error
       }
     }
 
