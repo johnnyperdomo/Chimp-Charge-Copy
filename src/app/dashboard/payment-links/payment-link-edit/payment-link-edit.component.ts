@@ -120,6 +120,8 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
       this.error = err.message;
       this.isLoading = false;
 
+      this.generateNewIdempotenceKeys();
+
       setTimeout(() => {
         this.error = null;
       }, 5000);
@@ -147,6 +149,8 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
     } catch (err) {
       this.error = err.message;
       this.isLoading = false;
+
+      this.generateNewIdempotenceKeys();
 
       setTimeout(() => {
         this.error = null;
@@ -206,6 +210,12 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
         console.log(err);
       }
     }
+  }
+
+  generateNewIdempotenceKeys() {
+    //on error; they are passed to stripe but transaction. not completed
+    this.productIdempotencyKey = uuidv4();
+    this.priceIdempotencyKey = uuidv4();
   }
 
   ngOnDestroy() {

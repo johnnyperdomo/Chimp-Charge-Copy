@@ -1,0 +1,25 @@
+//FUTURE-UPDATE: make styling better, and make it more responsive for mobile; add multiline text for description
+
+td.text-wrapper {
+  max-width: 50vh;
+
+  * {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+}
+
+//Extra small (xs) devices (portrait phones, less than 576px)
+@media (max-width: 576px) {
+  td.text-wrapper {
+    max-width: 35vh;
+  }
+}
+
+// Small (sm) devices (landscape phones, 576px and up) - Large (lg) devices (desktops, 992px and up)
+@media (min-width: 557px) and (max-width: 992px) {
+  td.text-wrapper {
+    max-width: 40vh;
+  }
+}

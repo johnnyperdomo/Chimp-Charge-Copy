@@ -57,8 +57,7 @@
         <tbody class="list">
           <!-- FUTURE-UPDATE: Make table rows fully tappable, or just allow txn id to be a tappable link, then leads to more in-depth information about the payment -->
           <tr *ngFor="let linkEl of paymentLinks">
-            <td>
-              <!-- TODO: add text wrapping and/or max text length, so that text isn't too long for screen -->
+            <td class="text-wrapper">
               <h5 class="mb-0">{{ linkEl.product.name }}</h5>
               <p class="card-text small text-muted mb-0">
                 {{ linkEl.product.description }}

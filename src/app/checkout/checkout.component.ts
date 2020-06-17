@@ -102,3 +102,6 @@ export class CheckoutComponent implements OnInit {
     console.log(this.idempotencyKey);
   }
 }
+
+//TODO: unsubscribe from route sub
+//TODO: generate new idempotence key on error
