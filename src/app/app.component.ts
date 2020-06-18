@@ -19,12 +19,14 @@ export class AppComponent implements OnInit, OnDestroy {
   stripeConnectClientID = environment.stripeConnectClientID;
 
   isLoggedIn: boolean = false;
+  isCheckoutMode: boolean = false;
   currentUser = new Subject<User>();
   isStripeConnectAuthorized: boolean;
 
   userSub: Subscription;
   merchantSub: Subscription;
   currentUserSub: Subscription;
+  routeSub: Subscription;
 
   constructor(
     private store: Store<fromApp.AppState>,
@@ -35,6 +37,13 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.autoLoginUser();
+
+    // this.routeSub = this.route.params.subscribe((params: Params) => {
+    //   if (params['pay']) {
+    //     console.log('is checkout mode');
+    //   }
+    //   // this.editMode = params['id'] != null;
+    // });
 
     this.userSub = this.store
       .select('auth')
@@ -106,6 +115,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
     if (this.merchantSub) {
       this.merchantSub.unsubscribe();
+    }
+
+    if (this.routeSub) {
+      this.routeSub.unsubscribe();
     }
   }
 }

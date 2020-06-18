@@ -44,8 +44,8 @@ import { PaymentLinkEditComponent } from './dashboard/payment-links/payment-link
 import { CheckoutComponent } from './checkout/checkout.component';
 import { SecurityComponent } from './dashboard/settings/security/security.component';
 import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.component';
-import { ErrorPageComponent } from './shared/error-page/error-page.component';
 
+import { PageNotFoundComponent } from './shared/page-not-found/page-not-found.component';
 firebase.initializeApp(environment.firebase);
 
 @NgModule({
@@ -72,7 +72,7 @@ firebase.initializeApp(environment.firebase);
     CheckoutComponent,
     SecurityComponent,
     ForgotPasswordComponent,
-    ErrorPageComponent,
+    PageNotFoundComponent,
   ],
   imports: [
     BrowserModule,

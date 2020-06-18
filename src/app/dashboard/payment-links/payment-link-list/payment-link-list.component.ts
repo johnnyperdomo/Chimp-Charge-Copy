@@ -37,7 +37,7 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    //TODO: //add loading spinner
+    //FUTURE-UPDATE: //add loading spinner
     //TODO: catch errors
     //FUTURE-UPDATE// turn into ngrx reducer
     //FUTURE-UPDATE: render content faster
