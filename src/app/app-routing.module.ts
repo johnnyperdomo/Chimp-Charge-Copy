@@ -20,6 +20,7 @@ import { PaymentLinkListComponent } from './dashboard/payment-links/payment-link
 import { CheckoutComponent } from './checkout/checkout.component';
 import { SecurityComponent } from './dashboard/settings/security/security.component';
 import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.component';
+import { ErrorPageComponent } from './shared/error-page/error-page.component';
 
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['login']); //if no logged in, restrict access
 const redirectLoggedInToPayments = () => redirectLoggedInTo(['payments']); //if logged in, block auth components
@@ -100,11 +101,10 @@ const routes: Routes = [
 
   //checkout - for customers, no auth required
   //TODO: if routed to this component, don't show dashboard header
-  { path: 'pay/:id', component: CheckoutComponent }, //TODO: user is being redirected
+  { path: 'pay/:id', component: CheckoutComponent },
 
   //404 - Page not found
-  //FUTURE-UPDATE: make really nice 404 pages => creative/funny
-  { path: '**', redirectTo: '/payments' }, //TODO : make this a 404 page
+  { path: '**', component: ErrorPageComponent },
 ];
 
 @NgModule({
