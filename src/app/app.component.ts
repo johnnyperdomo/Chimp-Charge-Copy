@@ -4,7 +4,13 @@ import { map, mergeMap } from 'rxjs/operators';
 import * as fromApp from './store/app.reducer';
 import { Store } from '@ngrx/store';
 import * as AuthActions from './auth/store/auth.actions';
-import { ActivatedRoute, Params } from '@angular/router';
+import {
+  ActivatedRoute,
+  Params,
+  Router,
+  Event,
+  NavigationStart,
+} from '@angular/router';
 import { HelperService } from './helper.service';
 import { environment } from 'src/environments/environment';
 import { User } from './auth/user.model';
@@ -19,7 +25,7 @@ export class AppComponent implements OnInit, OnDestroy {
   stripeConnectClientID = environment.stripeConnectClientID;
 
   isLoggedIn: boolean = false;
-  isCheckoutMode: boolean = false;
+  isCheckoutSession: boolean = false;
   currentUser = new Subject<User>();
   isStripeConnectAuthorized: boolean;
 
@@ -32,18 +38,25 @@ export class AppComponent implements OnInit, OnDestroy {
     private store: Store<fromApp.AppState>,
     private route: ActivatedRoute,
     private helperService: HelperService,
+    private router: Router,
     private zone: NgZone //listens to some event handlers in observable to update ui
   ) {}
 
   ngOnInit() {
     this.autoLoginUser();
 
-    // this.routeSub = this.route.params.subscribe((params: Params) => {
-    //   if (params['pay']) {
-    //     console.log('is checkout mode');
-    //   }
-    //   // this.editMode = params['id'] != null;
-    // });
+    this.routeSub = this.router.events.subscribe((event: Event) => {
+      if (event instanceof NavigationStart) {
+        let path = event.url;
+
+        //i.e. '/pay/1234' => checkout session
+        if (path.includes('/pay/')) {
+          this.isCheckoutSession = true;
+        } else {
+          this.isCheckoutSession = false;
+        }
+      }
+    });
 
     this.userSub = this.store
       .select('auth')

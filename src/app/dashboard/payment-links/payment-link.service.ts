@@ -7,10 +7,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
   providedIn: 'root',
 })
 export class PaymentLinkService {
-  constructor(
-    private location: PlatformLocation,
-    private clipboard: Clipboard
-  ) {}
+  constructor(private location: PlatformLocation) {}
 
   copyPayLink(id: string) {
     const scheme = 'https://';
