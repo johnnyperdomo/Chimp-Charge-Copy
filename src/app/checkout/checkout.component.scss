@@ -1,3 +1,11 @@
 .payment-link-details {
-  color: rgb(0, 110, 255);
+  color: #256eff;
+}
+
+.capitalize {
+  text-transform: capitalize;
+}
+
+.first-letter-capitalize::first-letter {
+  text-transform: capitalize;
 }

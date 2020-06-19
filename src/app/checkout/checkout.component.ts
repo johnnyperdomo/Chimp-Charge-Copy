@@ -11,40 +11,42 @@ import { environment } from 'src/environments/environment';
 import { ActivatedRoute } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { map, switchMap, catchError } from 'rxjs/operators';
-import { from } from 'rxjs';
+import { from, Subscription } from 'rxjs';
 import * as MoneyFormatter from 'src/app/accounting';
 
 declare var Stripe; // : stripe.StripeStatic;
+
+//FUTURE-UPDATE: add can deactivate child option, to save the user from accidently losing data.
 
 @Component({
   selector: 'app-checkout',
   templateUrl: './checkout.component.html',
   styleUrls: ['./checkout.component.scss'],
 })
-export class CheckoutComponent implements OnInit {
+export class CheckoutComponent implements OnInit, OnDestroy {
   @ViewChild('cardElement', { static: true }) cardElement: ElementRef;
-  //TODO: add can deactivate child option, to save the user from accidently losing data.
 
-  idempotencyKey = uuidv4(); //used to prevent duplicate charges; generated on component load
+  idempotencyKey = uuidv4(); //used to prevent duplicate charges;
 
   stripe; // : stripe.Stripe;
   card;
   cardErrors;
 
-  //TODO: add dynamic values
   businessName: string;
   linkName: string;
   linkDescription: string;
-  linkType: string;
-  price: string; //stripe price
+
+  paymentLinkDetails: string;
+  checkoutBtnText: string;
+
+  routeSub: Subscription;
 
   constructor(private route: ActivatedRoute, private db: AngularFirestore) {}
 
   ngOnInit(): void {
     //TODO: add loading page before rendering checkout
     //TODO: catchError, show 404 page if no data find with id
-    //TODO: add business name to checkout page
-    this.route.params
+    this.routeSub = this.route.params
       .pipe(
         map((params) => {
           return params['id'];
@@ -54,20 +56,32 @@ export class CheckoutComponent implements OnInit {
 
           return from(this.db.collection('payment-links').doc(id).ref.get());
         }),
-        switchMap((paymentLinkData) => {
-          const retrievedLink = paymentLinkData.data();
-          const merchantUID = retrievedLink.merchantUID;
+        switchMap((data) => {
+          const linkData = data.data();
+          const merchantUID = linkData.merchantUID;
 
           const formattedPrice = MoneyFormatter.convertMinorUnitToStandard(
-            retrievedLink.price.unit_amount
+            linkData.price.unit_amount
           );
 
-          this.price = formattedPrice;
-          this.linkType = retrievedLink.price.type;
-          this.linkName = retrievedLink.product.name;
-          this.linkDescription = retrievedLink.product.description;
+          const billingType = linkData.price.type;
 
-          console.log(retrievedLink);
+          this.linkName = linkData.product.name;
+          this.linkDescription = linkData.product.description;
+
+          console.log(billingType);
+
+          if (billingType === 'recurring') {
+            const recurring = linkData.price.recurring;
+            const recurringInterval: string = recurring.interval;
+
+            this.paymentLinkDetails = `${formattedPrice} - Every ${recurringInterval} [Subscription]`;
+
+            this.checkoutBtnText = `Pay ${formattedPrice} Every ${recurringInterval}`;
+          } else {
+            this.paymentLinkDetails = `${formattedPrice}`;
+            this.checkoutBtnText = `Pay ${formattedPrice}`;
+          }
 
           return from(
             this.db.collection('merchants').doc(merchantUID).ref.get()
@@ -79,9 +93,9 @@ export class CheckoutComponent implements OnInit {
         this.businessName = merchant.businessName;
         console.log(merchantData.data());
         //TODO: Render content here => after data finishes loading
-      });
 
-    this.activeCard();
+        this.activeCard();
+      });
   }
 
   activeCard() {
@@ -100,6 +114,12 @@ export class CheckoutComponent implements OnInit {
     //TODO: spam button to test for duplicate charges and idempotency key works
     console.log(checkoutForm.value);
     console.log(this.idempotencyKey);
+  }
+
+  ngOnDestroy() {
+    if (this.routeSub) {
+      this.routeSub.unsubscribe();
+    }
   }
 }
 
