@@ -21,6 +21,7 @@ import { CheckoutComponent } from './checkout/checkout.component';
 import { SecurityComponent } from './dashboard/settings/security/security.component';
 import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.component';
 import { PageNotFoundComponent } from './shared/page-not-found/page-not-found.component';
+import { CheckoutSuccessComponent } from './checkout/checkout-success/checkout-success.component';
 
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['login']); //if no logged in, restrict access
 const redirectLoggedInToPayments = () => redirectLoggedInTo(['payments']); //if logged in, block auth components
@@ -100,6 +101,7 @@ const routes: Routes = [
 
   //checkout - for customers, no auth required
   { path: 'pay/:id', component: CheckoutComponent },
+  { path: 'pay/:id/success', component: CheckoutSuccessComponent },
 
   //404 - Page not found
   { path: '404', component: PageNotFoundComponent },

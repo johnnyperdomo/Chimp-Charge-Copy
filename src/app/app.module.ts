@@ -46,6 +46,7 @@ import { SecurityComponent } from './dashboard/settings/security/security.compon
 import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.component';
 
 import { PageNotFoundComponent } from './shared/page-not-found/page-not-found.component';
+import { CheckoutSuccessComponent } from './checkout/checkout-success/checkout-success.component';
 firebase.initializeApp(environment.firebase);
 
 @NgModule({
@@ -73,6 +74,7 @@ firebase.initializeApp(environment.firebase);
     SecurityComponent,
     ForgotPasswordComponent,
     PageNotFoundComponent,
+    CheckoutSuccessComponent,
   ],
   imports: [
     BrowserModule,

@@ -9,7 +9,7 @@ import {
 import { NgForm } from '@angular/forms';
 import { v4 as uuidv4 } from 'uuid';
 import { environment } from 'src/environments/environment';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { map, switchMap, catchError } from 'rxjs/operators';
 import { from, Subscription, empty } from 'rxjs';
@@ -55,6 +55,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private db: AngularFirestore,
     private _cdr: ChangeDetectorRef
   ) {}
@@ -151,6 +152,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     if (checkoutForm.invalid || this.isCardPaymentComplete == false) {
       return;
     }
+
+    //TODO: handle success case
+    this.router.navigate(['success'], { relativeTo: this.route });
 
     console.log(checkoutForm.value);
     console.log(this.idempotencyKey);
