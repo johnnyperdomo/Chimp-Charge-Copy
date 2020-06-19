@@ -4,6 +4,7 @@ import {
   ElementRef,
   ViewChild,
   OnDestroy,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { v4 as uuidv4 } from 'uuid';
@@ -11,7 +12,7 @@ import { environment } from 'src/environments/environment';
 import { ActivatedRoute } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { map, switchMap, catchError } from 'rxjs/operators';
-import { from, Subscription } from 'rxjs';
+import { from, Subscription, empty } from 'rxjs';
 import * as MoneyFormatter from 'src/app/accounting';
 
 declare var Stripe; // : stripe.StripeStatic;
@@ -24,13 +25,23 @@ declare var Stripe; // : stripe.StripeStatic;
   styleUrls: ['./checkout.component.scss'],
 })
 export class CheckoutComponent implements OnInit, OnDestroy {
+  @ViewChild('checkoutForm', { static: true }) checkoutForm: NgForm;
   @ViewChild('cardElement', { static: true }) cardElement: ElementRef;
+
+  isPaymentResponseLoading: boolean = false;
+  paymentResponseError: string;
+
+  isCheckoutFormLoading: boolean = true;
+  checkoutFormRenderingError: string;
 
   idempotencyKey = uuidv4(); //used to prevent duplicate charges;
 
   stripe; // : stripe.Stripe;
   card;
   cardErrors;
+
+  isCardElementReady: boolean = false; //card is initialized and ready to be used
+  isCardPaymentComplete: boolean = false; //successful card input
 
   businessName: string;
   linkName: string;
@@ -40,20 +51,25 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   checkoutBtnText: string;
 
   routeSub: Subscription;
+  changeDetectionSub: Subscription;
 
-  constructor(private route: ActivatedRoute, private db: AngularFirestore) {}
+  constructor(
+    private route: ActivatedRoute,
+    private db: AngularFirestore,
+    private _cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
-    //TODO: add loading page before rendering checkout
-    //TODO: catchError, show 404 page if no data find with id
+    this.changeDetectionSub = this.checkoutForm.valueChanges.subscribe(() => {
+      this._cdr.detectChanges();
+    });
+
     this.routeSub = this.route.params
       .pipe(
         map((params) => {
           return params['id'];
         }),
         switchMap((id) => {
-          console.log('id is => ' + id);
-
           return from(this.db.collection('payment-links').doc(id).ref.get());
         }),
         switchMap((data) => {
@@ -86,40 +102,67 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           );
         })
       )
+      .pipe(
+        catchError((err) => {
+          this.checkoutFormRenderingError = err;
+          this.isCheckoutFormLoading = false;
+          this.generateNewIdempotenceKey();
+
+          return empty();
+        })
+      )
       .subscribe((merchantData) => {
         const merchant = merchantData.data();
         this.businessName = merchant.businessName;
-        console.log(merchantData.data());
-        //TODO: Render content here => after data finishes loading
 
-        this.activeCard();
+        this.initStripeElements();
       });
   }
 
-  activeCard() {
+  initStripeElements() {
     this.stripe = Stripe(environment.stripePublishableKey);
     const elements = this.stripe.elements();
 
     this.card = elements.create('card');
     this.card.mount(this.cardElement.nativeElement);
 
-    this.card.addEventListener('change', ({ error }) => {
+    this.card.addEventListener('change', (event) => {
+      const error = event.error;
       this.cardErrors = error && error.message;
+
+      this.isCardPaymentComplete = event.complete ? true : false;
     });
+
+    this.card.addEventListener('ready', () => {
+      //present checkoutForm to user when card is active
+      this.isCheckoutFormLoading = false;
+      this.checkoutFormRenderingError = null;
+    });
+  }
+
+  generateNewIdempotenceKey() {
+    //on error; they are passed to stripe but transaction. not completed
+    this.idempotencyKey = uuidv4();
   }
 
   onSubmit(checkoutForm: NgForm) {
     //TODO: spam button to test for duplicate charges and idempotency key works
+
+    if (checkoutForm.invalid || this.isCardPaymentComplete == false) {
+      return;
+    }
+
     console.log(checkoutForm.value);
     console.log(this.idempotencyKey);
   }
 
   ngOnDestroy() {
+    if (this.changeDetectionSub) {
+      this.changeDetectionSub.unsubscribe();
+    }
+
     if (this.routeSub) {
       this.routeSub.unsubscribe();
     }
   }
 }
-
-//TODO: unsubscribe from route sub
-//TODO: generate new idempotence key on error

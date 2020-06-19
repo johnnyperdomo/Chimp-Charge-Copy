@@ -76,7 +76,7 @@ firebase.initializeApp(environment.firebase);
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule,
+
     ClipboardModule,
     NgbModule,
     FormsModule,
@@ -89,6 +89,7 @@ firebase.initializeApp(environment.firebase);
     StoreDevtoolsModule.instrument({ logOnly: environment.production }),
     StoreRouterConnectingModule.forRoot(),
     EffectsModule.forRoot([AuthEffects, MerchantEffects]),
+    AppRoutingModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

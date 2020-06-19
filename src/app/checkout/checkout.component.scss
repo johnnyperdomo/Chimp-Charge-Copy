@@ -6,6 +6,11 @@
   text-transform: capitalize;
 }
 
-.first-letter-capitalize::first-letter {
+.first-word-capitalize::first-letter {
   text-transform: capitalize;
+}
+
+.big-spinner {
+  width: 3rem;
+  height: 3rem;
 }
