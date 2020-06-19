@@ -69,8 +69,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           this.linkName = linkData.product.name;
           this.linkDescription = linkData.product.description;
 
-          console.log(billingType);
-
           if (billingType === 'recurring') {
             const recurring = linkData.price.recurring;
             const recurringInterval: string = recurring.interval;

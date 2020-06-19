@@ -99,11 +99,11 @@ const routes: Routes = [
   },
 
   //checkout - for customers, no auth required
-  //TODO: if routed to this component, don't show dashboard header
   { path: 'pay/:id', component: CheckoutComponent },
 
   //404 - Page not found
-  { path: '**', component: PageNotFoundComponent },
+  { path: '404', component: PageNotFoundComponent },
+  { path: '**', redirectTo: '/404' },
 ];
 
 @NgModule({
