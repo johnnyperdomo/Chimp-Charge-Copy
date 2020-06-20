@@ -75,7 +75,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         }),
         switchMap((data) => {
           const linkData = data.data();
-          const merchantUID = linkData.merchantUID;
+          const merchantUID = linkData.merchantInfo.merchantUID;
 
           const formattedPrice = MoneyFormatter.convertMinorUnitToStandard(
             linkData.price.unit_amount

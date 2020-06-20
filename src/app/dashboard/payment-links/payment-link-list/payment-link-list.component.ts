@@ -60,8 +60,16 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
               'payment-links',
               (ref) =>
                 ref
-                  .where('merchantUID', '==', retrievedMerchant.uid)
-                  .where('connectID', '==', retrievedMerchant.stripeConnectID)
+                  .where(
+                    'merchantInfo.merchantUID',
+                    '==',
+                    retrievedMerchant.uid
+                  )
+                  .where(
+                    'merchantInfo.connectID',
+                    '==',
+                    retrievedMerchant.stripeConnectID
+                  )
                   .orderBy('product.created', 'desc') //sort: newest to last
             )
             .valueChanges({ idField: 'id' });
@@ -71,7 +79,7 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
         this.paymentLinks = data.map((item) => {
           return new PaymentLink(
             item.id,
-            item.merchantUID,
+            item.merchantInfo,
             item.product,
             item.price,
             item.lastUpdated

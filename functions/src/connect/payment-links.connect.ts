@@ -90,8 +90,10 @@ export const onCreatePaymentLink = functions.https.onCall(
       const newDoc = await db.collection('payment-links').add({
         price: price,
         product: product,
-        merchantUID: merchantUID,
-        connectID: stripeConnectID,
+        merchantInfo: {
+          merchantUID: merchantUID,
+          connectID: stripeConnectID,
+        },
         lastUpdated: admin.firestore.Timestamp.now(),
         eventID: productIdempotencyKey, //check if this event has already been processed
       });
@@ -240,7 +242,7 @@ async function createProduct(
       {
         name: name,
         description: description,
-        metadata: { firebase_merchant_uid: merchantUID },
+        metadata: { chimp_charge_firebase_merchant_uid: merchantUID },
       },
       { idempotencyKey: idempotencyKey, stripeAccount: connectID }
     );
@@ -316,7 +318,7 @@ async function createPrice(
           recurring: {
             interval: getStripeIntervalFromString(recurringInterval),
           },
-          metadata: { firebase_merchant_uid: merchantUID },
+          metadata: { chimp_charge_firebase_merchant_uid: merchantUID },
         },
         { idempotencyKey: idempotencyKey, stripeAccount: connectID }
       );
@@ -327,7 +329,7 @@ async function createPrice(
           unit_amount: amount,
           currency: 'usd', //FUTURE-UPDATE: add dynamic currencies?
           product: productID,
-          metadata: { firebase_merchant_uid: merchantUID },
+          metadata: { chimp_charge_firebase_merchant_uid: merchantUID },
         },
         { idempotencyKey: idempotencyKey, stripeAccount: connectID }
       );

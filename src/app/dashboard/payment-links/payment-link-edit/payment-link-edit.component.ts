@@ -14,6 +14,7 @@ import * as accounting from 'src/app/accounting';
 //FUTURE-UPDATE: add success page url
 
 // FUTURE-UPDATE: add loading spinner before setting up form if getting data from firebase on editMode, for good ux
+//FUTURE-UPDATE: do a check to see if this payment link belongs to this user, if not, don't allow to view details (security rules allow non-users to 'read' payment links but this should only be used for checkout customers.)
 
 @Component({
   selector: 'app-payment-link-edit',
