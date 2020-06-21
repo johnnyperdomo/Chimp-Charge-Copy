@@ -106,7 +106,10 @@ export class HelperService {
     };
 
     try {
-      const deleteLink = await this.chimpApi.post('/onDeletePaymentLink', body);
+      const deleteLink = await this.chimpApi.patch(
+        '/onDeletePaymentLink',
+        body
+      );
       return deleteLink;
     } catch (err) {
       throw Error(err.error.message);

@@ -105,7 +105,7 @@ app.patch(
   }
 );
 
-app.post(
+app.patch(
   '/onDeletePaymentLink',
   async (req: express.Request, res: express.Response) => {
     if (!req.headers.authorization) {

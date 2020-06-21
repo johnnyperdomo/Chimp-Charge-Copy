@@ -11,7 +11,7 @@ export class ChimpApiService {
 
   constructor(private http: HttpClient, private auth: AngularFireAuth) {}
 
-  //post
+  //post: creating a new resource
   async post(pathUrl: string, httpBody: any) {
     try {
       const headers = await this.getAuthHeaders();
@@ -28,7 +28,7 @@ export class ChimpApiService {
     }
   }
 
-  //patch
+  //patch, delete: updating an existing resource
   async patch(pathUrl: string, httpBody: any) {
     try {
       const headers = await this.getAuthHeaders();
