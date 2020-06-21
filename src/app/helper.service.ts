@@ -1,28 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
-import { AngularFireFunctions } from '@angular/fire/functions';
 import { User } from './auth/user.model';
 import { MerchantService } from './merchants/merchants.service';
-import {
-  HttpClient,
-  HttpHeaders,
-  HttpErrorResponse,
-} from '@angular/common/http';
-import { environment } from 'src/environments/environment';
-import { AngularFireAuth } from '@angular/fire/auth';
+import { ChimpApiService } from './chimp-api.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class HelperService {
   constructor(
-    private fireFunctions: AngularFireFunctions,
     private merchantService: MerchantService,
-    private http: HttpClient,
-    private auth: AngularFireAuth
+    private chimpApi: ChimpApiService
   ) {}
-
-  private chimpApiUrl = environment.chimpApiURL;
 
   async handleStripeOAuthConnection(query: Params, user: User) {
     //TODO: If user gets back response from helper function, clear url parameters
@@ -50,18 +39,13 @@ export class HelperService {
       };
 
       try {
-        const authHeader = await this.returnAuthHeader();
-
-        const responseToken: any = await this.http
-          .post(this.chimpApiUrl + '/connectStandardIntegration', body, {
-            headers: authHeader,
-          })
-          .toPromise();
-
-        const stripeConnectID = responseToken.stripe_user_id;
+        const stripeOAuthResponse: any = await this.chimpApi.post(
+          '/connectStandardIntegration',
+          body
+        );
+        const stripeConnectID = stripeOAuthResponse.stripe_user_id;
 
         this.merchantService.getMerchantInfo(user.id);
-
         return stripeConnectID;
       } catch (err) {
         throw Error(err.error.message);
@@ -89,14 +73,7 @@ export class HelperService {
     };
 
     try {
-      const authHeader = await this.returnAuthHeader();
-
-      const createLink = await this.http
-        .post(this.chimpApiUrl + '/onCreatePaymentLink', body, {
-          headers: authHeader,
-        })
-        .toPromise();
-
+      const createLink = await this.chimpApi.post('/onCreatePaymentLink', body);
       return createLink;
     } catch (err) {
       throw Error(err.error.message);
@@ -115,14 +92,7 @@ export class HelperService {
     };
 
     try {
-      const authHeader = await this.returnAuthHeader();
-
-      const editLink = await this.http
-        .post(this.chimpApiUrl + '/onEditPaymentLink', body, {
-          headers: authHeader,
-        })
-        .toPromise();
-
+      const editLink = await this.chimpApi.post('/onEditPaymentLink', body);
       return editLink;
     } catch (err) {
       throw Error(err.error.message);
@@ -136,36 +106,10 @@ export class HelperService {
     };
 
     try {
-      const authHeader = await this.returnAuthHeader();
-
-      const deleteLink = await this.http
-        .post(this.chimpApiUrl + '/onDeletePaymentLink', body, {
-          headers: authHeader,
-        })
-        .toPromise();
-
+      const deleteLink = await this.chimpApi.post('/onDeletePaymentLink', body);
       return deleteLink;
     } catch (err) {
       throw Error(err.error.message);
-    }
-  }
-
-  //Helpers ==============================>
-  private async returnAuthHeader() {
-    //get user tokenId and pass into authorization header to validate on server
-
-    try {
-      const tokenId = (await (await this.auth.currentUser).getIdTokenResult())
-        .token;
-
-      const headers = new HttpHeaders({
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${tokenId}`,
-      });
-
-      return headers;
-    } catch (err) {
-      throw Error(err);
     }
   }
 }

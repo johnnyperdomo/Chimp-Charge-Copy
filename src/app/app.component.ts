@@ -63,7 +63,7 @@ export class AppComponent implements OnInit, OnDestroy {
       .pipe(map((authState) => authState.user))
       .subscribe((user) => {
         this.currentUser.next(user);
-        this.isLoggedIn = !user ? false : true; //TODO: this isn't being called on new sign up
+        this.isLoggedIn = !user ? false : true; //TODO: this isn't being called on new sign up, sometimes it does get called, could be that one function is not waiting for the other, figure this out.
       });
 
     this.merchantSub = this.store
@@ -149,4 +149,4 @@ export class AppComponent implements OnInit, OnDestroy {
 
 //FUTURE-UPDATE: get all ngoninit observables and add them in a separate function to make code cleaner
 
-//FUTURE-UPDATE: listen for angFire auth state changes, if auth state logs out, call logout ngrx action. right now, if auth state changes, logout may not be called sometimes. (to replicate )
+//FUTURE-UPDATE: listen for angFire auth state changes, if auth state logs out, call logout ngrx action. right now, if auth state changes, logout may not be called sometimes. (to replicate: when logged into app on computer, delet user on firebase console => auth state changes, but client side logout is not detected )
