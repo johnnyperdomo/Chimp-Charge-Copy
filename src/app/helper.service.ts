@@ -45,14 +45,18 @@ export class HelperService {
     }
 
     if (scope && code) {
-      const stripeOAuthFunction = this.fireFunctions.httpsCallable(
-        'connectStandardIntegration'
-      );
+      const body = {
+        authorization_code: code,
+      };
 
       try {
-        const responseToken = await stripeOAuthFunction({
-          authorization_code: code,
-        }).toPromise();
+        const authHeader = await this.returnAuthHeader();
+
+        const responseToken: any = await this.http
+          .post(this.chimpApiUrl + '/connectStandardIntegration', body, {
+            headers: authHeader,
+          })
+          .toPromise();
 
         const stripeConnectID = responseToken.stripe_user_id;
 
@@ -60,8 +64,7 @@ export class HelperService {
 
         return stripeConnectID;
       } catch (err) {
-        console.log('error message is: ' + err);
-        throw Error(err);
+        throw Error(err.error.message);
       }
     }
     return null;

@@ -2,6 +2,7 @@ import * as functions from 'firebase-functions';
 import * as express from 'express';
 import * as cors from 'cors';
 import * as paymentLinks from './payment-links.connect';
+import * as connectAuth from './auth.connect';
 import * as admin from 'firebase-admin';
 
 const app = express();
@@ -32,6 +33,30 @@ const authenticate = async (tokenId: string) => {
 // );
 
 //app.get(/some-url)
+
+//Stripe Authentication ==============================>
+app.post(
+  '/connectStandardIntegration',
+  async (req: express.Request, res: express.Response) => {
+    if (!req.headers.authorization) {
+      res.status(403).json({ error: 'No credentials sent!' });
+    }
+
+    const tokenId = req.headers.authorization!.split('Bearer ')[1];
+
+    try {
+      const authenticated = await authenticate(tokenId);
+
+      const response = await connectAuth.connectStandardIntegration(
+        req.body,
+        authenticated.uid
+      );
+      res.send(response);
+    } catch (err) {
+      res.status(400).send(err);
+    }
+  }
+);
 
 //Payment Links ==============================>
 app.post(

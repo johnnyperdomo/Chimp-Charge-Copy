@@ -148,3 +148,5 @@ export class AppComponent implements OnInit, OnDestroy {
 //FUTURE-UPDATE: create reducers for all components, for better, single one source of truth
 
 //FUTURE-UPDATE: get all ngoninit observables and add them in a separate function to make code cleaner
+
+//FUTURE-UPDATE: listen for angFire auth state changes, if auth state logs out, call logout ngrx action. right now, if auth state changes, logout may not be called sometimes. (to replicate )
