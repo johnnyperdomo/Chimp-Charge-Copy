@@ -82,7 +82,7 @@ app.post(
   }
 );
 
-app.post(
+app.patch(
   '/onEditPaymentLink',
   async (req: express.Request, res: express.Response) => {
     if (!req.headers.authorization) {

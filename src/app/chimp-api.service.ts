@@ -11,7 +11,41 @@ export class ChimpApiService {
 
   constructor(private http: HttpClient, private auth: AngularFireAuth) {}
 
+  //post
   async post(pathUrl: string, httpBody: any) {
+    try {
+      const headers = await this.getAuthHeaders();
+
+      const serverData = await this.http
+        .post(this.chimpApiUrl + pathUrl, httpBody, {
+          headers: headers,
+        })
+        .toPromise();
+
+      return serverData;
+    } catch (err) {
+      throw Error(err);
+    }
+  }
+
+  //patch
+  async patch(pathUrl: string, httpBody: any) {
+    try {
+      const headers = await this.getAuthHeaders();
+
+      const serverData = await this.http
+        .patch(this.chimpApiUrl + pathUrl, httpBody, {
+          headers: headers,
+        })
+        .toPromise();
+
+      return serverData;
+    } catch (err) {
+      throw Error(err);
+    }
+  }
+
+  private async getAuthHeaders() {
     try {
       const tokenId = (await (await this.auth.currentUser).getIdTokenResult())
         .token;
@@ -21,13 +55,7 @@ export class ChimpApiService {
         Authorization: `Bearer ${tokenId}`,
       });
 
-      const serverData = await this.http
-        .post(this.chimpApiUrl + pathUrl, httpBody, {
-          headers: headers,
-        })
-        .toPromise();
-
-      return serverData;
+      return headers;
     } catch (err) {
       throw Error(err);
     }

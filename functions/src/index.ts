@@ -3,7 +3,6 @@ import * as admin from 'firebase-admin';
 admin.initializeApp();
 
 export { chimpApi } from './connect/api.connect';
-export { connectStandardIntegration } from './connect/auth.connect';
 
 //TODO: sendgrid send email on stripe webhooks
 //TODO: export .connect functions

@@ -92,7 +92,7 @@ export class HelperService {
     };
 
     try {
-      const editLink = await this.chimpApi.post('/onEditPaymentLink', body);
+      const editLink = await this.chimpApi.patch('/onEditPaymentLink', body);
       return editLink;
     } catch (err) {
       throw Error(err.error.message);
