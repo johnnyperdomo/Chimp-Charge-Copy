@@ -28,6 +28,8 @@ import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireFunctionsModule } from '@angular/fire/functions';
+import { HttpClientModule } from '@angular/common/http';
+
 import { environment } from '../environments/environment';
 
 import { StoreModule } from '@ngrx/store';
@@ -47,6 +49,7 @@ import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.
 
 import { PageNotFoundComponent } from './shared/page-not-found/page-not-found.component';
 import { CheckoutSuccessComponent } from './checkout/checkout-success/checkout-success.component';
+
 firebase.initializeApp(environment.firebase);
 
 @NgModule({
@@ -78,7 +81,7 @@ firebase.initializeApp(environment.firebase);
   ],
   imports: [
     BrowserModule,
-
+    HttpClientModule,
     ClipboardModule,
     NgbModule,
     FormsModule,

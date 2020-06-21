@@ -3,6 +3,13 @@ import { Params } from '@angular/router';
 import { AngularFireFunctions } from '@angular/fire/functions';
 import { User } from './auth/user.model';
 import { MerchantService } from './merchants/merchants.service';
+import {
+  HttpClient,
+  HttpHeaders,
+  HttpErrorResponse,
+} from '@angular/common/http';
+import { environment } from 'src/environments/environment';
+import { AngularFireAuth } from '@angular/fire/auth';
 
 @Injectable({
   providedIn: 'root',
@@ -10,8 +17,12 @@ import { MerchantService } from './merchants/merchants.service';
 export class HelperService {
   constructor(
     private fireFunctions: AngularFireFunctions,
-    private merchantService: MerchantService
+    private merchantService: MerchantService,
+    private http: HttpClient,
+    private auth: AngularFireAuth
   ) {}
+
+  private chimpApiUrl = environment.chimpApiURL;
 
   async handleStripeOAuthConnection(query: Params, user: User) {
     //TODO: If user gets back response from helper function, clear url parameters
@@ -56,6 +67,7 @@ export class HelperService {
     return null;
   }
 
+  //Payment Links ==============================>
   async createPaymentLink(
     productIdempotencyKey: string,
     priceIdempotencyKey: string,
@@ -64,65 +76,91 @@ export class HelperService {
     description: string,
     interval: string
   ) {
-    const createLinkFunction = this.fireFunctions.httpsCallable(
-      'paymentLinks-onCreatePaymentLink'
-    );
+    const body = {
+      productIdempotencyKey: productIdempotencyKey,
+      priceIdempotencyKey: priceIdempotencyKey,
+      amount: amount,
+      productName: linkName,
+      productDesc: description,
+      interval: interval,
+    };
 
     try {
-      const createLink = await createLinkFunction({
-        productIdempotencyKey: productIdempotencyKey,
-        priceIdempotencyKey: priceIdempotencyKey,
-        amount: amount,
-        productName: linkName,
-        productDesc: description,
-        interval: interval,
-      }).toPromise();
+      const authHeader = await this.returnAuthHeader();
 
-      console.log(createLink);
+      const createLink = await this.http
+        .post(this.chimpApiUrl + '/onCreatePaymentLink', body, {
+          headers: authHeader,
+        })
+        .toPromise();
 
       return createLink;
     } catch (err) {
-      console.log('error message is: ' + err);
-      throw Error(err);
+      throw Error(err.error.message);
     }
   }
 
-  //TODO:
   async editPaymentLink(
-    paymentlinkID: string,
+    paymentLinkID: string,
     linkName: string,
     description: string
   ) {
-    //can only edit amount on 'one-time payments
-    const editLinkFunction = this.fireFunctions.httpsCallable(
-      'paymentLinks-onEditPaymentLink'
-    );
+    const body = {
+      paymentLinkID: paymentLinkID,
+      productName: linkName,
+      productDesc: description,
+    };
 
     try {
-      const editLink = await editLinkFunction({
-        paymentlinkID: paymentlinkID,
-        productName: linkName,
-        productDesc: description,
-      }).toPromise();
+      const authHeader = await this.returnAuthHeader();
+
+      const editLink = await this.http
+        .post(this.chimpApiUrl + '/onEditPaymentLink', body, {
+          headers: authHeader,
+        })
+        .toPromise();
 
       return editLink;
     } catch (err) {
-      throw Error(err);
+      throw Error(err.error.message);
     }
   }
 
   async deletePaymentLink(priceID: string, productID: string) {
-    const deleteLinkFunction = this.fireFunctions.httpsCallable(
-      'paymentLinks-onDeletePaymentLink'
-    );
+    const body = {
+      priceID: priceID,
+      productID: productID,
+    };
 
     try {
-      const deleteLink = await deleteLinkFunction({
-        priceID: priceID,
-        productID: productID,
-      }).toPromise();
+      const authHeader = await this.returnAuthHeader();
+
+      const deleteLink = await this.http
+        .post(this.chimpApiUrl + '/onDeletePaymentLink', body, {
+          headers: authHeader,
+        })
+        .toPromise();
 
       return deleteLink;
+    } catch (err) {
+      throw Error(err.error.message);
+    }
+  }
+
+  //Helpers ==============================>
+  private async returnAuthHeader() {
+    //get user tokenId and pass into authorization header to validate on server
+
+    try {
+      const tokenId = (await (await this.auth.currentUser).getIdTokenResult())
+        .token;
+
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${tokenId}`,
+      });
+
+      return headers;
     } catch (err) {
       throw Error(err);
     }

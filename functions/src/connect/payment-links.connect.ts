@@ -10,222 +10,198 @@ const db = admin.firestore();
 
 //cloud functions exports ====================================>
 
-export const onCreatePaymentLink = functions.https.onCall(
-  async (data, context) => {
-    if (!context.auth) {
+export async function onCreatePaymentLink(data: any, userID: string) {
+  const productIdempotencyKey: string = data.productIdempotencyKey; //used to prevent duplicates
+  const priceIdempotencyKey: string = data.priceIdempotencyKey;
+  const productName: string = data.productName;
+  let productDesc: string | undefined = data.productDesc; //optional
+  let interval: string | undefined = data.interval; //optional
+  const amount: number = data.amount;
+
+  if (productDesc === '' || null) {
+    productDesc = undefined; //need to pass undefined to stripe
+  }
+
+  if (interval === '' || null) {
+    interval = undefined; //need to pass undefined to stripe
+  }
+
+  try {
+    const userId = userID;
+    const userRef = db.doc(`merchants/${userId}`);
+    const userSnap = await userRef.get();
+    const userData = userSnap.data()!;
+
+    const eventIDQuery = await db
+      .collection('payment-links')
+      .where('eventID', '==', productIdempotencyKey)
+      .get();
+
+    if (!(eventIDQuery.docs.length === 0)) {
+      //if eventID already exists, function has already been processed
       throw new functions.https.HttpsError(
-        'failed-precondition',
-        'The function must be called ' + 'while authenticated.'
+        'already-exists',
+        'This payment link has already been created'
       );
     }
 
-    const productIdempotencyKey: string = data.productIdempotencyKey; //used to prevent duplicates
-    const priceIdempotencyKey: string = data.priceIdempotencyKey;
-    const productName: string = data.productName;
-    let productDesc: string | undefined = data.productDesc; //optional
-    let interval: string | undefined = data.interval; //optional
-    const amount: number = data.amount;
+    const merchantUID = userData.uid;
+    const stripeConnectID = userData.stripeConnectID;
 
-    if (productDesc === '' || null) {
-      productDesc = undefined; //need to pass undefined to stripe
+    if (!merchantUID) {
+      throw new functions.https.HttpsError(
+        'not-found',
+        'Merchant ID not found'
+      );
     }
 
-    if (interval === '' || null) {
-      interval = undefined; //need to pass undefined to stripe
+    if (!stripeConnectID) {
+      throw new functions.https.HttpsError(
+        'not-found',
+        'Stripe Connect ID not found'
+      );
     }
 
-    try {
-      const userId = context.auth?.uid;
-      const userRef = db.doc(`merchants/${userId}`);
-      const userSnap = await userRef.get();
-      const userData = userSnap.data()!;
+    const product = await createProduct(
+      merchantUID,
+      stripeConnectID,
+      productIdempotencyKey,
+      productName,
+      productDesc
+    );
 
-      const eventIDQuery = await db
+    const price = await createPrice(
+      merchantUID,
+      stripeConnectID,
+      priceIdempotencyKey,
+      amount,
+      product.id,
+      interval
+    );
+
+    const newDoc = await db.collection('payment-links').add({
+      price: price,
+      product: product,
+      merchantInfo: {
+        merchantUID: merchantUID,
+        connectID: stripeConnectID,
+      },
+      lastUpdated: admin.firestore.Timestamp.now(),
+      eventID: productIdempotencyKey, //check if this event has already been processed
+    });
+
+    return newDoc;
+  } catch (err) {
+    throw new functions.https.HttpsError('unknown', err);
+  }
+}
+
+/////////////
+export async function onEditPaymentLink(data: any, userID: string) {
+  const paymentLinkID: string = data.paymentLinkID;
+  const productName: string = data.productName;
+  let productDesc: string = data.productDesc; //optional
+
+  if (productDesc === '' || null) {
+    productDesc = ''; //passing in 'undefined' to edit doesn't cause change
+  }
+
+  try {
+    const userId = userID;
+    const userRef = db.doc(`merchants/${userId}`);
+    const userSnap = await userRef.get();
+    const userData = userSnap.data()!;
+
+    const merchantUID = userData.uid;
+    const stripeConnectID = userData.stripeConnectID;
+
+    if (!merchantUID) {
+      throw new functions.https.HttpsError(
+        'not-found',
+        'Merchant ID not found'
+      );
+    }
+
+    if (!stripeConnectID) {
+      throw new functions.https.HttpsError(
+        'not-found',
+        'Stripe Connect ID not found'
+      );
+    }
+
+    const paymentLinkRef = db.doc(`payment-links/${paymentLinkID}`);
+    const paymentLinkData = (await paymentLinkRef.get()).data()!;
+
+    const productID = paymentLinkData.product.id;
+
+    const updateProduct = await editProduct(
+      productID,
+      stripeConnectID,
+      productName,
+      productDesc
+    );
+
+    const updatePaymentLinkDoc = paymentLinkRef.update({
+      product: updateProduct,
+      lastUpdated: admin.firestore.Timestamp.now(),
+    });
+
+    return updatePaymentLinkDoc;
+  } catch (err) {
+    console.error(err); //TODO: add console.log errors to all throw error methods to log it in the console
+    throw new functions.https.HttpsError('unknown', err);
+  }
+}
+
+export async function onDeletePaymentLink(data: any, userID: string) {
+  const priceID: string = data.priceID;
+  const productID: string = data.productID;
+
+  try {
+    const userId = userID;
+    const userRef = db.doc(`merchants/${userId}`);
+    const userSnap = await userRef.get();
+    const userData = userSnap.data()!;
+
+    const stripeConnectID = userData.stripeConnectID;
+
+    if (!stripeConnectID) {
+      throw new functions.https.HttpsError(
+        'not-found',
+        'Stripe Connect ID not found'
+      );
+    }
+
+    const prodResponse = await archiveProduct(
+      priceID,
+      productID,
+      stripeConnectID
+    );
+
+    if (prodResponse.active === false) {
+      const query = await db
         .collection('payment-links')
-        .where('eventID', '==', productIdempotencyKey)
+        .where('product.id', '==', prodResponse.id)
         .get();
+      const docID = query.docs[0].id;
 
-      if (!(eventIDQuery.docs.length === 0)) {
-        //if eventID already exists, function has already been processed
-        throw new functions.https.HttpsError(
-          'already-exists',
-          'This payment link has already been created'
-        );
-      }
+      const deleteDoc = await db
+        .collection('payment-links')
+        .doc(docID)
+        .delete();
 
-      const merchantUID = userData.uid;
-      const stripeConnectID = userData.stripeConnectID;
-
-      if (!merchantUID) {
-        throw new functions.https.HttpsError(
-          'not-found',
-          'Merchant ID not found'
-        );
-      }
-
-      if (!stripeConnectID) {
-        throw new functions.https.HttpsError(
-          'not-found',
-          'Stripe Connect ID not found'
-        );
-      }
-
-      const product = await createProduct(
-        merchantUID,
-        stripeConnectID,
-        productIdempotencyKey,
-        productName,
-        productDesc
-      );
-
-      const price = await createPrice(
-        merchantUID,
-        stripeConnectID,
-        priceIdempotencyKey,
-        amount,
-        product.id,
-        interval
-      );
-
-      const newDoc = await db.collection('payment-links').add({
-        price: price,
-        product: product,
-        merchantInfo: {
-          merchantUID: merchantUID,
-          connectID: stripeConnectID,
-        },
-        lastUpdated: admin.firestore.Timestamp.now(),
-        eventID: productIdempotencyKey, //check if this event has already been processed
-      });
-
-      return newDoc;
-    } catch (err) {
-      throw new functions.https.HttpsError('unknown', err);
-    }
-  }
-);
-
-export const onEditPaymentLink = functions.https.onCall(
-  async (data, context) => {
-    if (!context.auth) {
+      return deleteDoc;
+    } else {
       throw new functions.https.HttpsError(
         'failed-precondition',
-        'The function must be called ' + 'while authenticated.'
+        'Stripe.Product was not successfully archived, item is still active'
       );
     }
-
-    const paymentlinkID: string = data.paymentlinkID;
-    const productName: string = data.productName;
-    let productDesc: string = data.productDesc; //optional
-
-    if (productDesc === '' || null) {
-      productDesc = ''; //passing in 'undefined' to edit doesn't cause change
-    }
-
-    try {
-      const userId = context.auth?.uid;
-      const userRef = db.doc(`merchants/${userId}`);
-      const userSnap = await userRef.get();
-      const userData = userSnap.data()!;
-
-      const merchantUID = userData.uid;
-      const stripeConnectID = userData.stripeConnectID;
-
-      if (!merchantUID) {
-        throw new functions.https.HttpsError(
-          'not-found',
-          'Merchant ID not found'
-        );
-      }
-
-      if (!stripeConnectID) {
-        throw new functions.https.HttpsError(
-          'not-found',
-          'Stripe Connect ID not found'
-        );
-      }
-
-      const paymentLinkRef = db.doc(`payment-links/${paymentlinkID}`);
-      const paymentLinkData = (await paymentLinkRef.get()).data()!;
-
-      const productID = paymentLinkData.product.id;
-
-      const updateProduct = await editProduct(
-        productID,
-        stripeConnectID,
-        productName,
-        productDesc
-      );
-
-      const updatePaymentLinkDoc = paymentLinkRef.update({
-        product: updateProduct,
-        lastUpdated: admin.firestore.Timestamp.now(),
-      });
-
-      return updatePaymentLinkDoc;
-    } catch (err) {
-      throw new functions.https.HttpsError('unknown', err);
-    }
+  } catch (err) {
+    console.error(err);
+    throw new functions.https.HttpsError('unknown', err);
   }
-);
-
-export const onDeletePaymentLink = functions.https.onCall(
-  async (data, context) => {
-    if (!context.auth) {
-      throw new functions.https.HttpsError(
-        'failed-precondition',
-        'The function must be called ' + 'while authenticated.'
-      );
-    }
-
-    const priceID: string = data.priceID;
-    const productID: string = data.productID;
-
-    try {
-      const userId = context.auth?.uid;
-      const userRef = db.doc(`merchants/${userId}`);
-      const userSnap = await userRef.get();
-      const userData = userSnap.data()!;
-
-      const stripeConnectID = userData.stripeConnectID;
-
-      if (!stripeConnectID) {
-        throw new functions.https.HttpsError(
-          'not-found',
-          'Stripe Connect ID not found'
-        );
-      }
-
-      const prodResponse = await archiveProduct(
-        priceID,
-        productID,
-        stripeConnectID
-      );
-
-      if (prodResponse.active === false) {
-        const query = await db
-          .collection('payment-links')
-          .where('product.id', '==', prodResponse.id)
-          .get();
-        const docID = query.docs[0].id;
-
-        const deleteDoc = await db
-          .collection('payment-links')
-          .doc(docID)
-          .delete();
-
-        return deleteDoc;
-      } else {
-        throw new functions.https.HttpsError(
-          'failed-precondition',
-          'Stripe.Product was not successfully archived, item is still active'
-        );
-      }
-    } catch (err) {
-      throw new functions.https.HttpsError('unknown', err);
-    }
-  }
-);
+}
 
 //methods ===============================>
 

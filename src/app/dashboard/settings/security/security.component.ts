@@ -122,6 +122,8 @@ export class SecurityComponent implements OnInit, OnDestroy {
     this.isChangePasswordLoading = true;
     try {
       const currentUser = await this.auth.currentUser;
+      console.log('original', currentUser);
+
       await currentUser.reauthenticateWithCredential(credentials);
 
       await currentUser.updatePassword(newPassword);
@@ -135,6 +137,8 @@ export class SecurityComponent implements OnInit, OnDestroy {
           redirect: false,
         })
       );
+      console.log('original 2,', currentUser);
+      console.log('updated', updatedUser);
 
       //TODO: trigger success alert
       this.isChangePasswordLoading = false;

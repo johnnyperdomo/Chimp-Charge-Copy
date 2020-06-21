@@ -2,7 +2,7 @@ import * as admin from 'firebase-admin';
 
 admin.initializeApp();
 
-export * as connect from './connect/api.connect';
+export { chimpApi } from './connect/api.connect';
 export { connectStandardIntegration } from './connect/auth.connect';
 export * as paymentLinks from './connect/payment-links.connect';
 
