@@ -40,7 +40,7 @@ export class HelperService {
 
       try {
         const stripeOAuthResponse: any = await this.chimpApi.post(
-          '/connectStandardIntegration',
+          '/connect/connectStandardIntegration',
           body
         );
         const stripeConnectID = stripeOAuthResponse.stripe_user_id;
@@ -73,7 +73,10 @@ export class HelperService {
     };
 
     try {
-      const createLink = await this.chimpApi.post('/onCreatePaymentLink', body);
+      const createLink = await this.chimpApi.post(
+        '/connect/onCreatePaymentLink',
+        body
+      );
       return createLink;
     } catch (err) {
       throw Error(err.error.message);
@@ -92,7 +95,10 @@ export class HelperService {
     };
 
     try {
-      const editLink = await this.chimpApi.patch('/onEditPaymentLink', body);
+      const editLink = await this.chimpApi.patch(
+        '/connect/onEditPaymentLink',
+        body
+      );
       return editLink;
     } catch (err) {
       throw Error(err.error.message);
@@ -107,7 +113,7 @@ export class HelperService {
 
     try {
       const deleteLink = await this.chimpApi.patch(
-        '/onDeletePaymentLink',
+        '/connect/onDeletePaymentLink',
         body
       );
       return deleteLink;

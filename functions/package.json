@@ -8,6 +8,9 @@
     "start": "npm run shell",
     "deploy-functions": "firebase deploy --only functions",
     "functions-location": "firebase use",
+    "config-get-functions": "firebase functions:config:get",
+    "config-set-functions": "firebase functions:config:set",
+    "config-unset-functions": "firebase functions:config:unset",
     "logs": "firebase functions:log"
   },
   "engines": {

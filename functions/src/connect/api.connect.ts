@@ -4,6 +4,8 @@ import * as cors from 'cors';
 import * as paymentLinks from './payment-links.connect';
 import * as connectAuth from './auth.connect';
 import * as admin from 'firebase-admin';
+// import { stripeClientID } from '../config';
+// import * as qs from 'querystring';
 
 const app = express();
 
@@ -20,7 +22,7 @@ const authenticate = async (tokenId: string) => {
       console.error(err);
       throw new functions.https.HttpsError(
         'unauthenticated',
-        'The function must be called ' + 'while authenticated.'
+        'You must be logged in to make this request.'
       );
     });
 };
@@ -35,11 +37,44 @@ const authenticate = async (tokenId: string) => {
 //app.get(/some-url)
 
 //Stripe Authentication ==============================>
+
+//TODO: authenticate stripe connect with auth connection from server
+// app.get(
+//   '/redirectToStripeOAuth',
+//   async (req: express.Request, res: express.Response) => {
+//     // if (!req.headers.authorization) {
+//     //   res
+//     //     .status(403)
+//     //     .json({ error: 'You must be logged in to make this request.' });
+//     // }
+
+//     // const tokenId = req.headers.authorization!.split('Bearer ')[1];
+
+//     try {
+//       //  await authenticate(tokenId);
+
+//       const base = 'https://connect.stripe.com/oauth/authorize?';
+//       const queryParams = {
+//         client_id: stripeClientID,
+//         response_type: 'code',
+//         scope: 'read_write',
+//       };
+//       const endpoint = base + qs.stringify(queryParams);
+
+//       res.redirect(endpoint);
+//     } catch (err) {
+//       res.status(400).send(err);
+//     }
+//   }
+// );
+
 app.post(
-  '/connectStandardIntegration',
+  '/connect/connectStandardIntegration',
   async (req: express.Request, res: express.Response) => {
     if (!req.headers.authorization) {
-      res.status(403).json({ error: 'No credentials sent!' });
+      res
+        .status(403)
+        .json({ error: 'You must be logged in to make this request.' });
     }
 
     const tokenId = req.headers.authorization!.split('Bearer ')[1];
@@ -60,10 +95,12 @@ app.post(
 
 //Payment Links ==============================>
 app.post(
-  '/onCreatePaymentLink',
+  '/connect/onCreatePaymentLink',
   async (req: express.Request, res: express.Response) => {
     if (!req.headers.authorization) {
-      res.status(403).json({ error: 'No credentials sent!' });
+      res
+        .status(403)
+        .json({ error: 'You must be logged in to make this request.' });
     }
 
     const tokenId = req.headers.authorization!.split('Bearer ')[1];
@@ -83,10 +120,12 @@ app.post(
 );
 
 app.patch(
-  '/onEditPaymentLink',
+  '/connect/onEditPaymentLink',
   async (req: express.Request, res: express.Response) => {
     if (!req.headers.authorization) {
-      res.status(403).json({ error: 'No credentials sent!' });
+      res
+        .status(403)
+        .json({ error: 'You must be logged in to make this request.' });
     }
 
     const tokenId = req.headers.authorization!.split('Bearer ')[1];
@@ -106,10 +145,12 @@ app.patch(
 );
 
 app.patch(
-  '/onDeletePaymentLink',
+  '/connect/onDeletePaymentLink',
   async (req: express.Request, res: express.Response) => {
     if (!req.headers.authorization) {
-      res.status(403).json({ error: 'No credentials sent!' });
+      res
+        .status(403)
+        .json({ error: 'You must be logged in to make this request.' });
     }
 
     const tokenId = req.headers.authorization!.split('Bearer ')[1];
