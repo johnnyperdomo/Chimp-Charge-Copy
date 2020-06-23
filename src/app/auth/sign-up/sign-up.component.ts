@@ -4,12 +4,14 @@ import {
   OnDestroy,
   ViewChild,
   ChangeDetectorRef,
+  NgZone,
 } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import * as fromApp from 'src/app/shared/app-store/app.reducer';
 import * as AuthActions from '../store/auth.actions';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sign-up',
@@ -26,7 +28,9 @@ export class SignUpComponent implements OnInit, OnDestroy {
 
   constructor(
     private store: Store<fromApp.AppState>,
-    private _cdr: ChangeDetectorRef
+    private _cdr: ChangeDetectorRef,
+    private router: Router,
+    private zone: NgZone
   ) {}
 
   ngOnInit(): void {
@@ -47,7 +51,7 @@ export class SignUpComponent implements OnInit, OnDestroy {
     });
   }
 
-  //FUTURE-UPDATE: remove business name/company name from signup form, add optional in accounts page - less friction: when you add onboarding instructions
+  //FUTURE-UPDATE: remove business name/company name from signup form, add optional in accounts page - less friction(for new users): when you add onboarding instructions
   onSubmit(signupForm: NgForm) {
     if (!signupForm.valid) {
       return;
@@ -85,6 +89,12 @@ export class SignUpComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.store.dispatch(new AuthActions.ClearError());
     }, 5000); //5 seconds
+  }
+
+  goToLoginPage() {
+    this.zone.run(() => {
+      this.router.navigate(['/login']);
+    });
   }
 
   ngOnDestroy() {

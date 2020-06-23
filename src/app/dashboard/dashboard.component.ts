@@ -51,11 +51,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         //user is connecting to stripOAuth flow
         if (path.includes('/connect-redirect')) {
           this.isStripeOAuthConnecting = true;
-
-          console.log('connecting stripe....');
         } else {
           this.isStripeOAuthConnecting = false;
-          console.log('stripe connecting success!');
         }
       }
     });

@@ -4,12 +4,14 @@ import {
   OnDestroy,
   ViewChild,
   ChangeDetectorRef,
+  NgZone,
 } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
 import * as fromApp from 'src/app/shared/app-store/app.reducer';
 import * as AuthActions from '../store/auth.actions';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -26,7 +28,9 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   constructor(
     private store: Store<fromApp.AppState>,
-    private _cdr: ChangeDetectorRef
+    private _cdr: ChangeDetectorRef,
+    private router: Router,
+    private zone: NgZone
   ) {}
 
   ngOnInit(): void {
@@ -62,6 +66,12 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.store.dispatch(
       new AuthActions.LoginStart({ email: email, password: password })
     );
+  }
+
+  goToSignupPage() {
+    this.zone.run(() => {
+      this.router.navigate(['/signup']);
+    });
   }
 
   clearError() {

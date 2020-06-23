@@ -1,6 +1,7 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, NgZone } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { AngularFireAuth } from '@angular/fire/auth';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-forgot-password',
@@ -12,7 +13,11 @@ export class ForgotPasswordComponent implements OnInit {
 
   didSendResetInstructions: boolean = false;
 
-  constructor(private auth: AngularFireAuth) {}
+  constructor(
+    private auth: AngularFireAuth,
+    private router: Router,
+    private zone: NgZone
+  ) {}
 
   ngOnInit(): void {}
 
@@ -28,5 +33,17 @@ export class ForgotPasswordComponent implements OnInit {
     //don't care about promise result; present 'success' response
     this.didSendResetInstructions = true;
     forgotPasswordForm.resetForm();
+  }
+
+  goToSignupPage() {
+    this.zone.run(() => {
+      this.router.navigate(['/signup']);
+    });
+  }
+
+  goToLoginPage() {
+    this.zone.run(() => {
+      this.router.navigate(['/login']);
+    });
   }
 }
