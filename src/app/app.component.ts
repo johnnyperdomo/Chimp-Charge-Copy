@@ -1,118 +1,22 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription, Subject } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
-import * as fromApp from './store/app.reducer';
+import { Component, OnInit } from '@angular/core';
+import * as fromApp from './shared/app-store/app.reducer';
 import { Store } from '@ngrx/store';
 import * as AuthActions from './auth/store/auth.actions';
-import {
-  ActivatedRoute,
-  Params,
-  Router,
-  Event,
-  NavigationStart,
-} from '@angular/router';
-import { HelperService } from './shared/helper.service';
-import { environment } from 'src/environments/environment';
-import { User } from './auth/user.model';
-import { NgZone } from '@angular/core';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit, OnDestroy {
-  stripeConnectClientID = environment.stripeConnectClientID;
-
-  isLoggedIn: boolean = false;
-  currentUser = new Subject<User>();
-  isStripeConnectAuthorized: boolean;
-
-  userSub: Subscription;
-  merchantSub: Subscription;
-  currentUserSub: Subscription;
-
-  constructor(
-    private store: Store<fromApp.AppState>,
-    private route: ActivatedRoute,
-    private helperService: HelperService,
-    private zone: NgZone //listens to some event handlers in observable to update ui
-  ) {}
+export class AppComponent implements OnInit {
+  constructor(private store: Store<fromApp.AppState>) {}
 
   ngOnInit() {
     this.autoLoginUser();
-
-    this.userSub = this.store
-      .select('auth')
-      .pipe(map((authState) => authState.user))
-      .subscribe((user) => {
-        this.currentUser.next(user);
-        this.isLoggedIn = !user ? false : true; //TODO: this isn't being called on new sign up, sometimes it does get called, could be that one function is not waiting for the other, figure this out.
-      });
-
-    this.merchantSub = this.store
-      .select('merchant')
-      .pipe(map((merchantState) => merchantState.merchant))
-      .subscribe((merchant) => {
-        if (merchant) {
-          this.zone.run(() => {
-            this.isStripeConnectAuthorized = !merchant.stripeConnectID
-              ? false
-              : true;
-          });
-        }
-      });
-
-    this.currentUserSub = this.currentUser
-      .pipe(
-        mergeMap((retrievedUser) => {
-          return this.route.queryParams.pipe(
-            map((query) => {
-              this.handleStripePayload(query, retrievedUser);
-            })
-          );
-        })
-      )
-      .subscribe();
-  }
-
-  // TODO: we may not need this function, check back later: with try: catch
-  async handleStripePayload(query: Params, retrievedUser: User) {
-    if (!retrievedUser) {
-      return;
-    }
-
-    try {
-      const payload = await this.helperService.handleStripeOAuthConnection(
-        query,
-        retrievedUser
-      );
-
-      //TODO: trigger ui feedback for error or success
-      if (payload) {
-        console.log(' from the app component, the user id is :' + payload);
-      }
-    } catch (err) {
-      console.log(err);
-    }
   }
 
   async autoLoginUser() {
     this.store.dispatch(new AuthActions.AutoLogin());
-  }
-
-  ngOnDestroy() {
-    if (this.userSub) {
-      this.userSub.unsubscribe();
-    }
-
-    if (this.currentUserSub) {
-      this.currentUserSub.unsubscribe();
-    }
-
-    if (this.merchantSub) {
-      this.merchantSub.unsubscribe();
-    }
   }
 }
 

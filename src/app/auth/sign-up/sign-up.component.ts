@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Store } from '@ngrx/store';
-import * as fromApp from '../../store/app.reducer';
+import * as fromApp from 'src/app/shared/app-store/app.reducer';
 import * as AuthActions from '../store/auth.actions';
 import { Subscription } from 'rxjs';
 

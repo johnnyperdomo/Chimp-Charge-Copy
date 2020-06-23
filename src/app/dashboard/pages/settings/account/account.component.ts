@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import * as fromApp from '../../../store/app.reducer';
+import * as fromApp from 'src/app/shared/app-store/app.reducer';
 import { Store } from '@ngrx/store';
 import { map, filter } from 'rxjs/operators';
 import { MerchantService } from 'src/app/merchants/merchants.service';

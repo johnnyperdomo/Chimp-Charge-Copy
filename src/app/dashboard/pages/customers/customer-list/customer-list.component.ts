@@ -4,7 +4,7 @@ import { Subscription, BehaviorSubject } from 'rxjs';
 import { Merchant } from 'src/app/merchants/merchant.model';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Store } from '@ngrx/store';
-import * as fromApp from '../../../store/app.reducer';
+import * as fromApp from 'src/app/shared/app-store/app.reducer';
 import { map, filter, mergeMap } from 'rxjs/operators';
 
 @Component({

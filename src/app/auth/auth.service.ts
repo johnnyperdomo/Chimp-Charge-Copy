@@ -3,11 +3,10 @@ import { of } from 'rxjs';
 import { FirebaseError } from 'firebase/app';
 import * as AuthActions from './store/auth.actions';
 import { User } from './user.model';
-import * as fromApp from '../store/app.reducer';
+import * as fromApp from '../shared/app-store/app.reducer';
 import { Store } from '@ngrx/store';
 import { LocalStorage } from '@ngx-pwa/local-storage';
 import { first } from 'rxjs/operators';
-import { AngularFireAuth } from '@angular/fire/auth';
 
 @Injectable({
   providedIn: 'root',

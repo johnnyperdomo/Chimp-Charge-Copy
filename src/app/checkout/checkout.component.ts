@@ -13,7 +13,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { map, switchMap, catchError } from 'rxjs/operators';
 import { from, Subscription, empty } from 'rxjs';
-import * as MoneyFormatter from 'src/app/accounting';
+import * as MoneyFormatter from 'src/app/shared/accounting';
 
 declare var Stripe; // : stripe.StripeStatic;
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import * as fromApp from '../store/app.reducer';
+import * as fromApp from '../shared/app-store/app.reducer';
 import { Store } from '@ngrx/store';
 import * as MerchantActions from '../merchants/store/merchant.actions';
 import { Merchant } from './merchant.model';

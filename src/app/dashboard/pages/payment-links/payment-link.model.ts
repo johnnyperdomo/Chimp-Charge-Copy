@@ -1,5 +1,5 @@
 import { Stripe } from 'stripe';
-import * as MoneyFormatter from 'src/app/accounting';
+import * as MoneyFormatter from 'src/app/shared/accounting';
 import * as moment from 'moment';
 
 export class PaymentLink {

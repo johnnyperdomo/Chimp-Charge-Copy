@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Customer } from '../../customers/customer.model';
 import { Subscription, BehaviorSubject } from 'rxjs';
 import { Merchant } from 'src/app/merchants/merchant.model';
-import * as fromApp from '../../../store/app.reducer';
+import * as fromApp from '../../../../shared/app-store/app.reducer';
 import { Store } from '@ngrx/store';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { map, mergeMap, filter } from 'rxjs/operators';

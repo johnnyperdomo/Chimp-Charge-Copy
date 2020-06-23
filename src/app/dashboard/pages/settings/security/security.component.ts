@@ -7,13 +7,13 @@ import {
 } from '@angular/core';
 import { NgForm, FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { Store } from '@ngrx/store';
-import * as fromApp from '../../../store/app.reducer';
+import * as fromApp from 'src/app/shared/app-store/app.reducer';
 import { Subscription, merge } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { PasswordValidation } from './security.validator';
 import { AngularFireAuth } from '@angular/fire/auth';
 import * as firebase from 'firebase/app';
-import * as AuthActions from '../../../auth/store/auth.actions';
+import * as AuthActions from '../../../../auth/store/auth.actions';
 import { User } from 'src/app/auth/user.model';
 
 @Component({

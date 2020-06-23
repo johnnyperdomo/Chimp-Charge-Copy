@@ -3,7 +3,7 @@ import { PaymentLink } from '../payment-link.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { map, mergeMap, filter } from 'rxjs/operators';
-import * as fromApp from '../../../store/app.reducer';
+import * as fromApp from 'src/app/shared/app-store/app.reducer';
 import { Store } from '@ngrx/store';
 import { Subscription, BehaviorSubject } from 'rxjs';
 import { Merchant } from 'src/app/merchants/merchant.model';

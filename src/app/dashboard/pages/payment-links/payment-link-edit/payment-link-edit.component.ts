@@ -3,12 +3,12 @@ import { PaymentLinkTypeEnum } from '../payment-link-type.enum';
 import { v4 as uuidv4 } from 'uuid';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HelperService } from 'src/app/shared/helper.service';
-import * as MoneyFormatter from 'src/app/accounting';
+import * as MoneyFormatter from 'src/app/shared/accounting';
 import { Subscription } from 'rxjs';
 import { PriceValidation } from './payment-link-edit.validator';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/firestore';
-import * as accounting from 'src/app/accounting';
+import * as accounting from 'src/app/shared/accounting';
 
 //FUTURE-UPDATE: add can deactivate child option, to save the user from accidently losing data.
 //FUTURE-UPDATE: add success page url

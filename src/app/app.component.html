@@ -1,24 +1,4 @@
 <!-- TODO: Add Charge Chimp logo to top of auth pages -->
 
-<div
-  *ngIf="isStripeConnectAuthorized == false && isLoggedIn"
-  class="container mt-3 text-center"
->
-  <div class="alert alert-warning" role="alert">
-    To finish verifying your account.
-    <a
-      [href]="
-        'https://connect.stripe.com/oauth/authorize?scope=read_write&response_type=code&client_id=' +
-        stripeConnectClientID
-      "
-      class="alert-link"
-    >
-      <b>Click here to set up your stripe account.</b>
-    </a>
-  </div>
-</div>
-
+<app-dashboard></app-dashboard>
 <router-outlet></router-outlet>
-
-<!-- //FUTURE-UPDATE: reconfigure this code to place some router outlets in
-dashboard, with router names like 'router #dashboard' -->
