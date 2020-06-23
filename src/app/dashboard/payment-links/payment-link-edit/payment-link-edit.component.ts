@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { PaymentLinkTypeEnum } from '../payment-link-type.enum';
 import { v4 as uuidv4 } from 'uuid';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { HelperService } from 'src/app/helper.service';
+import { HelperService } from 'src/app/shared/helper.service';
 import * as MoneyFormatter from 'src/app/accounting';
 import { Subscription } from 'rxjs';
 import { PriceValidation } from './payment-link-edit.validator';

@@ -7,7 +7,7 @@ import * as fromApp from '../../../store/app.reducer';
 import { Store } from '@ngrx/store';
 import { Subscription, BehaviorSubject } from 'rxjs';
 import { Merchant } from 'src/app/merchants/merchant.model';
-import { HelperService } from 'src/app/helper.service';
+import { HelperService } from 'src/app/shared/helper.service';
 import { PaymentLinkService } from '../payment-link.service';
 import { Clipboard } from '@angular/cdk/clipboard';
 

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
-import { User } from './auth/user.model';
-import { MerchantService } from './merchants/merchants.service';
-import { ChimpApiService } from './chimp-api.service';
+import { User } from '../auth/user.model';
+import { MerchantService } from '../merchants/merchants.service';
+import { ChimpApiService } from '../shared/chimp-api.service';
 
 @Injectable({
   providedIn: 'root',

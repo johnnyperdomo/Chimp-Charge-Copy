@@ -11,7 +11,7 @@ import {
   Event,
   NavigationStart,
 } from '@angular/router';
-import { HelperService } from './helper.service';
+import { HelperService } from './shared/helper.service';
 import { environment } from 'src/environments/environment';
 import { User } from './auth/user.model';
 import { NgZone } from '@angular/core';
@@ -25,38 +25,22 @@ export class AppComponent implements OnInit, OnDestroy {
   stripeConnectClientID = environment.stripeConnectClientID;
 
   isLoggedIn: boolean = false;
-  isCheckoutSession: boolean = false;
   currentUser = new Subject<User>();
   isStripeConnectAuthorized: boolean;
 
   userSub: Subscription;
   merchantSub: Subscription;
   currentUserSub: Subscription;
-  routeSub: Subscription;
 
   constructor(
     private store: Store<fromApp.AppState>,
     private route: ActivatedRoute,
     private helperService: HelperService,
-    private router: Router,
     private zone: NgZone //listens to some event handlers in observable to update ui
   ) {}
 
   ngOnInit() {
     this.autoLoginUser();
-
-    this.routeSub = this.router.events.subscribe((event: Event) => {
-      if (event instanceof NavigationStart) {
-        let path = event.url;
-
-        //i.e. '/pay/1234' => checkout session
-        if (path.includes('/pay/')) {
-          this.isCheckoutSession = true;
-        } else {
-          this.isCheckoutSession = false;
-        }
-      }
-    });
 
     this.userSub = this.store
       .select('auth')
@@ -128,10 +112,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
     if (this.merchantSub) {
       this.merchantSub.unsubscribe();
-    }
-
-    if (this.routeSub) {
-      this.routeSub.unsubscribe();
     }
   }
 }

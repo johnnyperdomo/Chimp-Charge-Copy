@@ -2,123 +2,133 @@
 <!-- TODO: maybe add manual change detection -->
 
 <div class="main-content">
-  <div class="container-fluid">
-    <!-- Loading Checkout Form-->
-    <div [hidden]="!isCheckoutFormLoading">
-      <div class="row justify-content-center">
-        <div class="col-12 col-md-5 col-xl-4 my-5">
-          <div class="text-center mt-8">
-            <div class="d-flex justify-content-center">
-              <div
-                class="spinner-border text-primary big-spinner"
-                role="status"
-              >
-                <span class="sr-only">Loading...</span>
-              </div>
-            </div>
-            <h3 class="text-primary mt-4">Loading Payment Details...</h3>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Checkout Form -->
-    <div [hidden]="isCheckoutFormLoading || checkoutFormRenderingError">
-      <div class="row justify-content-center">
-        <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5 my-6">
-          <div class="card">
-            <div class="card-header">
-              <div class="card-header-title">
-                <h2 class="card-header-title">
-                  {{ businessName }}
-                </h2>
-              </div>
-            </div>
-
-            <div class="card-body">
-              <!-- Header -->
-              <div class="col-auto">
-                <h4 class="card-title first-word-capitalize">
-                  {{ linkName }}
-                </h4>
-                <p class="card-subtitle text-muted my-3 first-word-capitalize">
-                  {{ linkDescription }}
-                </p>
-                <h4 class="payment-link-details card-text mb-4 capitalize">
-                  {{ paymentLinkDetails }}
-                </h4>
-
-                <hr />
-
-                <form
-                  #checkoutForm="ngForm"
-                  (ngSubmit)="onSubmit(checkoutForm)"
-                >
-                  <!-- Card Details -->
-
-                  <div class="form-group">
-                    <h3 class="card-title my-3">Credit or debit card</h3>
-                    <input
-                      type="text"
-                      id="cardname"
-                      class="form-control"
-                      placeholder="Cardholder's Name"
-                      ngModel
-                      name="cardname"
-                      required
-                      #cardname="ngModel"
-                    />
-                  </div>
-
-                  <div class="form-group">
-                    <div class="form-control">
-                      <div #cardElement>
-                        <!-- A Stripe Element will be inserted here. -->
-                      </div>
+  <div class="container">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+          <!-- Loading Checkout Form-->
+          <div [hidden]="!isCheckoutFormLoading">
+            <div class="row justify-content-center">
+              <div class="col-12 col-md-5 col-xl-4 my-5">
+                <div class="text-center mt-8">
+                  <div class="d-flex justify-content-center">
+                    <div
+                      class="spinner-border text-primary big-spinner"
+                      role="status"
+                    >
+                      <span class="sr-only">Loading...</span>
                     </div>
+                  </div>
+                  <h3 class="text-primary mt-4">Loading Payment Details...</h3>
+                </div>
+              </div>
+            </div>
+          </div>
 
-                    <span class="help-block-invalid" *ngIf="cardErrors != null">
-                      {{ cardErrors }}
-                    </span>
+          <!-- Checkout Form -->
+          <div [hidden]="isCheckoutFormLoading || checkoutFormRenderingError">
+            <div class="row justify-content-center">
+              <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5 my-6">
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-header-title">
+                      <h2 class="card-header-title">
+                        {{ businessName }}
+                      </h2>
+                    </div>
                   </div>
 
-                  <!-- Customer Details -->
-                  <div class="form-group">
-                    <h3 class="card-title my-3">Customer Details</h3>
-                    <input
-                      type="text"
-                      id="name"
-                      class="form-control"
-                      placeholder="Your Name"
-                      ngModel
-                      name="name"
-                      required
-                      #name="ngModel"
-                    />
-                  </div>
+                  <div class="card-body">
+                    <!-- Header -->
+                    <div class="col-auto">
+                      <h4 class="card-title first-word-capitalize">
+                        {{ linkName }}
+                      </h4>
+                      <p
+                        class="card-subtitle text-muted my-3 first-word-capitalize"
+                      >
+                        {{ linkDescription }}
+                      </p>
+                      <h4
+                        class="payment-link-details card-text mb-4 capitalize"
+                      >
+                        {{ paymentLinkDetails }}
+                      </h4>
 
-                  <div class="form-group">
-                    <input
-                      type="email"
-                      id="email"
-                      class="form-control"
-                      placeholder="Your Email for receipt"
-                      ngModel
-                      name="email"
-                      required
-                      email
-                      #email="ngModel"
-                    />
-                    <span
-                      class="help-block-invalid"
-                      *ngIf="!email.valid && email.touched"
-                    >
-                      Please enter a valid email.</span
-                    >
-                  </div>
+                      <hr />
 
-                  <!-- FUTURE-UPDATE: add link to tos -->
-                  <!-- <div class="form-check mb-3">
+                      <form
+                        #checkoutForm="ngForm"
+                        (ngSubmit)="onSubmit(checkoutForm)"
+                      >
+                        <!-- Card Details -->
+
+                        <div class="form-group">
+                          <h3 class="card-title my-3">Credit or debit card</h3>
+                          <input
+                            type="text"
+                            id="cardname"
+                            class="form-control"
+                            placeholder="Cardholder's Name"
+                            ngModel
+                            name="cardname"
+                            required
+                            #cardname="ngModel"
+                          />
+                        </div>
+
+                        <div class="form-group">
+                          <div class="form-control">
+                            <div #cardElement>
+                              <!-- A Stripe Element will be inserted here. -->
+                            </div>
+                          </div>
+
+                          <span
+                            class="help-block-invalid"
+                            *ngIf="cardErrors != null"
+                          >
+                            {{ cardErrors }}
+                          </span>
+                        </div>
+
+                        <!-- Customer Details -->
+                        <div class="form-group">
+                          <h3 class="card-title my-3">Customer Details</h3>
+                          <input
+                            type="text"
+                            id="name"
+                            class="form-control"
+                            placeholder="Your Name"
+                            ngModel
+                            name="name"
+                            required
+                            #name="ngModel"
+                          />
+                        </div>
+
+                        <div class="form-group">
+                          <input
+                            type="email"
+                            id="email"
+                            class="form-control"
+                            placeholder="Your Email for receipt"
+                            ngModel
+                            name="email"
+                            required
+                            email
+                            #email="ngModel"
+                          />
+                          <span
+                            class="help-block-invalid"
+                            *ngIf="!email.valid && email.touched"
+                          >
+                            Please enter a valid email.</span
+                          >
+                        </div>
+
+                        <!-- FUTURE-UPDATE: add link to tos -->
+                        <!-- <div class="form-check mb-3">
                 <input
                   class="form-check-input"
                   type="checkbox"
@@ -133,54 +143,59 @@
                 </label>
               </div> -->
 
-                  <div
-                    *ngIf="isPaymentResponseLoading"
-                    class="row justify-content-center mb-3"
-                  >
-                    <div
-                      class="spinner-border text-primary"
-                      role="status"
-                    ></div>
-                  </div>
+                        <div
+                          *ngIf="isPaymentResponseLoading"
+                          class="row justify-content-center mb-3"
+                        >
+                          <div
+                            class="spinner-border text-primary"
+                            role="status"
+                          ></div>
+                        </div>
 
-                  <!-- Submit -->
-                  <button
-                    class="btn btn-lg btn-block btn-primary mb-3 capitalize"
-                    type="submit"
-                    [disabled]="
-                      !checkoutForm.valid || isCardPaymentComplete == false
-                    "
-                  >
-                    {{ checkoutBtnText }}
-                  </button>
-                </form>
+                        <!-- Submit -->
+                        <button
+                          class="btn btn-lg btn-block btn-primary mb-3 capitalize"
+                          type="submit"
+                          [disabled]="
+                            !checkoutForm.valid ||
+                            isCardPaymentComplete == false
+                          "
+                        >
+                          {{ checkoutBtnText }}
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row justify-content-center">
+                  <span class="fe fe-lock text-muted"></span>
+                  &nbsp;
+                  <span class="small text-muted">
+                    Secured by
+                    <a href="http://www.chimpcharge.com">Chimp Charge</a>
+                  </span>
+                </div>
               </div>
             </div>
           </div>
 
-          <div class="row justify-content-center">
-            <span class="fe fe-lock text-muted"></span>
-            &nbsp;
-            <span class="small text-muted">
-              Secured by <a href="http://www.chimpcharge.com">Chimp Charge</a>
-            </span>
+          <!-- Checkout form Rendering Error -->
+          <div [hidden]="!checkoutFormRenderingError">
+            <div class="text-center mt-8">
+              <!-- Heading -->
+              <h3 class="display-4 mb-3">
+                Error loading checkout form 😭
+              </h3>
+
+              <!-- Subheading -->
+              <p class="text-muted mb-4">
+                Have the wrong link? If not, please try again!
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Checkout form Rendering Error -->
-    <div [hidden]="!checkoutFormRenderingError">
-      <div class="text-center mt-8">
-        <!-- Heading -->
-        <h3 class="display-4 mb-3">
-          Error loading checkout form 😭
-        </h3>
-
-        <!-- Subheading -->
-        <p class="text-muted mb-4">
-          Have the wrong link? If not, please try again!
-        </p>
       </div>
     </div>
   </div>

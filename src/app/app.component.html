@@ -1,6 +1,5 @@
 <!-- TODO: Add Charge Chimp logo to top of auth pages -->
 
-<app-header *ngIf="isLoggedIn && !isCheckoutSession"></app-header>
 <div
   *ngIf="isStripeConnectAuthorized == false && isLoggedIn"
   class="container mt-3 text-center"
@@ -19,13 +18,7 @@
   </div>
 </div>
 
-<div class="container">
-  <div class="row">
-    <div class="col-md-12">
-      <router-outlet></router-outlet>
-    </div>
-  </div>
-</div>
+<router-outlet></router-outlet>
 
 <!-- //FUTURE-UPDATE: reconfigure this code to place some router outlets in
 dashboard, with router names like 'router #dashboard' -->
