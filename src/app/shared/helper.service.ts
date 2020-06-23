@@ -13,22 +13,16 @@ export class HelperService {
     private chimpApi: ChimpApiService
   ) {}
 
-  async handleStripeOAuthConnection(query: Params, user: User) {
-    //TODO: If user gets back response from helper function, clear url parameters
-
-    //TODO: add loading spinner so user can know you're waiting on a response, until await finished
-    //TODO: handle different error cases
-
+  async handleStripeOAuthConnection(params: Params) {
     //successful queries
-    const scope = await query.scope;
-    const code = await query.code;
+    const scope = await params.scope;
+    const code = await params.code;
 
     //error queries
-    const error = await query.error;
-    const error_description = await query.error_description;
+    const error = await params.error;
+    const error_description = await params.error_description;
 
     if (error || error_description) {
-      //TODO: trigger alert => authentication failed, try again
       const errorMessage = `${error}: ${error_description}`;
       throw Error(errorMessage);
     }
@@ -43,9 +37,10 @@ export class HelperService {
           '/connect/connectStandardIntegration',
           body
         );
-        const stripeConnectID = stripeOAuthResponse.stripe_user_id;
+        const stripeConnectID =
+          stripeOAuthResponse.authorization.stripe_user_id;
 
-        this.merchantService.getMerchantInfo(user.id);
+        this.merchantService.getMerchantInfo(stripeOAuthResponse.userID);
         return stripeConnectID;
       } catch (err) {
         throw Error(err.error.message);

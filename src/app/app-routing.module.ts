@@ -22,6 +22,7 @@ import { SecurityComponent } from './dashboard/pages/settings/security/security.
 import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.component';
 import { PageNotFoundComponent } from './shared/page-not-found/page-not-found.component';
 import { CheckoutSuccessComponent } from './checkout/checkout-success/checkout-success.component';
+import { ConnectRedirectComponent } from './dashboard/connect-redirect/connect-redirect.component';
 
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['login']); //if no logged in, restrict access
 const redirectLoggedInToPayments = () => redirectLoggedInTo(['payments']); //if logged in, block auth components
@@ -49,6 +50,14 @@ const routes: Routes = [
 
   //Dashboard
   { path: '', redirectTo: '/payments', pathMatch: 'full' },
+
+  //connect redirect used for redirecting client to stripeOAuth flow, and getting authenticated parameters
+  {
+    path: 'connect-redirect',
+    component: ConnectRedirectComponent,
+    canActivate: [AngularFireAuthGuard],
+    data: { authGuardPipe: redirectUnauthorizedToLogin },
+  },
   {
     path: 'payments',
     component: PaymentsComponent,

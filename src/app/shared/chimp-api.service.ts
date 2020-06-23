@@ -45,6 +45,23 @@ export class ChimpApiService {
     }
   }
 
+  //get: get existing resource
+  async get(pathUrl: string) {
+    try {
+      const headers = await this.getAuthHeaders();
+
+      const serverData = await this.http
+        .get(this.chimpApiUrl + pathUrl, {
+          headers: headers,
+        })
+        .toPromise();
+
+      return serverData;
+    } catch (err) {
+      throw Error(err);
+    }
+  }
+
   private async getAuthHeaders() {
     try {
       const tokenId = (await (await this.auth.currentUser).getIdTokenResult())

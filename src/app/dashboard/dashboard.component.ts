@@ -1,17 +1,13 @@
 import { Component, OnInit, NgZone, OnDestroy } from '@angular/core';
-import { HelperService } from '../shared/helper.service';
-import {
-  ActivatedRoute,
-  Router,
-  NavigationStart,
-  Event,
-} from '@angular/router';
+import { Router, NavigationStart, Event } from '@angular/router';
 import { Store } from '@ngrx/store';
 import * as fromApp from 'src/app/shared/app-store/app.reducer';
-import { Subject, Subscription } from 'rxjs';
+import { Subscription, BehaviorSubject } from 'rxjs';
 import { User } from '../auth/user.model';
-import { map, mergeMap } from 'rxjs/operators';
-import { environment } from 'src/environments/environment';
+import { map, filter, mergeMap } from 'rxjs/operators';
+import { Merchant } from '../merchants/merchant.model';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { MerchantService } from '../merchants/merchants.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,24 +15,24 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-  stripeConnectClientID = environment.stripeConnectClientID;
-
   isLoggedIn: boolean = false;
   isCheckoutSession: boolean = false;
+  isStripeOAuthConnecting: boolean = false;
 
-  currentUser = new Subject<User>();
+  currentUser = new BehaviorSubject<User>(null);
   isStripeConnectAuthorized: boolean;
 
   userSub: Subscription;
   merchantSub: Subscription;
   currentUserSub: Subscription;
   routeSub: Subscription;
+  merchantDocSubscription: Subscription;
 
   constructor(
     private store: Store<fromApp.AppState>,
-    private route: ActivatedRoute,
-    private helperService: HelperService,
     private router: Router,
+    private db: AngularFirestore,
+    private merchantService: MerchantService,
     private zone: NgZone //listens to some event handlers in observable to update ui
   ) {}
 
@@ -51,6 +47,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
         } else {
           this.isCheckoutSession = false;
         }
+
+        //user is connecting to stripOAuth flow
+        if (path.includes('/connect-redirect')) {
+          this.isStripeOAuthConnecting = true;
+
+          console.log('connecting stripe....');
+        } else {
+          this.isStripeOAuthConnecting = false;
+          console.log('stripe connecting success!');
+        }
       }
     });
 
@@ -59,9 +65,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       .pipe(map((authState) => authState.user))
       .subscribe((user) => {
         this.currentUser.next(user);
-        this.isLoggedIn = !user ? false : true; //TODO: this isn't being called on new sign up, sometimes it does get called, could be that one function is not waiting for the other, figure this out.
-
-        //TODO: if firebase get data error, 'connect alert' doesn't exist. => fix this
+        this.isLoggedIn = !user ? false : true;
       });
 
     this.merchantSub = this.store
@@ -77,39 +81,25 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }
       });
 
-    // this.currentUserSub = this.currentUser
-    //   .pipe(
-    //     mergeMap((retrievedUser) => {
-    //       return this.route.queryParams.pipe(
-    //         map((query) => {
-    //           this.handleStripePayload(query, retrievedUser);
-    //         })
-    //       );
-    //     })
-    //   )
-    //   .subscribe();
+    this.merchantDocSubscription = this.currentUser
+      .pipe(
+        filter((user) => user !== null),
+        mergeMap((user) => {
+          console.log('merge map succeed');
+
+          return this.db.doc<Merchant>(`merchants/${user.id}`).valueChanges();
+        })
+      )
+      .subscribe((data) => {
+        this.merchantService.getMerchantInfo(data.uid);
+      });
   }
 
-  // TODO: we may not need this function, check back later: with try: catch
-  // async handleStripePayload(query: Params, retrievedUser: User) {
-  //   if (!retrievedUser) {
-  //     return;
-  //   }
-
-  //   try {
-  //     const payload = await this.helperService.handleStripeOAuthConnection(
-  //       query,
-  //       retrievedUser
-  //     );
-
-  //     //TODO: trigger ui feedback for error or success
-  //     if (payload) {
-  //       console.log(' from the app component, the user id is :' + payload);
-  //     }
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // }
+  openStripeOAuthFlow() {
+    const currentURL = location.origin;
+    const redirectURL = currentURL + '/connect-redirect';
+    window.open(redirectURL, '_blank');
+  }
 
   ngOnDestroy() {
     if (this.userSub) {
@@ -126,6 +116,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     if (this.routeSub) {
       this.routeSub.unsubscribe();
+    }
+
+    if (this.merchantDocSubscription) {
+      this.merchantDocSubscription.unsubscribe();
     }
   }
 }

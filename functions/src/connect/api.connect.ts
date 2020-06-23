@@ -4,8 +4,8 @@ import * as cors from 'cors';
 import * as paymentLinks from './payment-links.connect';
 import * as connectAuth from './auth.connect';
 import * as admin from 'firebase-admin';
-// import { stripeClientID } from '../config';
-// import * as qs from 'querystring';
+import { stripeClientID } from '../config';
+import * as qs from 'querystring';
 
 const app = express();
 
@@ -22,7 +22,7 @@ const authenticate = async (tokenId: string) => {
       console.error(err);
       throw new functions.https.HttpsError(
         'unauthenticated',
-        'You must be logged in to make this request.'
+        'You are not authorized to make this request.'
       );
     });
 };
@@ -36,37 +36,36 @@ const authenticate = async (tokenId: string) => {
 
 //app.get(/some-url)
 
-//Stripe Authentication ==============================>
+//Stripe Connect Authentication ==============================>
 
-//TODO: authenticate stripe connect with auth connection from server
-// app.get(
-//   '/redirectToStripeOAuth',
-//   async (req: express.Request, res: express.Response) => {
-//     // if (!req.headers.authorization) {
-//     //   res
-//     //     .status(403)
-//     //     .json({ error: 'You must be logged in to make this request.' });
-//     // }
+app.get(
+  '/connect/stripeOAuthURL',
+  async (req: express.Request, res: express.Response) => {
+    if (!req.headers.authorization) {
+      res
+        .status(403)
+        .json({ error: 'You must be logged in to make this request.' });
+    }
 
-//     // const tokenId = req.headers.authorization!.split('Bearer ')[1];
+    const tokenId = req.headers.authorization!.split('Bearer ')[1];
 
-//     try {
-//       //  await authenticate(tokenId);
+    try {
+      await authenticate(tokenId);
 
-//       const base = 'https://connect.stripe.com/oauth/authorize?';
-//       const queryParams = {
-//         client_id: stripeClientID,
-//         response_type: 'code',
-//         scope: 'read_write',
-//       };
-//       const endpoint = base + qs.stringify(queryParams);
+      const base = 'https://connect.stripe.com/oauth/authorize?';
+      const queryParams = {
+        client_id: stripeClientID,
+        response_type: 'code',
+        scope: 'read_write',
+      };
+      const endpoint = base + qs.stringify(queryParams);
 
-//       res.redirect(endpoint);
-//     } catch (err) {
-//       res.status(400).send(err);
-//     }
-//   }
-// );
+      res.send({ stripeURL: endpoint });
+    } catch (err) {
+      res.status(400).send(err);
+    }
+  }
+);
 
 app.post(
   '/connect/connectStandardIntegration',
@@ -86,7 +85,7 @@ app.post(
         req.body,
         authenticated.uid
       );
-      res.send(response);
+      res.send({ authorization: response, userID: authenticated.uid });
     } catch (err) {
       res.status(400).send(err);
     }

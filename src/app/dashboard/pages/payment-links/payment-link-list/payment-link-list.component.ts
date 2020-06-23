@@ -47,6 +47,7 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
       .pipe(map((merchantState) => merchantState.merchant))
       .subscribe((payload) => {
         this.currentMerchant.next(payload);
+        console.log('current merchant', this.currentMerchant.getValue());
       });
 
     this.currentMerchantSub = this.currentMerchant

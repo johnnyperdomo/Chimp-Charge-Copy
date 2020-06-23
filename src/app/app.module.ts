@@ -49,6 +49,7 @@ import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.
 
 import { PageNotFoundComponent } from './shared/page-not-found/page-not-found.component';
 import { CheckoutSuccessComponent } from './checkout/checkout-success/checkout-success.component';
+import { ConnectRedirectComponent } from './dashboard/connect-redirect/connect-redirect.component';
 
 firebase.initializeApp(environment.firebase);
 
@@ -78,6 +79,7 @@ firebase.initializeApp(environment.firebase);
     ForgotPasswordComponent,
     PageNotFoundComponent,
     CheckoutSuccessComponent,
+    ConnectRedirectComponent,
   ],
   imports: [
     BrowserModule,

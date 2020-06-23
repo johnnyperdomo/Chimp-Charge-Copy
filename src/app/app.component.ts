@@ -15,7 +15,7 @@ export class AppComponent implements OnInit {
     this.autoLoginUser();
   }
 
-  async autoLoginUser() {
+  autoLoginUser() {
     this.store.dispatch(new AuthActions.AutoLogin());
   }
 }
