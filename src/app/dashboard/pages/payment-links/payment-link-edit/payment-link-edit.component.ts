@@ -1,5 +1,4 @@
 import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { PaymentLinkTypeEnum } from '../payment-link-type.enum';
 import { v4 as uuidv4 } from 'uuid';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HelperService } from 'src/app/shared/helper.service';
@@ -9,6 +8,7 @@ import { PriceValidation } from './payment-link-edit.validator';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/firestore';
 import * as accounting from 'src/app/shared/accounting';
+import Stripe from 'stripe';
 
 //FUTURE-UPDATE: add can deactivate child option, to save the user from accidently losing data.
 //FUTURE-UPDATE: add success page url
@@ -36,7 +36,7 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
   linkID: string;
   editMode: boolean = false;
 
-  linkType = PaymentLinkTypeEnum.onetime;
+  linkType: Stripe.Price.Type = 'one_time';
 
   constructor(
     private helperService: HelperService,
@@ -72,7 +72,7 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
     if (this.editMode) {
       this.editPaymentLink(linkName, description);
     } else {
-      if (this.linkType === PaymentLinkTypeEnum.onetime) {
+      if (this.linkType === 'one_time') {
         this.createPaymentLink(linkName, description, minorCurrency);
       } else {
         //recurring
@@ -91,11 +91,11 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
   }
 
   onRecurringMode() {
-    this.linkType = PaymentLinkTypeEnum.recurring;
+    this.linkType = 'recurring';
   }
 
   onOneTimeMode() {
-    this.linkType = PaymentLinkTypeEnum.onetime;
+    this.linkType = 'one_time';
   }
 
   async createPaymentLink(
@@ -185,7 +185,7 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
         const desc = linkData.product.description;
         const amount = linkData.price.unit_amount;
 
-        const priceType = linkData.price.type;
+        const priceType: Stripe.Price.Type = linkData.price.type;
 
         this.paymentLinkEditForm.patchValue({
           linkName: name,

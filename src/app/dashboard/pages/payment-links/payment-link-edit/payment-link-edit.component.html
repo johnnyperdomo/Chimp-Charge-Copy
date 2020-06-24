@@ -37,7 +37,7 @@ more information. Redirect url. -->
                       class="btn mr-3"
                       [disabled]="editMode && linkType === 'recurring'"
                       [ngClass]="{
-                        'btn-secondary': linkType === 'onetime',
+                        'btn-secondary': linkType === 'one_time',
                         'btn-outline-secondary': linkType === 'recurring'
                       }"
                       (click)="onOneTimeMode()"
@@ -49,10 +49,10 @@ more information. Redirect url. -->
                     <button
                       type="button"
                       class="btn"
-                      [disabled]="editMode && linkType === 'onetime'"
+                      [disabled]="editMode && linkType === 'one_time'"
                       [ngClass]="{
                         'btn-secondary': linkType === 'recurring',
-                        'btn-outline-secondary': linkType === 'onetime'
+                        'btn-outline-secondary': linkType === 'one_time'
                       }"
                       (click)="onRecurringMode()"
                     >

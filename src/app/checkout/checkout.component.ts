@@ -14,6 +14,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { map, switchMap, catchError } from 'rxjs/operators';
 import { from, Subscription, empty } from 'rxjs';
 import * as MoneyFormatter from 'src/app/shared/accounting';
+import * as StripeTypes from 'stripe';
 
 declare var Stripe; // : stripe.StripeStatic;
 
@@ -81,7 +82,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             linkData.price.unit_amount
           );
 
-          const billingType = linkData.price.type;
+          const billingType: StripeTypes.Stripe.Price.Type =
+            linkData.price.type;
 
           this.linkName = linkData.product.name;
           this.linkDescription = linkData.product.description;
