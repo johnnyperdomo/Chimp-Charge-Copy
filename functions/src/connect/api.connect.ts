@@ -6,6 +6,7 @@ import * as connectAuth from './auth.connect';
 import * as admin from 'firebase-admin';
 import { stripeClientID } from '../config';
 import * as qs from 'querystring';
+import { createPaymentIntent } from './checkout.connect';
 
 const app = express();
 
@@ -162,6 +163,22 @@ app.patch(
         authenticated.uid
       );
       res.send(response);
+    } catch (err) {
+      res.status(400).send(err);
+    }
+  }
+);
+
+//Checkout ==============================>
+//non-authenticated customers
+
+app.post(
+  '/connect/createPaymentIntent',
+  async (req: express.Request, res: express.Response) => {
+    try {
+      const paymentIntent = await createPaymentIntent(req.body);
+
+      res.send(paymentIntent);
     } catch (err) {
       res.status(400).send(err);
     }

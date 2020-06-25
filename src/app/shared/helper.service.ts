@@ -54,17 +54,17 @@ export class HelperService {
     productIdempotencyKey: string,
     priceIdempotencyKey: string,
     amount: number,
-    linkName: string,
-    description: string,
+    productName: string,
+    productDesc: string,
     interval: string
   ) {
     const body = {
-      productIdempotencyKey: productIdempotencyKey,
-      priceIdempotencyKey: priceIdempotencyKey,
-      amount: amount,
-      productName: linkName,
-      productDesc: description,
-      interval: interval,
+      productIdempotencyKey,
+      priceIdempotencyKey,
+      amount,
+      productName,
+      productDesc,
+      interval,
     };
 
     try {
@@ -80,13 +80,13 @@ export class HelperService {
 
   async editPaymentLink(
     paymentLinkID: string,
-    linkName: string,
-    description: string
+    productName: string,
+    productDesc: string
   ) {
     const body = {
-      paymentLinkID: paymentLinkID,
-      productName: linkName,
-      productDesc: description,
+      paymentLinkID,
+      productName,
+      productDesc,
     };
 
     try {
@@ -112,6 +112,37 @@ export class HelperService {
         body
       );
       return deleteLink;
+    } catch (err) {
+      throw Error(err.error.message);
+    }
+  }
+
+  //Checkout ==============================>
+
+  //for one_time payment. 'clientSecret' generated on server, but payment confirmed on client
+  async createPaymentIntent(
+    amount: number,
+    customerParams: { email: string; name: string },
+    connectID: string,
+    merchantUID: string
+  ) {
+    const body = {
+      amount,
+      customerParams,
+      connectID,
+      merchantUID,
+    };
+
+    try {
+      //non-authenticated customer checkout
+      const paymentIntent = await this.chimpApi.post(
+        '/connect/createPaymentIntent',
+        body,
+        false
+      );
+      console.log('payment intenttttttt helper: ', paymentIntent);
+
+      return paymentIntent;
     } catch (err) {
       throw Error(err.error.message);
     }

@@ -91,6 +91,7 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
   }
 
   onCreatePaymentLink() {
+    //TODO: Navigation triggered outside Angular zone, did you forget to call 'ngZone.run()'?
     this.router.navigate(['new'], { relativeTo: this.route });
   }
 
