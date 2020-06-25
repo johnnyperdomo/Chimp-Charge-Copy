@@ -124,13 +124,15 @@ export class HelperService {
     amount: number,
     customerParams: { email: string; name: string },
     connectID: string,
-    merchantUID: string
+    merchantUID: string,
+    idempotencyKey: string
   ) {
     const body = {
       amount,
       customerParams,
       connectID,
       merchantUID,
+      idempotencyKey,
     };
 
     try {

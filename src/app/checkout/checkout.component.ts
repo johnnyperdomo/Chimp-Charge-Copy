@@ -12,7 +12,7 @@ import { environment } from 'src/environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { map, switchMap, catchError } from 'rxjs/operators';
-import { from, Subscription, empty } from 'rxjs';
+import { from, Subscription, empty, throwError } from 'rxjs';
 import * as MoneyFormatter from 'src/app/shared/accounting';
 import * as StripeTypes from 'stripe';
 import { HelperService } from '../shared/helper.service';
@@ -164,63 +164,73 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   async onSubmit(checkoutForm: NgForm) {
     //TODO: spam button to test for duplicate charges and idempotency key works
     console.log('on submit');
-
-    if (checkoutForm.invalid || this.isCardPaymentComplete == false) {
-      console.log('not returned');
-
-      return;
-    }
+    this.isPaymentResponseLoading = true;
 
     console.log('init');
 
-    const customerName = checkoutForm.value.name;
+    const cardHolderName = checkoutForm.value.cardHolderName;
+
+    const customerName = checkoutForm.value.customerName;
     const customerEmail = checkoutForm.value.email;
 
     try {
+      if (checkoutForm.invalid || this.isCardPaymentComplete == false) {
+        throw Error('Invalid form. Please try again!');
+      }
+
       const charge = await this.createOneTimeCharge(
+        cardHolderName,
         customerEmail,
         customerName
       );
-      console.log(charge);
 
-      return charge;
+      if (
+        charge.paymentIntent.status &&
+        charge.paymentIntent.status === 'succeeded'
+      ) {
+        console.log('successssss!!!!');
+        this.router.navigate(['success'], { relativeTo: this.route });
+      }
+
+      this.isPaymentResponseLoading = false;
+      return;
     } catch (err) {
-      console.log(err);
+      this.paymentResponseError = err.message;
+      this.isPaymentResponseLoading = false;
+
+      this.generateNewIdempotenceKey();
+
+      setTimeout(() => {
+        this.paymentResponseError = null;
+      }, 5000);
     }
-
-    // this.helperService.createPaymentIntent(4, {email:"4", name: '4'}, "4", "3")
-
-    //TODO: handle success case
-    this.router.navigate(['success'], { relativeTo: this.route });
-
-    console.log(checkoutForm.value);
-    console.log(this.idempotencyKey);
   }
 
-  async createOneTimeCharge(email: string, name: string) {
-    if (!this.connectID || !this.merchantUID || !this.minorAmount) {
-      return;
-    }
-
-    console.log('one time payment proceededd');
-
+  async createOneTimeCharge(
+    cardHolderName: string,
+    email: string,
+    customerName: string
+  ) {
     try {
+      if (!this.connectID || !this.merchantUID || !this.minorAmount) {
+        throw Error('Invalid form. Please try again!');
+      }
+
       const paymentIntent: any = await this.helperService.createPaymentIntent(
         this.minorAmount,
-        { email, name },
+        { email, name: customerName },
         this.connectID,
-        this.merchantUID
+        this.merchantUID,
+        this.idempotencyKey
       );
 
-      console.log('payment intent: ', paymentIntent);
-      console.log('client sercret: ' + paymentIntent.client_secret);
       const charge = await this.stripe.confirmCardPayment(
         paymentIntent.client_secret,
         {
           payment_method: {
             card: this.card,
             billing_details: {
-              name,
+              name: cardHolderName,
               email,
             },
           },
@@ -228,7 +238,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         }
       );
 
-      console.log(charge);
+      if (charge.error) {
+        throw Error(charge.error.message);
+      }
 
       return charge;
     } catch (err) {

@@ -64,13 +64,13 @@
                           <h3 class="card-title my-3">Credit or debit card</h3>
                           <input
                             type="text"
-                            id="cardname"
+                            id="cardHolderName"
                             class="form-control"
                             placeholder="Cardholder's Name"
                             ngModel
-                            name="cardname"
+                            name="cardHolderName"
                             required
-                            #cardname="ngModel"
+                            #cardHolderName="ngModel"
                           />
                         </div>
 
@@ -94,13 +94,13 @@
                           <h3 class="card-title my-3">Customer Details</h3>
                           <input
                             type="text"
-                            id="name"
+                            id="customerName"
                             class="form-control"
                             placeholder="Your Name"
                             ngModel
-                            name="name"
+                            name="customerName"
                             required
-                            #name="ngModel"
+                            #customerName="ngModel"
                           />
                         </div>
 
@@ -141,6 +141,13 @@
               </div> -->
 
                         <div
+                          class="help-block-invalid form-group text-center"
+                          *ngIf="paymentResponseError"
+                        >
+                          {{ paymentResponseError }}
+                        </div>
+
+                        <div
                           *ngIf="isPaymentResponseLoading"
                           class="row justify-content-center mb-3"
                         >
@@ -156,7 +163,8 @@
                           type="submit"
                           [disabled]="
                             !checkoutForm.valid ||
-                            isCardPaymentComplete == false
+                            isCardPaymentComplete == false ||
+                            isPaymentResponseLoading == true
                           "
                         >
                           {{ checkoutBtnText }}

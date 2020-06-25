@@ -9,6 +9,7 @@ export async function createPaymentIntent(data: any) {
   const customerParams: Stripe.CustomerCreateParams = data.customerParams;
   const connectID: string = data.connectID;
   const merchantUID: string = data.merchantUID;
+  const idempotencyKey: string = data.idempotencyKey;
 
   try {
     const customer = await getOrCreateCustomer(
@@ -25,7 +26,7 @@ export async function createPaymentIntent(data: any) {
         payment_method_types: ['card'],
         metadata: { chimp_charge_firebase_merchant_uid: merchantUID },
       },
-      { stripeAccount: connectID }
+      { stripeAccount: connectID, idempotencyKey }
     );
 
     return paymentIntent;
