@@ -27,9 +27,7 @@ export async function getOrCreateCustomer(
           metadata: { chimp_charge_firebase_merchant_uid: merchantUID },
           ...customerParams,
         },
-        {
-          stripeAccount: connectID,
-        }
+        { stripeAccount: connectID }
       );
 
       return createdCustomer;
@@ -59,14 +57,35 @@ async function updateCustomerMetadata(
       {
         metadata: { chimp_charge_firebase_merchant_uid: merchantUID },
       },
-      {
-        stripeAccount: connectID,
-      }
+      { stripeAccount: connectID }
     );
 
     return updatedCustomer;
   } catch (err) {
     throw new Error('stripe: updateCustomerMetadata: ' + err);
+  }
+}
+
+export async function updateCustomerDefaultPaymentMethod(
+  customerID: string,
+  connectID: string,
+  paymentMethodID: string
+) {
+  try {
+    const updatedCustomer = await stripe.customers.update(
+      customerID,
+      {
+        invoice_settings: {
+          default_payment_method: paymentMethodID,
+        },
+      },
+      { stripeAccount: connectID }
+    );
+
+    return updatedCustomer;
+  } catch (error) {
+    console.error('updated customer', error);
+    throw new Error('stripe: updateCustomerDefaultPaymentMethod: ' + error);
   }
 }
 

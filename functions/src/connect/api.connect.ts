@@ -6,7 +6,8 @@ import * as connectAuth from './auth.connect';
 import * as admin from 'firebase-admin';
 import { stripeClientID } from '../config';
 import * as qs from 'querystring';
-import { createPaymentIntent } from './checkout.connect';
+import { createPaymentIntent } from './onetime-payments.connect';
+import { createSubscription } from './subscriptions.connect';
 
 const app = express();
 
@@ -180,6 +181,21 @@ app.post(
 
       res.send(paymentIntent);
     } catch (err) {
+      res.status(400).send(err);
+    }
+  }
+);
+
+app.post(
+  '/connect/createSubscription',
+  async (req: express.Request, res: express.Response) => {
+    try {
+      const subscription = await createSubscription(req.body);
+
+      res.send(subscription);
+    } catch (err) {
+      console.error('api error', err);
+
       res.status(400).send(err);
     }
   }

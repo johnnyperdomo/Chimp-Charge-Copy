@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpHeaders,
+  HttpErrorResponse,
+} from '@angular/common/http';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { environment } from 'src/environments/environment';
 
@@ -24,6 +28,14 @@ export class ChimpApiService {
 
       return serverData;
     } catch (err) {
+      console.log('chimp api error', err);
+      console.log('status text', err.statusText);
+      if (err instanceof HttpErrorResponse) {
+        console.log('http error status code,', err.status);
+        throw Error(err.error.message);
+      }
+
+      //TODO: make sure error messages work for other functions
       throw Error(err);
     }
   }

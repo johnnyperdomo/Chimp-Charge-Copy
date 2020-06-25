@@ -33,7 +33,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private router: Router,
     private db: AngularFirestore,
     private merchantService: MerchantService,
-    private zone: NgZone //listens to some event handlers in observable to update ui
+    private zone: NgZone
   ) {}
 
   ngOnInit(): void {
@@ -82,8 +82,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       .pipe(
         filter((user) => user !== null),
         mergeMap((user) => {
-          console.log('merge map succeed');
-
           return this.db.doc<Merchant>(`merchants/${user.id}`).valueChanges();
         })
       )

@@ -3,6 +3,7 @@ import { Params } from '@angular/router';
 import { User } from '../auth/user.model';
 import { MerchantService } from '../merchants/merchants.service';
 import { ChimpApiService } from '../shared/chimp-api.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -150,6 +151,47 @@ export class HelperService {
       return paymentIntent;
     } catch (err) {
       throw Error(err.error.message);
+    }
+  }
+
+  //for recurring payment. subscription finalized on server, but if requires confirmation, pass 'latest paymentIntent_clientSecret' to be confirmed on client
+  async createSubscription(
+    priceID: string,
+    paymentMethodID: string,
+    customerParams: { email: string; name: string },
+    paymentLinkMetadata: {
+      chimp_charge_payment_link_id: string;
+    },
+    connectID: string,
+    merchantUID: string,
+    idempotencyKey: string
+  ) {
+    const body = {
+      priceID,
+      paymentMethodID,
+      customerParams,
+      paymentLinkMetadata,
+      connectID,
+      merchantUID,
+      idempotencyKey,
+    };
+
+    try {
+      //non-authenticated customer checkout
+      const subscription = await this.chimpApi.post(
+        '/connect/createSubscription',
+        body,
+        false
+      );
+      console.log('helper service', subscription);
+
+      return subscription;
+    } catch (err) {
+      if (err instanceof HttpErrorResponse) {
+        console.log('http error status code,', err.status);
+      }
+
+      throw Error(err.message);
     }
   }
 }
