@@ -49,6 +49,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   linkName: string;
   linkDescription: string;
 
+  linkID: string;
+
   paymentLinkDetails: string;
   checkoutBtnText: string;
 
@@ -78,6 +80,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           return params['id'];
         }),
         switchMap((id) => {
+          this.linkID = id;
           return from(this.db.collection('payment-links').doc(id).ref.get());
         }),
         switchMap((data) => {
@@ -212,13 +215,21 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     customerName: string
   ) {
     try {
-      if (!this.connectID || !this.merchantUID || !this.minorAmount) {
+      if (
+        !this.connectID ||
+        !this.merchantUID ||
+        !this.minorAmount ||
+        !this.linkID
+      ) {
         throw Error('Invalid form. Please try again!');
       }
 
       const paymentIntent: any = await this.helperService.createPaymentIntent(
         this.minorAmount,
         { email, name: customerName },
+        {
+          chimp_charge_payment_link_id: this.linkID,
+        },
         this.connectID,
         this.merchantUID,
         this.idempotencyKey

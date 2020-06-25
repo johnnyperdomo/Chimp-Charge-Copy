@@ -123,6 +123,9 @@ export class HelperService {
   async createPaymentIntent(
     amount: number,
     customerParams: { email: string; name: string },
+    paymentLinkMetadata: {
+      chimp_charge_payment_link_id: string;
+    },
     connectID: string,
     merchantUID: string,
     idempotencyKey: string
@@ -130,6 +133,7 @@ export class HelperService {
     const body = {
       amount,
       customerParams,
+      paymentLinkMetadata,
       connectID,
       merchantUID,
       idempotencyKey,
@@ -142,7 +146,6 @@ export class HelperService {
         body,
         false
       );
-      console.log('payment intenttttttt helper: ', paymentIntent);
 
       return paymentIntent;
     } catch (err) {
