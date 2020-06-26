@@ -187,11 +187,11 @@ export class HelperService {
 
       return subscription;
     } catch (err) {
-      if (err instanceof HttpErrorResponse) {
-        console.log('http error status code,', err.status);
-      }
+      console.log('err.message helper', err.message);
 
       throw Error(err.message);
     }
   }
 }
+
+//FUTURE-UPDATE: some of these error messages may not work. fix .err, .err.message etc...

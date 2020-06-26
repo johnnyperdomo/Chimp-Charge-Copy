@@ -194,7 +194,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           charge.paymentIntent.status &&
           charge.paymentIntent.status === 'succeeded'
         ) {
-          console.log('successssss!!!!');
           this.router.navigate(['success'], { relativeTo: this.route });
         }
 
@@ -207,8 +206,15 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           customerEmail,
           customerName
         );
-        console.log('recurring', subscription);
 
+        if (
+          subscription.paymentIntent.status &&
+          subscription.paymentIntent.status === 'succeeded'
+        ) {
+          this.router.navigate(['success'], { relativeTo: this.route });
+        }
+
+        this.isPaymentResponseLoading = false;
         return;
       }
     } catch (err) {
@@ -269,7 +275,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
       return charge;
     } catch (err) {
-      console.log('one time err', err);
       throw Error(err);
     }
   }
@@ -311,7 +316,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       );
 
       if (subscription.error) {
-        console.log('sub error', subscription.error.message);
+        throw Error(subscription.error);
       }
 
       const latest_invoice = subscription.latest_invoice;
@@ -320,8 +325,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         const { client_secret, status } = latest_invoice.payment_intent;
 
         if (status === 'requires_action') {
-          console.log('requires action');
-
           const confirmSubscription = await this.stripe.confirmCardPayment(
             client_secret
           );
@@ -334,17 +337,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         }
       }
 
-      console.log(subscription);
-
       return subscription;
     } catch (err) {
-      console.log('there is an error called here');
-
-      console.log('err.err.error', err.error.error);
-      console.log('err.err.me', err.error.message);
-      console.log(err);
-
-      throw Error(err.message);
+      throw Error(err);
     }
   }
 
