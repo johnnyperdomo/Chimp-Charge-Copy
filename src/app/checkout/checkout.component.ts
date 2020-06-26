@@ -36,7 +36,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   isCheckoutFormLoading: boolean = true;
   checkoutFormRenderingError: string;
 
-  idempotencyKey = uuidv4(); //used to prevent duplicate charges;
+  chargeIdempotencyKey = uuidv4(); //used to prevent duplicate charges;
+  newCustomerIdempotencyKey = uuidv4();
 
   card;
   cardErrors;
@@ -163,7 +164,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   generateNewIdempotenceKey() {
     //on error; they are passed to stripe but transaction. not completed
-    this.idempotencyKey = uuidv4();
+    this.chargeIdempotencyKey = uuidv4();
   }
 
   async onSubmit(checkoutForm: NgForm) {
@@ -189,11 +190,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           customerEmail,
           customerName
         );
+        console.log('charge');
 
-        if (
-          charge.paymentIntent.status &&
-          charge.paymentIntent.status === 'succeeded'
-        ) {
+        if (charge.status && charge.status === 'succeeded') {
           this.router.navigate(['success'], { relativeTo: this.route });
         }
 
@@ -206,11 +205,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           customerEmail,
           customerName
         );
+        console.log('sub success, ', subscription);
 
-        if (
-          subscription.paymentIntent.status &&
-          subscription.paymentIntent.status === 'succeeded'
-        ) {
+        if (subscription.status && subscription.status === 'succeeded') {
           this.router.navigate(['success'], { relativeTo: this.route });
         }
 
@@ -252,7 +249,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         },
         this.connectID,
         this.merchantUID,
-        this.idempotencyKey
+        this.chargeIdempotencyKey,
+        this.newCustomerIdempotencyKey
       );
 
       const charge = await this.stripe.confirmCardPayment(
@@ -273,7 +271,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         throw Error(charge.error.message);
       }
 
-      return charge;
+      return charge.paymentIntent; //paymentIntent
     } catch (err) {
       throw Error(err);
     }
@@ -312,7 +310,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         },
         this.connectID,
         this.merchantUID,
-        this.idempotencyKey
+        this.chargeIdempotencyKey,
+        this.newCustomerIdempotencyKey
       );
 
       if (subscription.error) {
@@ -333,11 +332,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             throw Error(confirmSubscription.error.message);
           }
 
-          return confirmSubscription;
+          console.log('latest, incoice, ', latest_invoice);
+
+          return confirmSubscription.paymentIntent; //paymentIntent
         }
       }
 
-      return subscription;
+      return latest_invoice.payment_intent; //payment_intent
     } catch (err) {
       throw Error(err);
     }

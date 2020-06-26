@@ -8,7 +8,8 @@ import { stripe } from '../config';
 export async function getOrCreateCustomer(
   customerParams: Stripe.CustomerCreateParams,
   merchantUID: string,
-  connectID: string
+  connectID: string,
+  newCustomerIdempotencyKey: string
 ) {
   try {
     const findCustomer = await stripe.customers.list(
@@ -27,7 +28,7 @@ export async function getOrCreateCustomer(
           metadata: { chimp_charge_firebase_merchant_uid: merchantUID },
           ...customerParams,
         },
-        { stripeAccount: connectID }
+        { stripeAccount: connectID, idempotencyKey: newCustomerIdempotencyKey }
       );
 
       return createdCustomer;
@@ -88,5 +89,3 @@ export async function updateCustomerDefaultPaymentMethod(
     throw new Error('stripe: updateCustomerDefaultPaymentMethod: ' + error);
   }
 }
-
-//TODO: eliminate customer duplication, when customer checks out, check database to see if there is an email with that customer, if there is no email, create a new one, if there is an email, use the current customer to not create a new one. 1. johnny@gmail.com + 2. johnny@gmail.com == one same person; Make sure your integration keeps a 1 to 1 mapping of user in your database to customer in Stripe.

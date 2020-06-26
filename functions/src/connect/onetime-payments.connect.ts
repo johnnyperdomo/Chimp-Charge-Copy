@@ -9,14 +9,16 @@ export async function createPaymentIntent(data: any) {
   const customerParams: Stripe.CustomerCreateParams = data.customerParams;
   const connectID: string = data.connectID;
   const merchantUID: string = data.merchantUID;
-  const idempotencyKey: string = data.idempotencyKey;
+  const chargeIdempotencyKey: string = data.chargeIdempotencyKey;
+  const newCustomerIdempotencyKey: string = data.newCustomerIdempotencyKey;
   const paymentLinkMetadata: {} = data.paymentLinkMetadata;
 
   try {
     const customer = await getOrCreateCustomer(
       customerParams,
       merchantUID,
-      connectID
+      connectID,
+      newCustomerIdempotencyKey
     );
 
     const paymentIntent = await stripe.paymentIntents.create(
@@ -30,7 +32,7 @@ export async function createPaymentIntent(data: any) {
           ...paymentLinkMetadata,
         },
       },
-      { stripeAccount: connectID, idempotencyKey }
+      { stripeAccount: connectID, idempotencyKey: chargeIdempotencyKey }
     );
 
     return paymentIntent;

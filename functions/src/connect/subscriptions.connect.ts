@@ -19,14 +19,16 @@ export async function createSubscription(data: any) {
   const customerParams: Stripe.CustomerCreateParams = data.customerParams;
   const connectID: string = data.connectID;
   const merchantUID: string = data.merchantUID;
-  const idempotencyKey: string = data.idempotencyKey;
+  const chargeIdempotencyKey: string = data.chargeIdempotencyKey;
+  const newCustomerIdempotencyKey: string = data.newCustomerIdempotencyKey;
   const paymentLinkMetadata: {} = data.paymentLinkMetadata;
 
   try {
     const customer = await customers.getOrCreateCustomer(
       customerParams,
       merchantUID,
-      connectID
+      connectID,
+      newCustomerIdempotencyKey
     );
 
     await stripe.paymentMethods.attach(
@@ -53,7 +55,7 @@ export async function createSubscription(data: any) {
           ...paymentLinkMetadata,
         },
       },
-      { stripeAccount: connectID, idempotencyKey }
+      { stripeAccount: connectID, idempotencyKey: chargeIdempotencyKey }
     );
 
     return subscription;

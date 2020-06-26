@@ -129,7 +129,8 @@ export class HelperService {
     },
     connectID: string,
     merchantUID: string,
-    idempotencyKey: string
+    chargeIdempotencyKey: string,
+    newCustomerIdempotencyKey: string
   ) {
     const body = {
       amount,
@@ -137,7 +138,8 @@ export class HelperService {
       paymentLinkMetadata,
       connectID,
       merchantUID,
-      idempotencyKey,
+      chargeIdempotencyKey,
+      newCustomerIdempotencyKey,
     };
 
     try {
@@ -164,7 +166,8 @@ export class HelperService {
     },
     connectID: string,
     merchantUID: string,
-    idempotencyKey: string
+    chargeIdempotencyKey: string,
+    newCustomerIdempotencyKey: string
   ) {
     const body = {
       priceID,
@@ -173,7 +176,8 @@ export class HelperService {
       paymentLinkMetadata,
       connectID,
       merchantUID,
-      idempotencyKey,
+      chargeIdempotencyKey,
+      newCustomerIdempotencyKey,
     };
 
     try {
@@ -183,12 +187,9 @@ export class HelperService {
         body,
         false
       );
-      console.log('helper service', subscription);
 
       return subscription;
     } catch (err) {
-      console.log('err.message helper', err.message);
-
       throw Error(err.message);
     }
   }

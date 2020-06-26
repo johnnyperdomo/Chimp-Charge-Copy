@@ -28,8 +28,6 @@ export class ChimpApiService {
 
       return serverData;
     } catch (err) {
-      console.log('chimp api error', err);
-      console.log('status text', err.statusText);
       if (err instanceof HttpErrorResponse) {
         throw Error(err.error.message);
       }
