@@ -4,10 +4,12 @@ import * as cors from 'cors';
 import * as paymentLinks from './payment-links.connect';
 import * as connectAuth from './auth.connect';
 import * as admin from 'firebase-admin';
-import { stripeClientID } from '../config';
+import { stripeClientID, stripe, stripeWebhookSecret } from '../config';
 import * as qs from 'querystring';
 import { createPaymentIntent } from './onetime-payments.connect';
 import { createSubscription } from './subscriptions.connect';
+import { handleStripeWebhooks } from './webhooks.connect';
+//import * as bodyParser from 'body-parser';
 
 const app = express();
 
@@ -29,14 +31,11 @@ const authenticate = async (tokenId: string) => {
     });
 };
 
-//sets raw body for webhook handling
-// app.use(
-//   express.json({
-//     verify: (req, res, buffer) => (req['rawBody'] = buffer),
-//   })
-// );
-
-//app.get(/some-url)
+app.use(
+  express.json({
+    verify: (req: any, res, buffer) => (req['rawBody'] = buffer),
+  })
+);
 
 //Stripe Connect Authentication ==============================>
 
@@ -194,11 +193,37 @@ app.post(
 
       res.send(subscription);
     } catch (err) {
-      console.error('api error', err);
-
       res.status(400).send(err);
     }
   }
 );
+
+//Webhooks ==================>
+app.post('/connect/stripeWebhooks', async (req: any, res: express.Response) => {
+  if (!req.headers['stripe-signature']) {
+    return;
+  }
+
+  const signature = req.headers['stripe-signature'];
+
+  try {
+    //  const subscription = await createSubscription(req.body);
+    const event = stripe.webhooks.constructEvent(
+      req['rawBody'],
+      signature,
+      stripeWebhookSecret
+    );
+
+    await handleStripeWebhooks(event);
+
+    console.info('stripe webhook called: event: ', event);
+    res.send({ received: true });
+    //   res.send({ received: true });
+  } catch (err) {
+    res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  // // Handle the event
+});
 
 export const chimpApi = functions.https.onRequest(app);

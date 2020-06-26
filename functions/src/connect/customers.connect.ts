@@ -1,7 +1,7 @@
-//import * as functions from 'firebase-functions';
-
 import Stripe from 'stripe';
 import { stripe } from '../config';
+import * as admin from 'firebase-admin';
+const db = admin.firestore();
 
 // // export const getCustomers = functions.https.onCall(async (data, context) => {});
 
@@ -19,8 +19,19 @@ export async function getOrCreateCustomer(
       { stripeAccount: connectID }
     );
 
-    if (findCustomer.data.length == 0) {
+    if (findCustomer.data.length === 0) {
       //create customer
+
+      const eventIDQuery = await db
+        .collection('customers')
+        .where('eventID', '==', newCustomerIdempotencyKey)
+        .get();
+
+      if (!(eventIDQuery.docs.length === 0)) {
+        //if eventID already exists, function has already been processed
+
+        throw new Error("Error: Couldn't create customer, already created.");
+      }
 
       const createdCustomer = await stripe.customers.create(
         {
@@ -30,6 +41,16 @@ export async function getOrCreateCustomer(
         },
         { stripeAccount: connectID, idempotencyKey: newCustomerIdempotencyKey }
       );
+
+      //add customer to firestore
+      await db.collection('customers').add({
+        lastUpdated: admin.firestore.Timestamp.now(),
+        customer: createdCustomer,
+        merchantUID: merchantUID,
+        connectID: connectID,
+        isDeleted: false,
+        eventID: newCustomerIdempotencyKey, //check if this event has already been processed
+      });
 
       return createdCustomer;
     } else {
