@@ -50,6 +50,7 @@ export async function createSubscription(data: any) {
         customer: customer.id,
         items: [{ price: priceID }],
         expand: ['latest_invoice.payment_intent'],
+
         metadata: {
           chimp_charge_firebase_merchant_uid: merchantUID,
           ...paymentLinkMetadata,

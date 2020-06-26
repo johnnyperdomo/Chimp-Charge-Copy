@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
-import { User } from '../auth/user.model';
 import { MerchantService } from '../merchants/merchants.service';
 import { ChimpApiService } from '../shared/chimp-api.service';
-import { HttpErrorResponse } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -126,6 +124,7 @@ export class HelperService {
     customerParams: { email: string; name: string },
     paymentLinkMetadata: {
       chimp_charge_payment_link_id: string;
+      chimp_charge_short_id: string;
     },
     connectID: string,
     merchantUID: string,
@@ -163,6 +162,7 @@ export class HelperService {
     customerParams: { email: string; name: string },
     paymentLinkMetadata: {
       chimp_charge_payment_link_id: string;
+      chimp_charge_short_id: string;
     },
     connectID: string,
     merchantUID: string,
