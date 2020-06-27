@@ -26,9 +26,9 @@ export class MerchantService {
       data.firstName,
       data.lastName,
       data.businessName,
-      data.uid,
+      data.merchantUID,
       data.stripeBillingID,
-      data.stripeConnectID
+      data.connectID
     );
 
     return parsedMerchant;

@@ -17,7 +17,7 @@ export class MerchantEffects {
         firebaseApp
           .firestore()
           .collection('merchants')
-          .doc(merchant.payload.uid)
+          .doc(merchant.payload.merchantUID)
           .set(parsedMerchant, { merge: true })
       ).pipe(
         map((merchant) => {

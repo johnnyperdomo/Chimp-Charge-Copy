@@ -45,8 +45,8 @@ export async function onCreatePaymentLink(data: any, userID: string) {
       );
     }
 
-    const merchantUID = userData.uid;
-    const stripeConnectID = userData.stripeConnectID;
+    const merchantUID = userData.merchantUID;
+    const stripeConnectID = userData.connectID;
 
     if (!merchantUID) {
       throw new functions.https.HttpsError(
@@ -82,10 +82,8 @@ export async function onCreatePaymentLink(data: any, userID: string) {
     const newDoc = await db.collection('payment-links').add({
       price: price,
       product: product,
-      merchantInfo: {
-        merchantUID: merchantUID,
-        connectID: stripeConnectID,
-      },
+      merchantUID: merchantUID,
+      connectID: stripeConnectID,
       lastUpdated: admin.firestore.Timestamp.now(),
       eventID: productIdempotencyKey, //check if this event has already been processed
     });
@@ -112,8 +110,8 @@ export async function onEditPaymentLink(data: any, userID: string) {
     const userSnap = await userRef.get();
     const userData = userSnap.data()!;
 
-    const merchantUID = userData.uid;
-    const stripeConnectID = userData.stripeConnectID;
+    const merchantUID = userData.merchantUID;
+    const stripeConnectID = userData.connectID;
 
     if (!merchantUID) {
       throw new functions.https.HttpsError(
@@ -163,7 +161,7 @@ export async function onDeletePaymentLink(data: any, userID: string) {
     const userSnap = await userRef.get();
     const userData = userSnap.data()!;
 
-    const stripeConnectID = userData.stripeConnectID;
+    const stripeConnectID = userData.connectID;
 
     if (!stripeConnectID) {
       throw new functions.https.HttpsError(

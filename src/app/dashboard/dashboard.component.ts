@@ -71,9 +71,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       .subscribe((merchant) => {
         if (merchant) {
           this.zone.run(() => {
-            this.isStripeConnectAuthorized = !merchant.stripeConnectID
-              ? false
-              : true;
+            this.isStripeConnectAuthorized = !merchant.connectID ? false : true;
           });
         }
       });
@@ -86,7 +84,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe((data) => {
-        this.merchantService.getMerchantInfo(data.uid);
+        this.merchantService.getMerchantInfo(data.merchantUID);
       });
   }
 

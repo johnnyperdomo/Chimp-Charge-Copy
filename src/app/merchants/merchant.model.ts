@@ -3,9 +3,9 @@ export class Merchant {
     public firstName: string,
     public lastName: string,
     public businessName: string,
-    public uid: string,
+    public merchantUID: string,
     public stripeBillingID: string = null,
-    public stripeConnectID: string = null
+    public connectID: string = null
   ) {}
 }
 

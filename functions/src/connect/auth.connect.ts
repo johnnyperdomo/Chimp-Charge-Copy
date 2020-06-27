@@ -15,7 +15,7 @@ export async function connectStandardIntegration(data: any, userID: string) {
     });
 
     const newStripeConnectID = stripeResponse.stripe_user_id;
-    await userRef.update({ stripeConnectID: newStripeConnectID });
+    await userRef.update({ connectID: newStripeConnectID });
 
     return stripeResponse;
   } catch (err) {

@@ -91,7 +91,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         }),
         switchMap((data) => {
           const linkData = data.data();
-          const merchantUID = linkData.merchantInfo.merchantUID;
+          const merchantUID = linkData.merchantUID;
 
           this.minorAmount = linkData.price.unit_amount;
 
@@ -117,6 +117,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             this.checkoutBtnText = `Pay ${formattedPrice}`;
           }
 
+          //TODO: add public info in subcollection of merchant for security rules, we don't want client to be able to read sensitive info
           return from(
             this.db.collection('merchants').doc(merchantUID).ref.get()
           );
@@ -135,8 +136,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         const merchant = merchantData.data();
         this.businessName = merchant.businessName;
 
-        this.merchantUID = merchant.uid;
-        this.connectID = merchant.stripeConnectID;
+        this.merchantUID = merchant.merchantUID;
+        this.connectID = merchant.connectID;
 
         this.initStripeElements();
       });
