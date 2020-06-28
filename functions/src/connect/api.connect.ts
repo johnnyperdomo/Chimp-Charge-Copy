@@ -9,7 +9,6 @@ import * as qs from 'querystring';
 import { createPaymentIntent } from './onetime-payments.connect';
 import { createSubscription } from './subscriptions.connect';
 import { handleStripeConnectWebhooks } from './webhooks.connect';
-//import * as bodyParser from 'body-parser';
 
 const app = express();
 
@@ -218,7 +217,7 @@ app.post('/connect/stripeWebhooks', async (req: any, res: express.Response) => {
   } catch (err) {
     res.status(400).send(`Webhook Error: ${err.message}`);
   }
-  //TODO: check to see if two try catch blocks work in async
+
   if (!event) {
     return;
   }

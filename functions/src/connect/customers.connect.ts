@@ -35,7 +35,7 @@ export async function getOrCreateCustomer(
         {
           email: customerParams.email,
           metadata: { chimp_charge_firebase_merchant_uid: merchantUID },
-          ...customerParams,
+          ...customerParams, //name is included here
         },
         { stripeAccount: connectID, idempotencyKey: newCustomerIdempotencyKey }
       );
@@ -49,13 +49,11 @@ export async function getOrCreateCustomer(
 
       return createdCustomer;
     } else {
-      //update and return old customer
-      //TODO: check to see if user exists in firestore db, if yes => just .get, else { updateStripeCus.then(createFirestoreCustomer) }
-
+      //update and return existing customer
       const existingCustomerID = findCustomer.data[0].id;
 
-      //TODO: test this function
-      const updatedCustomer = await updateCustomerMetadata(
+      const updatedCustomer = await updateStripeCustomer(
+        customerParams,
         existingCustomerID,
         merchantUID,
         connectID
@@ -67,7 +65,8 @@ export async function getOrCreateCustomer(
   }
 }
 
-async function updateCustomerMetadata(
+async function updateStripeCustomer(
+  customerParams: Stripe.CustomerCreateParams,
   customerID: string,
   merchantUID: string,
   connectID: string
@@ -77,6 +76,7 @@ async function updateCustomerMetadata(
       customerID,
       {
         metadata: { chimp_charge_firebase_merchant_uid: merchantUID },
+        ...customerParams,
       },
       { stripeAccount: connectID }
     );
@@ -162,8 +162,6 @@ export async function updateFirestoreCustomer(
   } catch (err) {
     throw Error(err);
   }
-
-  //TODO: we'll check if user exists in firestore, if he doesn't => create one, if he does ...edit him
 }
 
 export async function createFirestoreCustomer(
@@ -172,9 +170,17 @@ export async function createFirestoreCustomer(
   connectID: string,
   idempotencyKey: string
 ) {
-  //add customer to firestore
-
   try {
+    const eventIDQuery = await db
+      .collection('customers')
+      .where('eventID', '==', idempotencyKey)
+      .get();
+
+    if (eventIDQuery.docs.length != 0) {
+      //if eventID already exists, function has already been processed
+      throw Error('This customer has already been created');
+    }
+
     await db.collection('customers').add({
       lastUpdated: admin.firestore.Timestamp.now(),
       customer,
