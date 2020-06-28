@@ -86,6 +86,8 @@ export async function onCreatePaymentLink(data: any, userID: string) {
       connectID: stripeConnectID,
       lastUpdated: admin.firestore.Timestamp.now(),
       eventID: productIdempotencyKey, //check if this event has already been processed
+      successfulTransactions: null,
+      currentSubscriptionsCount: null,
     });
 
     return newDoc;

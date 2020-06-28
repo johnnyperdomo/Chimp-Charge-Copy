@@ -3,8 +3,6 @@ import { stripe } from '../config';
 import * as admin from 'firebase-admin';
 const db = admin.firestore();
 
-// // export const getCustomers = functions.https.onCall(async (data, context) => {});
-
 export async function getOrCreateCustomer(
   customerParams: Stripe.CustomerCreateParams,
   merchantUID: string,
@@ -42,22 +40,23 @@ export async function getOrCreateCustomer(
         { stripeAccount: connectID, idempotencyKey: newCustomerIdempotencyKey }
       );
 
-      //add customer to firestore
-      await db.collection('customers').add({
-        lastUpdated: admin.firestore.Timestamp.now(),
-        customer: createdCustomer,
-        merchantUID: merchantUID,
-        connectID: connectID,
-        isDeleted: false,
-        eventID: newCustomerIdempotencyKey, //check if this event has already been processed
-      });
+      await createFirestoreCustomer(
+        createdCustomer,
+        merchantUID,
+        connectID,
+        newCustomerIdempotencyKey
+      );
 
       return createdCustomer;
     } else {
       //update and return old customer
-      const oldCustomerID = findCustomer.data[0].id;
+      //TODO: check to see if user exists in firestore db, if yes => just .get, else { updateStripeCus.then(createFirestoreCustomer) }
+
+      const existingCustomerID = findCustomer.data[0].id;
+
+      //TODO: test this function
       const updatedCustomer = await updateCustomerMetadata(
-        oldCustomerID,
+        existingCustomerID,
         merchantUID,
         connectID
       );
@@ -108,5 +107,85 @@ export async function updateCustomerDefaultPaymentMethod(
   } catch (error) {
     console.error('updated customer', error);
     throw new Error('stripe: updateCustomerDefaultPaymentMethod: ' + error);
+  }
+}
+
+//Firestore ================>
+
+export async function updateFirestoreCustomer(
+  stripeCustomer: Stripe.Customer,
+
+  connectID: string,
+  eventID: string,
+  willDelete: boolean = false,
+  merchantUID?: string
+) {
+  try {
+    const findCustomer = await db
+      .collection('customers')
+      .where('customer.id', '==', stripeCustomer.id)
+      .get();
+
+    //if can't find customer
+    if (findCustomer.docs.length === 0) {
+      if (!merchantUID) {
+        return;
+      }
+
+      await createFirestoreCustomer(
+        stripeCustomer,
+        merchantUID,
+        connectID,
+        eventID
+      );
+      return;
+    }
+
+    const customerRef = findCustomer.docs[0].ref;
+
+    if (willDelete === true) {
+      //pseudo delete
+      await customerRef.update({
+        isDeleted: true,
+        customer: stripeCustomer,
+        lastUpdated: admin.firestore.Timestamp.now(),
+      });
+      return;
+    }
+
+    await customerRef.update({
+      customer: stripeCustomer,
+      lastUpdated: admin.firestore.Timestamp.now(),
+    });
+
+    return;
+  } catch (err) {
+    throw Error(err);
+  }
+
+  //TODO: we'll check if user exists in firestore, if he doesn't => create one, if he does ...edit him
+}
+
+export async function createFirestoreCustomer(
+  customer: Stripe.Customer,
+  merchantUID: string,
+  connectID: string,
+  idempotencyKey: string
+) {
+  //add customer to firestore
+
+  try {
+    await db.collection('customers').add({
+      lastUpdated: admin.firestore.Timestamp.now(),
+      customer,
+      merchantUID: merchantUID,
+      connectID: connectID,
+      isDeleted: false,
+      eventID: idempotencyKey, //check if this event has already been processed
+      currentSubscriptionsCount: null,
+      successfulTransactions: null,
+    });
+  } catch (err) {
+    throw Error(err);
   }
 }

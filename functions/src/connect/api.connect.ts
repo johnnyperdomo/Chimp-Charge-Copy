@@ -8,7 +8,7 @@ import { stripeClientID, stripe, stripeWebhookSecret } from '../config';
 import * as qs from 'querystring';
 import { createPaymentIntent } from './onetime-payments.connect';
 import { createSubscription } from './subscriptions.connect';
-import { handleStripeWebhooks } from './webhooks.connect';
+import { handleStripeConnectWebhooks } from './webhooks.connect';
 //import * as bodyParser from 'body-parser';
 
 const app = express();
@@ -205,25 +205,30 @@ app.post('/connect/stripeWebhooks', async (req: any, res: express.Response) => {
   }
 
   const signature = req.headers['stripe-signature'];
-
+  let event;
   try {
     //  const subscription = await createSubscription(req.body);
-    const event = stripe.webhooks.constructEvent(
+    event = stripe.webhooks.constructEvent(
       req['rawBody'],
       signature,
       stripeWebhookSecret
     );
 
-    await handleStripeWebhooks(event);
-
-    console.info('stripe webhook called: event: ', event);
     res.send({ received: true });
-    //   res.send({ received: true });
   } catch (err) {
     res.status(400).send(`Webhook Error: ${err.message}`);
   }
+  //TODO: check to see if two try catch blocks work in async
+  if (!event) {
+    return;
+  }
 
-  // // Handle the event
+  try {
+    await handleStripeConnectWebhooks(event);
+    return;
+  } catch (err) {
+    throw new functions.https.HttpsError('unknown', err);
+  }
 });
 
 export const chimpApi = functions.https.onRequest(app);

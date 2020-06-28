@@ -334,7 +334,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
         if (status === 'requires_action') {
           const confirmSubscription = await this.stripe.confirmCardPayment(
-            client_secret
+            client_secret,
+            {
+              setup_future_usage: 'off_session', //save card for future off_session payments
+              receipt_email: email,
+            }
           );
 
           if (confirmSubscription.error) {
