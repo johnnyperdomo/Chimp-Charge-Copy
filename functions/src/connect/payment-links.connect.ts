@@ -172,6 +172,7 @@ export async function onDeletePaymentLink(data: any, userID: string) {
       );
     }
 
+    //archiving product archives price too
     const prodResponse = await archiveProduct(
       priceID,
       productID,
@@ -183,12 +184,9 @@ export async function onDeletePaymentLink(data: any, userID: string) {
         .collection('payment-links')
         .where('product.id', '==', prodResponse.id)
         .get();
-      const docID = query.docs[0].id;
 
-      const deleteDoc = await db
-        .collection('payment-links')
-        .doc(docID)
-        .delete();
+      const docRef = query.docs[0].ref;
+      const deleteDoc = await docRef.delete();
 
       return deleteDoc;
     } else {
@@ -204,6 +202,95 @@ export async function onDeletePaymentLink(data: any, userID: string) {
 }
 
 //methods ===============================>
+
+//Firestore - Stripe Webhooks =========>
+
+export async function updateFirestoreProductFromWebhook(
+  stripeProduct: Stripe.Product
+) {
+  try {
+    if (stripeProduct.active === false) {
+      await deletePaymentLinkFromWebhook(stripeProduct);
+      return;
+    }
+
+    const findProduct = await db
+      .collection('payment-links')
+      .where('product.id', '==', stripeProduct.id)
+      .get();
+
+    const productRef = findProduct.docs[0].ref;
+
+    await productRef.update({
+      product: stripeProduct,
+      lastUpdated: admin.firestore.Timestamp.now(),
+    });
+
+    return;
+  } catch (err) {
+    throw Error(err);
+  }
+}
+
+export async function updateFirestorePriceFromWebhook(
+  stripePrice: Stripe.Price
+) {
+  try {
+    if (stripePrice.active === false) {
+      await deletePaymentLinkFromWebhook(undefined, stripePrice);
+      return;
+    }
+
+    const findPrice = await db
+      .collection('payment-links')
+      .where('price.id', '==', stripePrice.id)
+      .get();
+
+    const priceRef = findPrice.docs[0].ref;
+
+    await priceRef.update({
+      price: stripePrice,
+      lastUpdated: admin.firestore.Timestamp.now(),
+    });
+
+    return;
+  } catch (err) {
+    throw Error(err);
+  }
+}
+
+export async function deletePaymentLinkFromWebhook(
+  stripeProduct?: Stripe.Product,
+  stripePrice?: Stripe.Price
+) {
+  try {
+    if (stripePrice) {
+      const findPrice = await db
+        .collection('payment-links')
+        .where('price.id', '==', stripePrice.id)
+        .get();
+
+      const priceRef = findPrice.docs[0].ref;
+      await priceRef.delete(); //deletes payment-link
+
+      return;
+    }
+
+    if (stripeProduct) {
+      const findProduct = await db
+        .collection('payment-links')
+        .where('product.id', '==', stripeProduct.id)
+        .get();
+
+      const productRef = findProduct.docs[0].ref;
+      await productRef.delete(); //deletes payment-link
+
+      return;
+    }
+  } catch (err) {
+    throw Error(err);
+  }
+}
 
 //Products ==========================>
 async function createProduct(

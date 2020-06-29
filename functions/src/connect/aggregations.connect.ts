@@ -8,7 +8,7 @@ export async function aggregatePaymentIntent() {
 }
 
 export async function aggregateCustomer() {
-  //aggregations.customers
+  //aggregations.customers(up)
 }
 
 export async function aggregatePaymentLink() {

@@ -1,6 +1,11 @@
 import Stripe from 'stripe';
 import { updateFirestoreCustomer } from './customers.connect';
 import * as functions from 'firebase-functions';
+import {
+  updateFirestoreProductFromWebhook,
+  updateFirestorePriceFromWebhook,
+  deletePaymentLinkFromWebhook,
+} from './payment-links.connect';
 
 //TODO:
 export async function handleStripeConnectWebhooks(event: Stripe.Event) {
@@ -11,6 +16,9 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
   const eventID = event.id;
 
   try {
+    //ensures this webhook is associated with chimp charge
+    const merchantUID = await validateStripeWebhook(event.data.object);
+
     switch (event.type) {
       //4 Event Categories
       //
@@ -24,6 +32,7 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
 
         return;
       case 'payment_intent.updated':
+        //if metadata updates most likely
         //update firestore transaction
 
         //::::if payment_intent has an invoice value(=== subscription), retrieve invoice so you can get metadata, update payment_Intent with new metadata, and then execute function as normal, with updated payment_intent
@@ -31,6 +40,7 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
         return;
       case 'charge.refunded':
         //updateFirestoreTransaction, payment intent to refunded === true
+        //transaction ==> .isRefunded: true
         //aggregatePaymentIntent(down)
 
         return;
@@ -39,24 +49,19 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
       //
       case 'customer.updated':
         const updatedCustomer = event.data.object as Stripe.Customer;
-        const updatedMerchantCustomer = await validateStripeWebhookFor(
-          'customer',
-          updatedCustomer
-        );
 
         await updateFirestoreCustomer(
           updatedCustomer,
           connectID,
           eventID,
           false,
-          updatedMerchantCustomer
+          merchantUID
         );
 
         return;
       case 'customer.deleted':
         //::make firestore customer false, archive customer
         const deletedCustomer = event.data.object as Stripe.Customer;
-        await validateStripeWebhookFor('customer', deletedCustomer);
 
         await updateFirestoreCustomer(
           deletedCustomer,
@@ -70,16 +75,26 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
       //PaymentLink Events (Products/Prices) ==================>
       //
       case 'product.updated':
-        //updatePaymentLink, else if product.isActive = false => delete
+        const updatedProduct = event.data.object as Stripe.Product;
+        await updateFirestoreProductFromWebhook(updatedProduct);
 
         return;
       case 'price.updated': //user can't update price from chimp_charge, but they can from stripe dashboard
-        //updatePaymentLink, else if price.isActive = false => delete
+        const updatedPrice = event.data.object as Stripe.Price;
+        await updateFirestorePriceFromWebhook(updatedPrice);
 
         return;
       case 'product.deleted':
+        const deletedProduct = event.data.object as Stripe.Product;
+        await deletePaymentLinkFromWebhook(deletedProduct);
+
+        //TODO: aggregate(down)
+        return;
       case 'price.deleted':
-        //::payment-link.onDeletePaymentLink
+        const deletedPrice = event.data.object as Stripe.Price;
+        await deletePaymentLinkFromWebhook(undefined, deletedPrice);
+
+        //TODO: aggregate(down)
 
         return;
       //
@@ -93,7 +108,7 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
       //Subscriptions
       case 'customer.subscription.created':
         //create firestore subscription
-        //aggregateSubscription()
+        //aggregateSubscription(up)
         return;
 
       case 'customer.subscription.updated':
@@ -113,31 +128,43 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
   }
 }
 
-type stripeEventType =
-  | 'transaction'
-  | 'customer'
-  | 'payment-link'
-  | 'subscription';
-async function validateStripeWebhookFor(
-  eventType: stripeEventType,
-  eventObject: Stripe.Event.Data.Object
-) {
+// type stripeEventType =
+//   | 'transaction'
+//   | 'customer'
+//   | 'product'
+//   | 'price'
+//   | 'subscription';
+async function validateStripeWebhook(eventObject: Stripe.Event.Data.Object) {
   try {
-    switch (eventType) {
-      case 'customer':
-        const customer = eventObject as Stripe.Customer;
-        const customerMerchantUID =
-          customer.metadata.chimp_charge_firebase_merchant_uid;
+    const stripeObject: any = eventObject;
 
-        if (!customerMerchantUID) {
-          functions.logger.error({ error: 'Webhook could not be validated' });
-          throw Error('Webhook could not be validated');
-        }
+    const retrievedMerchantUID =
+      stripeObject.metadata.chimp_charge_firebase_merchant_uid;
 
-        return customerMerchantUID;
-      default:
-        throw Error('Webhook could not be validated');
+    if (!retrievedMerchantUID) {
+      functions.logger.error({ error: 'Webhook could not be validated' });
+      throw Error('Webhook could not be validated');
     }
+
+    return retrievedMerchantUID;
+
+    // switch (eventType) {
+    //   case 'customer':
+
+    //   case 'product':
+    //     const product = eventObject as Stripe.Product;
+    //     const productMerchantUID =
+    //       product.metadata.chimp_charge_firebase_merchant_uid;
+
+    //     if (!productMerchantUID) {
+    //       functions.logger.error({ error: 'Webhook could not be validated' });
+    //       throw Error('Webhook could not be validated');
+    //     }
+
+    //     return customerMerchantUID;
+    //   default:
+    //     throw Error('Webhook could not be validated');
+    // }
   } catch (err) {
     throw Error(err);
   }
