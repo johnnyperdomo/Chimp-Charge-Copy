@@ -39,7 +39,6 @@ export class AuthService {
       case 'auth/weak-password':
         errorMessage = 'Weak password. Please enter a stronger password.';
         break;
-      //TODO: test the error messages below in a login session
       case 'auth/user-disabled':
         errorMessage =
           'This current account is disabled. Please contact support.';

@@ -90,4 +90,3 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
   }
 }
-//TODO: Navigation triggered outside Angular zone, did you forget to call 'ngZone.run()'? => when clicking signup button

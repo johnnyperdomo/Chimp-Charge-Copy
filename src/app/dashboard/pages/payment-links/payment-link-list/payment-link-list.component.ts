@@ -101,7 +101,7 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
     const payLink = this.linkService.copyPayLink(itemID);
     this.clipboard.copy(payLink);
 
-    //TODO: add alert upon success
+    //FUTURE-UPDATE: add alert upon success
   }
 
   onEditLinkAtRow(itemID: string) {

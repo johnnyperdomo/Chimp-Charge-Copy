@@ -8,7 +8,7 @@ import { MerchantService } from '../merchants.service';
 
 @Injectable()
 export class MerchantEffects {
-  @Effect({ dispatch: false }) //TODO: dispatch to true
+  @Effect({ dispatch: false }) //FUTURE-UPDATE: dispatch to true
   setMerchantInfo = this.actions$.pipe(
     ofType(MerchantActions.SET_MERCHANT_INFO_START),
     switchMap((merchant: MerchantActions.SetMerchantInfoStart) => {
@@ -20,10 +20,6 @@ export class MerchantEffects {
           .doc(merchant.payload.merchantUID)
           .set(parsedMerchant, { merge: true })
       ).pipe(
-        map((merchant) => {
-          //TODO: dispatch success.then (if stripe billing ids exist, call billing) //STRIPE
-          return of();
-        }),
         catchError((errorRes) => {
           //FUTURE-UPDATE: handle error messages better like authService => 'Firestore Error'
           return of(

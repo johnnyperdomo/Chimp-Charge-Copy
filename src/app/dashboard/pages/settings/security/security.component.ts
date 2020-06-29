@@ -93,7 +93,7 @@ export class SecurityComponent implements OnInit, OnDestroy {
       this.isChangeEmailLoading = false;
       this.emailForm.controls['confirmCurrentPassword'].reset();
 
-      //TODO: trigger success alert
+      //FUTURE-UPDATE: trigger success alert
     } catch (err) {
       console.log(err);
       this.changeEmailError = err;
@@ -140,7 +140,7 @@ export class SecurityComponent implements OnInit, OnDestroy {
       console.log('original 2,', currentUser);
       console.log('updated', updatedUser);
 
-      //TODO: trigger success alert
+      //FUTURE-UPDATE: trigger success alert
       this.isChangePasswordLoading = false;
       this.passwordForm.reset();
 

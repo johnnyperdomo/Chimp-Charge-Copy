@@ -48,12 +48,6 @@ export class GetMerchantInfoFail implements Action {
   constructor(public payload: string) {} //error message
 }
 
-//Stripe Billing ==================================>
-//TODO: add stripe billing actions here
-
-//Stripe Connect =================================>
-//TODO: add stripe connect configuration here
-
 export type MerchantActions =
   | SetMerchantInfoStart
   | SetMerchantInfoSuccess

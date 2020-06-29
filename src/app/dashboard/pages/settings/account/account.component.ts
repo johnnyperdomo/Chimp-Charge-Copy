@@ -88,7 +88,7 @@ export class AccountComponent implements OnInit, OnDestroy {
       //FUTURE-UPDATE: present error
     }
 
-    //TODO: present alert on success
+    //FUTURE-UPDATE: present alert on success
   }
 
   ngOnDestroy() {

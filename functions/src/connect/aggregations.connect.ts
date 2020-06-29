@@ -16,9 +16,9 @@ export async function aggregatePaymentLink() {
 }
 
 export async function aggregateSubscription() {
-  //aggregations.subscriptions(up/down)
-  //payment-links.currentSubscriptionsCount(up/down)
-  //customers.currentSubscriptionsCount(up/down)
+  //aggregations.subscriptions(up/down) //all
+  //payment-links.currentSubscriptionsCount(up/down) //active
+  //customers.currentSubscriptionsCount(up/down) //active
 }
 
 //Helper ================>
