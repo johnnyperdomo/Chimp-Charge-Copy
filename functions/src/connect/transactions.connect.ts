@@ -29,15 +29,20 @@ export async function createFirestoreTransaction(
       throw Error('This transaction has already been created');
     }
 
+    const expandedPaymentIntent = await retrieveExpandedPaymentIntent(
+      paymentIntent.id,
+      connectID
+    );
+
     const {
       chimp_charge_short_id,
       chimp_charge_product_name,
       chimp_charge_payment_link_id,
-    } = paymentIntent.metadata;
+    } = expandedPaymentIntent.metadata;
 
     await db.collection('transactions').add({
       lastUpdated: admin.firestore.Timestamp.now(),
-      paymentIntent,
+      paymentIntent: expandedPaymentIntent,
       productName: chimp_charge_product_name,
       paymentLinkID: chimp_charge_payment_link_id,
       merchantUID,
@@ -46,6 +51,40 @@ export async function createFirestoreTransaction(
       shortID: chimp_charge_short_id,
       isRefunded: false,
     });
+
+    return;
+  } catch (err) {
+    throw Error(err);
+  }
+}
+
+export async function updateFirestoreTransaction(
+  paymentIntent: Stripe.PaymentIntent,
+  connectID: string
+) {
+  try {
+    const findTransaction = await db
+      .collection('transactions')
+      .where('paymentIntent.id', '==', paymentIntent.id)
+      .get();
+
+    if (findTransaction.docs.length === 0) {
+      throw Error('Could not find transaction in database');
+    }
+
+    const transactionRef = findTransaction.docs[0].ref;
+
+    const expandedPaymentIntent = await retrieveExpandedPaymentIntent(
+      paymentIntent.id,
+      connectID
+    );
+
+    await transactionRef.update({
+      lastUpdated: admin.firestore.Timestamp.now(),
+      paymentIntent: expandedPaymentIntent,
+    });
+
+    return;
   } catch (err) {
     throw Error(err);
   }

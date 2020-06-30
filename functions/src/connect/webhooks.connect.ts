@@ -5,7 +5,10 @@ import {
   updateFirestorePriceFromWebhook,
   deletePaymentLinkFromWebhook,
 } from './payment-links.connect';
-import { createFirestoreTransaction } from './transactions.connect';
+import {
+  createFirestoreTransaction,
+  updateFirestoreTransaction,
+} from './transactions.connect';
 
 //TODO:
 export async function handleStripeConnectWebhooks(event: Stripe.Event) {
@@ -40,8 +43,9 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
 
         return;
       case 'payment_intent.updated':
-        //if metadata updates most likely
-        //update firestore transaction
+        //if invoice updates metadata for payment_intent most likely
+        const paymentIntentUpdated = eventObject as Stripe.PaymentIntent;
+        await updateFirestoreTransaction(paymentIntentUpdated, connectID);
 
         //::::if payment_intent has an invoice value(=== subscription), retrieve invoice so you can get metadata, update payment_Intent with new metadata, and then execute function as normal, with updated payment_intent
 
@@ -51,6 +55,7 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
         //transaction ==> .isRefunded: true
         //aggregatePaymentIntent(down)
 
+        //TODO: sendgrid
         return;
       //
       //Customer Events ===========================>
@@ -110,13 +115,14 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
       //TODO: invoice.pamyment_success
       case 'invoice.payment_failed':
         //FUTURE-UPDATE: handle this failure
-        // send sendgrid email, to customer -> updated payment method, contact merchant for help
+        // TODO:sendgrid send sendgrid email, to customer -> updated payment method, contact merchant for help
 
         return;
       //Subscriptions
       case 'customer.subscription.created':
         //create firestore subscription
         //aggregateSubscription(up)
+        //TODO: sendgrid
         return;
 
       case 'customer.subscription.updated':
@@ -127,6 +133,7 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
         //update firestore subscription -> cancelled
         //aggregateSubscription(down)
 
+        //TODO: sendgrid
         return;
       default:
         return;
