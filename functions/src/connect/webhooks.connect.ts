@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import { updateFirestoreCustomer } from './customers.connect';
+import * as functions from 'firebase-functions';
 import {
   updateFirestoreProductFromWebhook,
   updateFirestorePriceFromWebhook,
@@ -8,6 +9,7 @@ import {
 import {
   createFirestoreTransaction,
   updateFirestoreTransaction,
+  createFirestoreTransactionFromInvoice,
 } from './transactions.connect';
 
 //TODO:
@@ -20,8 +22,9 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
   const eventObject = event.data.object;
 
   try {
+    //TODO: account deauthorized payment intent
     //ensures this webhook is associated with chimp charge
-    const merchantUID = await validateStripeWebhook(event.data.object);
+    const merchantUID = await validateStripeWebhook(event);
 
     switch (event.type) {
       //4 Event Categories
@@ -32,20 +35,12 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
         const paymentIntentSucceeded = eventObject as Stripe.PaymentIntent;
 
         await createFirestoreTransaction(
-          paymentIntentSucceeded,
+          paymentIntentSucceeded.id,
           connectID,
           merchantUID,
           eventID
         );
         //aggregatePaymentIntents(up)
-
-        //::::if payment_intent has an invoice value(=== subscription), retrieve invoice so you can get metadata, update payment_Intent with new metadata, and then execute function as normal, with updated payment_intent
-
-        return;
-      case 'payment_intent.updated':
-        //if invoice updates metadata for payment_intent most likely
-        const paymentIntentUpdated = eventObject as Stripe.PaymentIntent;
-        await updateFirestoreTransaction(paymentIntentUpdated, connectID);
 
         //::::if payment_intent has an invoice value(=== subscription), retrieve invoice so you can get metadata, update payment_Intent with new metadata, and then execute function as normal, with updated payment_intent
 
@@ -112,7 +107,19 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
       //
       //Subscription Events ==================> //TODO:
       //
-      //TODO: invoice.pamyment_success
+
+      case 'invoice.payment_succeeded':
+        const invoicePaymentSucceeded = eventObject as Stripe.Invoice;
+        await createFirestoreTransactionFromInvoice(
+          invoicePaymentSucceeded,
+          connectID,
+          merchantUID,
+          eventID
+        );
+        //FUTURE-UPDATE: handle this failure
+        // TODO:sendgrid send sendgrid email, to customer -> updated payment method, contact merchant for help
+
+        return;
       case 'invoice.payment_failed':
         //FUTURE-UPDATE: handle this failure
         // TODO:sendgrid send sendgrid email, to customer -> updated payment method, contact merchant for help
@@ -149,18 +156,20 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
 //   | 'product'
 //   | 'price'
 //   | 'subscription';
-async function validateStripeWebhook(eventObject: Stripe.Event.Data.Object) {
+async function validateStripeWebhook(stripeEvent: Stripe.Event) {
   try {
-    const stripeObject: any = eventObject;
+    const stripeObject: any = stripeEvent.data.object;
 
-    const retrievedMerchantUID =
-      stripeObject.metadata.chimp_charge_firebase_merchant_uid;
+    switch (stripeEvent.type) {
+      case 'invoice.payment_succeeded':
+      case 'invoice.payment_failed':
+        const invoiceObject = stripeObject as Stripe.Invoice;
+        const invoiceLine = invoiceObject.lines.data[0];
 
-    if (!retrievedMerchantUID) {
-      throw Error('Webhook could not be validated');
+        return invoiceLine.metadata.chimp_charge_firebase_merchant_uid;
+      default:
+        return stripeObject.metadata.chimp_charge_firebase_merchant_uid;
     }
-
-    return retrievedMerchantUID;
 
     // switch (eventType) {
     //   case 'customer':

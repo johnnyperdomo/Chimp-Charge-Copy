@@ -2,6 +2,7 @@ import * as admin from 'firebase-admin';
 import Stripe from 'stripe';
 import { stripe } from '../config';
 const db = admin.firestore();
+import * as functions from 'firebase-functions';
 
 // export const getTransactions = functions.https.onCall(
 //   async (data, context) => {}
@@ -13,10 +14,12 @@ const db = admin.firestore();
 
 //payment_intent.success || invoice.success
 export async function createFirestoreTransaction(
-  paymentIntent: Stripe.PaymentIntent,
+  paymentIntentID: string,
   connectID: string,
   merchantUID: string,
-  idempotencyKey: string
+  idempotencyKey: string,
+  getMetadataFromInvoice: boolean = false,
+  invoiceMetadata?: Stripe.Metadata
 ) {
   try {
     const eventIDQuery = await db
@@ -25,20 +28,25 @@ export async function createFirestoreTransaction(
       .get();
 
     if (eventIDQuery.docs.length != 0) {
-      //if eventID already exists, function has already been processed
       throw Error('This transaction has already been created');
     }
 
     const expandedPaymentIntent = await retrieveExpandedPaymentIntent(
-      paymentIntent.id,
+      paymentIntentID,
       connectID
     );
+
+    //use invoice metadata if 'getMeta..fromInv..' else, use 'payment_intent'
+    //one time payments add metadata in 'payment_intent', but subscription payments add metadata in 'invoice'
+    functions.logger.log('invoice meta, : ' + invoiceMetadata!);
 
     const {
       chimp_charge_short_id,
       chimp_charge_product_name,
       chimp_charge_payment_link_id,
-    } = expandedPaymentIntent.metadata;
+    } = getMetadataFromInvoice
+      ? invoiceMetadata!
+      : expandedPaymentIntent.metadata;
 
     await db.collection('transactions').add({
       lastUpdated: admin.firestore.Timestamp.now(),
@@ -58,35 +66,34 @@ export async function createFirestoreTransaction(
   }
 }
 
-export async function updateFirestoreTransaction(
-  paymentIntent: Stripe.PaymentIntent,
-  connectID: string
+export async function createFirestoreTransactionFromInvoice(
+  invoice: Stripe.Invoice,
+  connectID: string,
+  merchantUID: string,
+  idempotencyKey: string
 ) {
   try {
-    const findTransaction = await db
-      .collection('transactions')
-      .where('paymentIntent.id', '==', paymentIntent.id)
-      .get();
-
-    if (findTransaction.docs.length === 0) {
-      throw Error('Could not find transaction in database');
+    if (!invoice.payment_intent) {
+      throw Error('No payment intent associated with this transaction');
     }
 
-    const transactionRef = findTransaction.docs[0].ref;
+    const paymentIntentID = invoice.payment_intent as string;
+    const invoiceMetadata = invoice.lines.data[0].metadata;
 
-    const expandedPaymentIntent = await retrieveExpandedPaymentIntent(
-      paymentIntent.id,
-      connectID
+    functions.logger.log('invoice meta from trans, : ' + invoiceMetadata);
+
+    await createFirestoreTransaction(
+      paymentIntentID,
+      connectID,
+      merchantUID,
+      idempotencyKey,
+      true,
+      invoiceMetadata
     );
 
-    await transactionRef.update({
-      lastUpdated: admin.firestore.Timestamp.now(),
-      paymentIntent: expandedPaymentIntent,
-    });
-
     return;
-  } catch (err) {
-    throw Error(err);
+  } catch (error) {
+    throw Error(error);
   }
 }
 
@@ -97,7 +104,7 @@ export async function retrieveExpandedPaymentIntent(
   try {
     const paymentIntent = await stripe.paymentIntents.retrieve(
       id,
-      { expand: ['customer'] },
+      { expand: ['customer', 'invoice'] },
       { stripeAccount: connectID }
     );
 
@@ -106,6 +113,7 @@ export async function retrieveExpandedPaymentIntent(
     throw Error(error);
   }
 }
+
 //TODO:export async function updateFirestoreTransaction() {}
 
 //TODO: add function, when new payment intent webhook is succeeded, add product/price to document of firestore.transaction to map product/price with transaction {update => product: stripe.product, price: stripe.price}
