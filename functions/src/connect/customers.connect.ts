@@ -114,7 +114,6 @@ export async function updateCustomerDefaultPaymentMethod(
 
 export async function updateFirestoreCustomer(
   stripeCustomer: Stripe.Customer,
-
   connectID: string,
   eventID: string,
   willDelete: boolean = false,

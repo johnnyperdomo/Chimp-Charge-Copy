@@ -125,6 +125,7 @@ export class HelperService {
     paymentLinkMetadata: {
       chimp_charge_payment_link_id: string;
       chimp_charge_short_id: string;
+      chimp_charge_product_name: string
     },
     connectID: string,
     merchantUID: string,
@@ -163,6 +164,7 @@ export class HelperService {
     paymentLinkMetadata: {
       chimp_charge_payment_link_id: string;
       chimp_charge_short_id: string;
+      chimp_charge_product_name: string
     },
     connectID: string,
     merchantUID: string,

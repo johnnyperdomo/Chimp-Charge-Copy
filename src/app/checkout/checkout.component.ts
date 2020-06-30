@@ -243,7 +243,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         !this.connectID ||
         !this.merchantUID ||
         !this.minorAmount ||
-        !this.linkID
+        !this.linkID ||
+        !this.linkName
       ) {
         throw Error('Invalid form. Please try again!');
       }
@@ -254,6 +255,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         {
           chimp_charge_payment_link_id: this.linkID,
           chimp_charge_short_id: this.shortTransactionID,
+          chimp_charge_product_name: this.linkName,
         },
         this.connectID,
         this.merchantUID,
@@ -295,7 +297,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         !this.connectID ||
         !this.merchantUID ||
         !this.priceID ||
-        !this.linkID
+        !this.linkID ||
+        !this.linkName
       ) {
         throw Error('Invalid form. Please try again!');
       }
@@ -316,6 +319,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         {
           chimp_charge_payment_link_id: this.linkID,
           chimp_charge_short_id: this.shortTransactionID,
+          chimp_charge_product_name: this.linkName,
         },
         this.connectID,
         this.merchantUID,

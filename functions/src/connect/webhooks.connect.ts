@@ -1,11 +1,11 @@
 import Stripe from 'stripe';
 import { updateFirestoreCustomer } from './customers.connect';
-import * as functions from 'firebase-functions';
 import {
   updateFirestoreProductFromWebhook,
   updateFirestorePriceFromWebhook,
   deletePaymentLinkFromWebhook,
 } from './payment-links.connect';
+import { createFirestoreTransaction } from './transactions.connect';
 
 //TODO:
 export async function handleStripeConnectWebhooks(event: Stripe.Event) {
@@ -14,6 +14,7 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
   }
   const connectID = event.account;
   const eventID = event.id;
+  const eventObject = event.data.object;
 
   try {
     //ensures this webhook is associated with chimp charge
@@ -25,7 +26,14 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
       //Transaction Events ========================>
       //
       case 'payment_intent.succeeded':
-        //createFirestoreTransaction
+        const paymentIntentSucceeded = eventObject as Stripe.PaymentIntent;
+
+        await createFirestoreTransaction(
+          paymentIntentSucceeded,
+          connectID,
+          merchantUID,
+          eventID
+        );
         //aggregatePaymentIntents(up)
 
         //::::if payment_intent has an invoice value(=== subscription), retrieve invoice so you can get metadata, update payment_Intent with new metadata, and then execute function as normal, with updated payment_intent
@@ -48,10 +56,10 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
       //Customer Events ===========================>
       //
       case 'customer.updated':
-        const updatedCustomer = event.data.object as Stripe.Customer;
+        const customerUpdated = eventObject as Stripe.Customer;
 
         await updateFirestoreCustomer(
-          updatedCustomer,
+          customerUpdated,
           connectID,
           eventID,
           false,
@@ -60,11 +68,10 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
 
         return;
       case 'customer.deleted':
-        //::make firestore customer false, archive customer
-        const deletedCustomer = event.data.object as Stripe.Customer;
+        const customerDeleted = eventObject as Stripe.Customer;
 
         await updateFirestoreCustomer(
-          deletedCustomer,
+          customerDeleted,
           connectID,
           eventID,
           true
@@ -75,23 +82,23 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
       //PaymentLink Events (Products/Prices) ==================>
       //
       case 'product.updated':
-        const updatedProduct = event.data.object as Stripe.Product;
-        await updateFirestoreProductFromWebhook(updatedProduct);
+        const productUpdated = eventObject as Stripe.Product;
+        await updateFirestoreProductFromWebhook(productUpdated);
 
         return;
       case 'price.updated': //user can't update price from chimp_charge, but they can from stripe dashboard
-        const updatedPrice = event.data.object as Stripe.Price;
-        await updateFirestorePriceFromWebhook(updatedPrice);
+        const priceUpdated = eventObject as Stripe.Price;
+        await updateFirestorePriceFromWebhook(priceUpdated);
 
         return;
       case 'product.deleted':
-        const deletedProduct = event.data.object as Stripe.Product;
-        await deletePaymentLinkFromWebhook(deletedProduct);
+        const productDeleted = eventObject as Stripe.Product;
+        await deletePaymentLinkFromWebhook(productDeleted);
 
         //TODO: aggregate(down)
         return;
       case 'price.deleted':
-        const deletedPrice = event.data.object as Stripe.Price;
+        const deletedPrice = eventObject as Stripe.Price;
         await deletePaymentLinkFromWebhook(undefined, deletedPrice);
 
         //TODO: aggregate(down)
@@ -100,6 +107,7 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
       //
       //Subscription Events ==================> //TODO:
       //
+      //TODO: invoice.pamyment_success
       case 'invoice.payment_failed':
         //FUTURE-UPDATE: handle this failure
         // send sendgrid email, to customer -> updated payment method, contact merchant for help
@@ -142,7 +150,6 @@ async function validateStripeWebhook(eventObject: Stripe.Event.Data.Object) {
       stripeObject.metadata.chimp_charge_firebase_merchant_uid;
 
     if (!retrievedMerchantUID) {
-      functions.logger.error({ error: 'Webhook could not be validated' });
       throw Error('Webhook could not be validated');
     }
 
