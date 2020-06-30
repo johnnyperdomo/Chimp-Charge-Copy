@@ -1,6 +1,7 @@
 import Stripe from 'stripe';
-import { updateFirestoreCustomer } from './customers.connect';
 import * as functions from 'firebase-functions';
+
+import { updateFirestoreCustomer } from './customers.connect';
 import {
   updateFirestoreProductFromWebhook,
   updateFirestorePriceFromWebhook,
@@ -8,7 +9,6 @@ import {
 } from './payment-links.connect';
 import {
   createFirestoreTransaction,
-  updateFirestoreTransaction,
   createFirestoreTransactionFromInvoice,
 } from './transactions.connect';
 
@@ -35,7 +35,7 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
         const paymentIntentSucceeded = eventObject as Stripe.PaymentIntent;
 
         await createFirestoreTransaction(
-          paymentIntentSucceeded.id,
+          paymentIntentSucceeded,
           connectID,
           merchantUID,
           eventID
@@ -109,6 +109,7 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
       //
 
       case 'invoice.payment_succeeded':
+        //TODO: error on 3d auth secure
         const invoicePaymentSucceeded = eventObject as Stripe.Invoice;
         await createFirestoreTransactionFromInvoice(
           invoicePaymentSucceeded,
@@ -150,12 +151,6 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
   }
 }
 
-// type stripeEventType =
-//   | 'transaction'
-//   | 'customer'
-//   | 'product'
-//   | 'price'
-//   | 'subscription';
 async function validateStripeWebhook(stripeEvent: Stripe.Event) {
   try {
     const stripeObject: any = stripeEvent.data.object;
@@ -166,29 +161,20 @@ async function validateStripeWebhook(stripeEvent: Stripe.Event) {
         const invoiceObject = stripeObject as Stripe.Invoice;
         const invoiceLine = invoiceObject.lines.data[0];
 
+        if (!invoiceLine.metadata.chimp_charge_firebase_merchant_uid) {
+          throw Error('Could not validate stripe webhook');
+        }
+
         return invoiceLine.metadata.chimp_charge_firebase_merchant_uid;
       default:
+        if (!stripeObject.metadata.chimp_charge_firebase_merchant_uid) {
+          throw Error('Could not validate stripe webhook');
+        }
+
         return stripeObject.metadata.chimp_charge_firebase_merchant_uid;
     }
-
-    // switch (eventType) {
-    //   case 'customer':
-
-    //   case 'product':
-    //     const product = eventObject as Stripe.Product;
-    //     const productMerchantUID =
-    //       product.metadata.chimp_charge_firebase_merchant_uid;
-
-    //     if (!productMerchantUID) {
-    //       functions.logger.error({ error: 'Webhook could not be validated' });
-    //       throw Error('Webhook could not be validated');
-    //     }
-
-    //     return customerMerchantUID;
-    //   default:
-    //     throw Error('Webhook could not be validated');
-    // }
   } catch (err) {
+    functions.logger.error(err);
     throw Error(err);
   }
 }

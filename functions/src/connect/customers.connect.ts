@@ -1,6 +1,8 @@
 import Stripe from 'stripe';
 import { stripe } from '../config';
 import * as admin from 'firebase-admin';
+import { customerFieldType } from '../helpers';
+
 const db = admin.firestore();
 
 export async function getOrCreateCustomer(
@@ -122,7 +124,7 @@ export async function updateFirestoreCustomer(
   try {
     const findCustomer = await db
       .collection('customers')
-      .where('customer.id', '==', stripeCustomer.id)
+      .where('customer.customerID', '==', stripeCustomer.id)
       .get();
 
     //if can't find customer
@@ -144,16 +146,32 @@ export async function updateFirestoreCustomer(
 
     if (willDelete === true) {
       //pseudo delete
+
+      const deletedCustomer: customerFieldType = {
+        name: stripeCustomer.name,
+        email: stripeCustomer.email,
+        customerID: stripeCustomer.id,
+        created: stripeCustomer.created,
+      };
+
       await customerRef.update({
         isDeleted: true,
-        customer: stripeCustomer,
+        customer: deletedCustomer,
         lastUpdated: admin.firestore.Timestamp.now(),
       });
+
       return;
     }
 
+    const customerField: customerFieldType = {
+      name: stripeCustomer.name,
+      email: stripeCustomer.email,
+      customerID: stripeCustomer.id,
+      created: stripeCustomer.created,
+    };
+
     await customerRef.update({
-      customer: stripeCustomer,
+      customer: customerField,
       lastUpdated: admin.firestore.Timestamp.now(),
     });
 
@@ -175,14 +193,21 @@ export async function createFirestoreCustomer(
       .where('eventID', '==', idempotencyKey)
       .get();
 
-    if (eventIDQuery.docs.length != 0) {
+    if (eventIDQuery.docs.length !== 0) {
       //if eventID already exists, function has already been processed
       throw Error('This customer has already been created');
     }
 
+    const customerField: customerFieldType = {
+      name: customer.name,
+      email: customer.email,
+      customerID: customer.id,
+      created: customer.created,
+    };
+
     await db.collection('customers').add({
       lastUpdated: admin.firestore.Timestamp.now(),
-      customer,
+      customer: customerField,
       merchantUID: merchantUID,
       connectID: connectID,
       isDeleted: false,

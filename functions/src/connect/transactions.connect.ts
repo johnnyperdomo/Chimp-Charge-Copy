@@ -2,11 +2,7 @@ import * as admin from 'firebase-admin';
 import Stripe from 'stripe';
 import { stripe } from '../config';
 const db = admin.firestore();
-import * as functions from 'firebase-functions';
-
-// export const getTransactions = functions.https.onCall(
-//   async (data, context) => {}
-// );
+import { paymentIntentFieldType, customerFieldType } from '../helpers';
 
 // export const onRefundPayment = functions.https.onCall(
 //   async (data, context) => {}
@@ -14,12 +10,10 @@ import * as functions from 'firebase-functions';
 
 //payment_intent.success || invoice.success
 export async function createFirestoreTransaction(
-  paymentIntentID: string,
+  paymentIntent: Stripe.PaymentIntent,
   connectID: string,
   merchantUID: string,
-  idempotencyKey: string,
-  getMetadataFromInvoice: boolean = false,
-  invoiceMetadata?: Stripe.Metadata
+  idempotencyKey: string
 ) {
   try {
     const eventIDQuery = await db
@@ -27,30 +21,49 @@ export async function createFirestoreTransaction(
       .where('eventID', '==', idempotencyKey)
       .get();
 
-    if (eventIDQuery.docs.length != 0) {
+    if (eventIDQuery.docs.length !== 0) {
       throw Error('This transaction has already been created');
     }
 
+    if (paymentIntent.invoice) {
+      //invoice should be null for one time payments, else exit out
+      return;
+    }
+
     const expandedPaymentIntent = await retrieveExpandedPaymentIntent(
-      paymentIntentID,
+      paymentIntent.id,
       connectID
     );
 
-    //use invoice metadata if 'getMeta..fromInv..' else, use 'payment_intent'
-    //one time payments add metadata in 'payment_intent', but subscription payments add metadata in 'invoice'
-    functions.logger.log('invoice meta, : ' + invoiceMetadata!);
-
+    //extracted from paymentIntent
     const {
       chimp_charge_short_id,
       chimp_charge_product_name,
       chimp_charge_payment_link_id,
-    } = getMetadataFromInvoice
-      ? invoiceMetadata!
-      : expandedPaymentIntent.metadata;
+    } = expandedPaymentIntent.metadata;
+
+    //Fields
+    const customerFromExpand = expandedPaymentIntent.customer as Stripe.Customer;
+
+    const paymentIntentField: paymentIntentFieldType = {
+      currency: expandedPaymentIntent.currency,
+      amount: expandedPaymentIntent.amount,
+      paymentIntentID: expandedPaymentIntent.id,
+      invoiceID: null,
+      created: expandedPaymentIntent.created,
+    };
+
+    const customerField: customerFieldType = {
+      name: customerFromExpand.name,
+      email: customerFromExpand.email,
+      customerID: customerFromExpand.id,
+      created: customerFromExpand.created,
+    };
 
     await db.collection('transactions').add({
       lastUpdated: admin.firestore.Timestamp.now(),
-      paymentIntent: expandedPaymentIntent,
+      paymentIntent: paymentIntentField,
+      customer: customerField,
       productName: chimp_charge_product_name,
       paymentLinkID: chimp_charge_payment_link_id,
       merchantUID,
@@ -77,19 +90,61 @@ export async function createFirestoreTransactionFromInvoice(
       throw Error('No payment intent associated with this transaction');
     }
 
+    const eventIDQuery = await db
+      .collection('transactions')
+      .where('eventID', '==', idempotencyKey)
+      .get();
+
+    if (eventIDQuery.docs.length !== 0) {
+      throw Error('This transaction has already been created');
+    }
+
     const paymentIntentID = invoice.payment_intent as string;
     const invoiceMetadata = invoice.lines.data[0].metadata;
 
-    functions.logger.log('invoice meta from trans, : ' + invoiceMetadata);
-
-    await createFirestoreTransaction(
+    const expandedPaymentIntent = await retrieveExpandedPaymentIntent(
       paymentIntentID,
-      connectID,
-      merchantUID,
-      idempotencyKey,
-      true,
-      invoiceMetadata
+      connectID
     );
+
+    const {
+      chimp_charge_short_id,
+      chimp_charge_product_name,
+      chimp_charge_payment_link_id,
+    } = invoiceMetadata;
+
+    //Fields
+    const customerFromExpand = expandedPaymentIntent.customer as Stripe.Customer;
+
+    const invoiceFromExpand = expandedPaymentIntent.invoice as Stripe.Invoice;
+
+    const paymentIntentField: paymentIntentFieldType = {
+      currency: expandedPaymentIntent.currency,
+      amount: expandedPaymentIntent.amount,
+      paymentIntentID: expandedPaymentIntent.id,
+      invoiceID: expandedPaymentIntent.invoice && invoiceFromExpand.id,
+      created: expandedPaymentIntent.created,
+    };
+
+    const customerField: customerFieldType = {
+      name: customerFromExpand.name,
+      email: customerFromExpand.email,
+      customerID: customerFromExpand.id,
+      created: customerFromExpand.created,
+    };
+
+    await db.collection('transactions').add({
+      lastUpdated: admin.firestore.Timestamp.now(),
+      paymentIntent: paymentIntentField,
+      customer: customerField,
+      productName: chimp_charge_product_name,
+      paymentLinkID: chimp_charge_payment_link_id,
+      merchantUID,
+      connectID,
+      eventID: idempotencyKey,
+      shortID: chimp_charge_short_id,
+      isRefunded: false,
+    });
 
     return;
   } catch (error) {
