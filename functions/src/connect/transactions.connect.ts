@@ -99,13 +99,7 @@ export async function createFirestoreTransactionFromInvoice(
       throw Error('This transaction has already been created');
     }
 
-    const paymentIntentID = invoice.payment_intent as string;
     const invoiceMetadata = invoice.lines.data[0].metadata;
-
-    const expandedPaymentIntent = await retrieveExpandedPaymentIntent(
-      paymentIntentID,
-      connectID
-    );
 
     const {
       chimp_charge_short_id,
@@ -114,23 +108,31 @@ export async function createFirestoreTransactionFromInvoice(
     } = invoiceMetadata;
 
     //Fields
-    const customerFromExpand = expandedPaymentIntent.customer as Stripe.Customer;
 
-    const invoiceFromExpand = expandedPaymentIntent.invoice as Stripe.Invoice;
+    const retrieveCustomer = await stripe.customers.retrieve(
+      invoice.customer as string,
+      { stripeAccount: connectID }
+    );
+
+    let customerField: customerFieldType | null;
+
+    if (retrieveCustomer.deleted === true) {
+      customerField = null;
+    } else {
+      customerField = {
+        name: retrieveCustomer.name,
+        email: retrieveCustomer.email,
+        customerID: retrieveCustomer.id,
+        created: retrieveCustomer.created,
+      };
+    }
 
     const paymentIntentField: paymentIntentFieldType = {
-      currency: expandedPaymentIntent.currency,
-      amount: expandedPaymentIntent.amount,
-      paymentIntentID: expandedPaymentIntent.id,
-      invoiceID: expandedPaymentIntent.invoice && invoiceFromExpand.id,
-      created: expandedPaymentIntent.created,
-    };
-
-    const customerField: customerFieldType = {
-      name: customerFromExpand.name,
-      email: customerFromExpand.email,
-      customerID: customerFromExpand.id,
-      created: customerFromExpand.created,
+      currency: invoice.currency,
+      amount: invoice.amount_paid,
+      paymentIntentID: invoice.payment_intent as string,
+      invoiceID: invoice.id,
+      created: invoice.created,
     };
 
     await db.collection('transactions').add({
