@@ -154,6 +154,34 @@ export async function createFirestoreTransactionFromInvoice(
   }
 }
 
+export async function refundFirestoreTransaction(charge: Stripe.Charge) {
+  try {
+    const findTransaction = await db
+      .collection('transactions')
+      .where(
+        'paymentIntent.paymentIntentID',
+        '==',
+        charge.payment_intent as string
+      )
+      .get();
+
+    if (findTransaction.docs.length === 0) {
+      return;
+    }
+
+    const transactionRef = findTransaction.docs[0].ref;
+
+    await transactionRef.update({
+      isRefunded: true,
+      lastUpdated: admin.firestore.Timestamp.now(),
+    });
+
+    return;
+  } catch (error) {
+    throw Error(error);
+  }
+}
+
 export async function retrieveExpandedPaymentIntent(
   id: string,
   connectID: string
@@ -170,7 +198,5 @@ export async function retrieveExpandedPaymentIntent(
     throw Error(error);
   }
 }
-
-//TODO:export async function updateFirestoreTransaction() {}
 
 //TODO: add function, when new payment intent webhook is succeeded, add product/price to document of firestore.transaction to map product/price with transaction {update => product: stripe.product, price: stripe.price}

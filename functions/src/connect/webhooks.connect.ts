@@ -10,7 +10,9 @@ import {
 import {
   createFirestoreTransaction,
   createFirestoreTransactionFromInvoice,
+  refundFirestoreTransaction,
 } from './transactions.connect';
+import { stripe } from '../config';
 
 //TODO:
 export async function handleStripeConnectWebhooks(event: Stripe.Event) {
@@ -51,13 +53,17 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
         );
         //aggregatePaymentIntents(up)
 
-        //::::if payment_intent has an invoice value(=== subscription), retrieve invoice so you can get metadata, update payment_Intent with new metadata, and then execute function as normal, with updated payment_intent
-
         return;
       case 'charge.refunded':
-        //TODO: validate
-        //updateFirestoreTransaction, payment intent to refunded === true
-        //transaction ==> .isRefunded: true
+        const chargeRefunded = eventObject as Stripe.Charge;
+
+        if (chargeRefunded.refunded === false) {
+          return;
+        }
+
+        await validateStripeWebhook(event, 'charge', connectID);
+        await refundFirestoreTransaction(chargeRefunded);
+
         //aggregatePaymentIntent(down)
 
         //TODO: sendgrid
@@ -152,6 +158,7 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
         return;
       //Subscriptions
       case 'customer.subscription.created':
+        //only active ones
         //TODO: validate
         //create firestore subscription
         //aggregateSubscription(up)
@@ -187,11 +194,13 @@ type stripeEventType =
   | 'invoice'
   | 'customer'
   | 'product'
-  | 'price';
+  | 'price'
+  | 'charge';
 
 async function validateStripeWebhook(
   stripeEvent: Stripe.Event,
-  eventType: stripeEventType
+  eventType: stripeEventType,
+  connectID?: string
 ) {
   try {
     const stripeObject: any = stripeEvent.data.object;
@@ -206,6 +215,30 @@ async function validateStripeWebhook(
         }
 
         return invoiceLine.metadata.chimp_charge_firebase_merchant_uid;
+
+      case 'charge':
+        const chargeObject = stripeObject as Stripe.Charge;
+
+        //if invoice exists, proceed with its metadata
+        if (chargeObject.invoice) {
+          const chargeInvoice = await stripe.invoices.retrieve(
+            chargeObject.invoice as string,
+            { stripeAccount: connectID }
+          );
+
+          const chargeInvoiceLine = chargeInvoice.lines.data[0];
+
+          if (!chargeInvoiceLine.metadata.chimp_charge_firebase_merchant_uid) {
+            throw Error('Could not validate stripe webhook for invoice');
+          }
+
+          return chargeInvoiceLine.metadata.chimp_charge_firebase_merchant_uid;
+        }
+
+        //else, get metadata directly from refund object
+        if (!chargeObject.metadata.chimp_charge_firebase_merchant_uid) {
+          throw Error('Could not validate stripe webhook for one time pay');
+        }
 
       default:
         if (!stripeObject.metadata.chimp_charge_firebase_merchant_uid) {
