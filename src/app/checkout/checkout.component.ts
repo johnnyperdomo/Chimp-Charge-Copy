@@ -12,7 +12,7 @@ import { environment } from 'src/environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { map, switchMap, catchError } from 'rxjs/operators';
-import { from, Subscription, empty } from 'rxjs';
+import { from, Subscription, empty, throwError } from 'rxjs';
 import * as MoneyFormatter from 'src/app/shared/accounting';
 import * as StripeTypes from 'stripe';
 import { HelperService } from '../shared/helper.service';
@@ -88,6 +88,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         }),
         switchMap((data) => {
           const linkData = data.data();
+
+          if (linkData.isDeleted === true) {
+            throw Error('This link has been deleted');
+          }
+
           const merchantUID = linkData.merchantUID;
 
           this.minorAmount = linkData.price.unit_amount;

@@ -160,7 +160,6 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
       case 'invoice.payment_failed':
         //TODO: validate
         //FUTURE-UPDATE: handle this failure
-        // TODO:sendgrid send sendgrid email, to customer -> updated payment method, contact merchant for help
 
         return;
       //Subscriptions
@@ -205,6 +204,8 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
           eventID,
           subscriptionUpdatedMerchantUID
         );
+
+        // TODO:sendgrid send sendgrid email, to customer on payment failure-> updated payment method, contact merchant for help
 
         return;
       case 'customer.subscription.deleted':
