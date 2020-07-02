@@ -16,7 +16,6 @@ import { from, Subscription, empty } from 'rxjs';
 import * as MoneyFormatter from 'src/app/shared/accounting';
 import * as StripeTypes from 'stripe';
 import { HelperService } from '../shared/helper.service';
-import * as shortid from 'shortid';
 
 declare var Stripe; // : stripe.StripeStatic;
 
@@ -39,8 +38,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
   chargeIdempotencyKey = uuidv4(); //used to prevent duplicate charges;
   newCustomerIdempotencyKey = uuidv4();
-
-  shortTransactionID = shortid.generate(); //a shorter id for the transaction
 
   card;
   cardErrors;
@@ -170,8 +167,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     //on error; they are passed to stripe but transaction. not completed
     this.chargeIdempotencyKey = uuidv4();
     this.newCustomerIdempotencyKey = uuidv4();
-
-    this.shortTransactionID = shortid.generate();
   }
 
   async onSubmit(checkoutForm: NgForm) {
@@ -254,7 +249,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         { email, name: customerName },
         {
           chimp_charge_payment_link_id: this.linkID,
-          chimp_charge_short_id: this.shortTransactionID,
           chimp_charge_product_name: this.linkName,
         },
         this.connectID,
@@ -318,7 +312,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         { email, name: customerName },
         {
           chimp_charge_payment_link_id: this.linkID,
-          chimp_charge_short_id: this.shortTransactionID,
           chimp_charge_product_name: this.linkName,
         },
         this.connectID,

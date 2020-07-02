@@ -29,6 +29,7 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
     //TODO: account deauthorized payment intent
     //ensures this webhook is associated with chimp charge
 
+    //TODO: take into account batch or transaction for multiple update values
     switch (event.type) {
       //4 Event Categories
       //

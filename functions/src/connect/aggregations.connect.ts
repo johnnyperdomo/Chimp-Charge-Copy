@@ -1,6 +1,6 @@
 //these functions are used to map grouped data for faster/cheaper querying when fetching items from database
 
-//TODO:
+//TODO: Batch firestore writes
 export async function aggregatePaymentIntent() {
   //aggregations.successfulTransactions(up/down)
   //customers.successfulTransactions(up/down)

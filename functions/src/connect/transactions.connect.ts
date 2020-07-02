@@ -3,6 +3,7 @@ import Stripe from 'stripe';
 import { stripe } from '../config';
 const db = admin.firestore();
 import { paymentIntentFieldType, customerFieldType } from '../helpers';
+import * as shortid from 'shortid';
 
 // export const onRefundPayment = functions.https.onCall(
 //   async (data, context) => {}
@@ -37,7 +38,6 @@ export async function createFirestoreTransaction(
 
     //extracted from paymentIntent
     const {
-      chimp_charge_short_id,
       chimp_charge_product_name,
       chimp_charge_payment_link_id,
     } = expandedPaymentIntent.metadata;
@@ -69,7 +69,7 @@ export async function createFirestoreTransaction(
       merchantUID,
       connectID,
       eventID: idempotencyKey,
-      shortID: chimp_charge_short_id || null,
+      shortID: shortid.generate(), //unique to this doc
       isRefunded: false,
     });
 
@@ -102,7 +102,6 @@ export async function createFirestoreTransactionFromInvoice(
     const invoiceMetadata = invoice.lines.data[0].metadata;
 
     const {
-      chimp_charge_short_id,
       chimp_charge_product_name,
       chimp_charge_payment_link_id,
     } = invoiceMetadata;
@@ -144,7 +143,7 @@ export async function createFirestoreTransactionFromInvoice(
       merchantUID,
       connectID,
       eventID: idempotencyKey,
-      shortID: chimp_charge_short_id || null, //TODO: remove
+      shortID: shortid.generate(), //unique to this doc
       isRefunded: false,
     });
 
