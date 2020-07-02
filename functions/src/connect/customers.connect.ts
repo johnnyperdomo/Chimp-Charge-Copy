@@ -127,7 +127,7 @@ export async function updateFirestoreCustomer(
       .where('customer.customerID', '==', stripeCustomer.id)
       .get();
 
-    //if can't find customer
+    //if can't find customer in firestore, create one(only on update webhook)
     if (findCustomer.docs.length === 0) {
       if (!merchantUID) {
         return;

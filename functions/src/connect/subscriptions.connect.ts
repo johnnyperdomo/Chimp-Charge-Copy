@@ -76,32 +76,87 @@ export async function createFirestoreSubscription(
   merchantUID: string,
   idempotencyKey: string
 ) {
-  const eventIDQuery = await db
-    .collection('subscriptions')
-    .where('eventID', '==', idempotencyKey)
-    .get();
+  try {
+    const eventIDQuery = await db
+      .collection('subscriptions')
+      .where('eventID', '==', idempotencyKey)
+      .get();
 
-  if (eventIDQuery.docs.length !== 0) {
-    throw Error('This subscription has already been created');
+    if (eventIDQuery.docs.length !== 0) {
+      throw Error('This subscription has already been created');
+    }
+
+    const { chimp_charge_payment_link_id } = subscription.metadata;
+
+    const subscriptionField: subscriptionFieldType = {
+      subscriptionID: subscription.id,
+      created: subscription.created,
+    };
+
+    await db.collection('subscriptions').add({
+      lastUpdated: admin.firestore.Timestamp.now(),
+      customerID: subscription.customer as string,
+      subscription: subscriptionField,
+      paymentLinkID: chimp_charge_payment_link_id || null,
+      merchantUID,
+      connectID,
+      eventID: idempotencyKey,
+      status: subscription.status,
+    });
+
+    functions.logger.log('could not create sub cuz its not a success one');
+  } catch (error) {
+    throw Error(error);
   }
+}
 
-  const { chimp_charge_payment_link_id } = subscription.metadata;
+export async function updateFirestoreSubscription(
+  stripeSubscription: Stripe.Subscription,
+  connectID: string,
+  eventID: string,
+  merchantUID?: string
+) {
+  try {
+    const findSubscription = await db
+      .collection('subscriptions')
+      .where('subscription.subscriptionID', '==', stripeSubscription.id)
+      .get();
 
-  const subscriptionField: subscriptionFieldType = {
-    subscriptionID: subscription.id,
-    created: subscription.created,
-  };
+    //if can't find subscription in firestore, create one(only on update webhook)
+    if (findSubscription.docs.length === 0) {
+      if (!merchantUID) {
+        return;
+      }
 
-  await db.collection('subscriptions').add({
-    lastUpdated: admin.firestore.Timestamp.now(),
-    customerID: subscription.customer as string,
-    subscription: subscriptionField,
-    paymentLinkID: chimp_charge_payment_link_id || null,
-    merchantUID,
-    connectID,
-    eventID: idempotencyKey,
-    status: subscription.status,
-  });
+      //only create subscription if active or trialing === success
+      if (
+        !(
+          stripeSubscription.status === 'active' ||
+          stripeSubscription.status === 'trialing'
+        )
+      ) {
+        return;
+      }
+
+      await createFirestoreSubscription(
+        stripeSubscription,
+        connectID,
+        merchantUID,
+        eventID
+      );
+
+      return;
+    }
+
+    const subscriptionRef = findSubscription.docs[0].ref;
+
+    await subscriptionRef.update({
+      status: stripeSubscription.status,
+      lastUpdated: admin.firestore.Timestamp.now(),
+    });
+  } catch (error) {
+    throw Error(error);
+  }
 }
 
 //TODO: when retriving subscription.items, make sure to expand items...data.product, to get product information

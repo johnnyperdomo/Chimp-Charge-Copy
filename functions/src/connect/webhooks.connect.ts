@@ -13,7 +13,10 @@ import {
   refundFirestoreTransaction,
 } from './transactions.connect';
 import { stripe } from '../config';
-import { createFirestoreSubscription } from './subscriptions.connect';
+import {
+  createFirestoreSubscription,
+  updateFirestoreSubscription,
+} from './subscriptions.connect';
 
 //TODO:
 export async function handleStripeConnectWebhooks(event: Stripe.Event) {
@@ -189,13 +192,32 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
         return;
 
       case 'customer.subscription.updated':
-        //TODO: validate
-        //update firestore subscription
+        const subscriptionUpdated = eventObject as Stripe.Subscription;
+
+        const subscriptionUpdatedMerchantUID = await validateStripeWebhook(
+          event,
+          'subscription'
+        );
+
+        await updateFirestoreSubscription(
+          subscriptionUpdated,
+          connectID,
+          eventID,
+          subscriptionUpdatedMerchantUID
+        );
 
         return;
       case 'customer.subscription.deleted':
-        //TODO: validate
-        //update firestore subscription -> cancelled
+        const subscriptionDeleted = eventObject as Stripe.Subscription;
+
+        await validateStripeWebhook(event, 'subscription');
+
+        await updateFirestoreSubscription(
+          subscriptionDeleted,
+          connectID,
+          eventID
+        );
+
         //aggregateSubscription(down)
 
         //TODO: sendgrid
