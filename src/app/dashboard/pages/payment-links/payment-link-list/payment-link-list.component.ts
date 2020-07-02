@@ -63,6 +63,7 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
                 ref
                   .where('merchantUID', '==', retrievedMerchant.merchantUID)
                   .where('connectID', '==', retrievedMerchant.connectID)
+                  .where('isDeleted', '==', false)
                   .orderBy('product.created', 'desc') //sort: newest to last
             )
             .valueChanges({ idField: 'id' });

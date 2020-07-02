@@ -88,6 +88,7 @@ export async function onCreatePaymentLink(data: any, userID: string) {
       eventID: productIdempotencyKey, //check if this event has already been processed
       successfulTransactions: null,
       currentSubscriptionsCount: 0,
+      isDeleted: false,
     });
 
     return newDoc;
@@ -186,7 +187,11 @@ export async function onDeletePaymentLink(data: any, userID: string) {
         .get();
 
       const docRef = query.docs[0].ref;
-      const deleteDoc = await docRef.delete();
+      //cannot un-delete
+      const deleteDoc = await docRef.update({
+        isDeleted: true,
+        lastUpdated: admin.firestore.Timestamp.now(),
+      });
 
       return deleteDoc;
     } else {
@@ -214,14 +219,14 @@ export async function updateFirestoreProductFromWebhook(
       return;
     }
 
-    const findProduct = await db
+    const findLinkFromProduct = await db
       .collection('payment-links')
       .where('product.id', '==', stripeProduct.id)
       .get();
 
-    const productRef = findProduct.docs[0].ref;
+    const linkFromProductRef = findLinkFromProduct.docs[0].ref;
 
-    await productRef.update({
+    await linkFromProductRef.update({
       product: stripeProduct,
       lastUpdated: admin.firestore.Timestamp.now(),
     });
@@ -241,14 +246,14 @@ export async function updateFirestorePriceFromWebhook(
       return;
     }
 
-    const findPrice = await db
+    const findLinkFromPrice = await db
       .collection('payment-links')
       .where('price.id', '==', stripePrice.id)
       .get();
 
-    const priceRef = findPrice.docs[0].ref;
+    const linkFromPriceRef = findLinkFromPrice.docs[0].ref;
 
-    await priceRef.update({
+    await linkFromPriceRef.update({
       price: stripePrice,
       lastUpdated: admin.firestore.Timestamp.now(),
     });
@@ -265,25 +270,33 @@ export async function deletePaymentLinkFromWebhook(
 ) {
   try {
     if (stripePrice) {
-      const findPrice = await db
+      const findLinkFromPrice = await db
         .collection('payment-links')
         .where('price.id', '==', stripePrice.id)
         .get();
 
-      const priceRef = findPrice.docs[0].ref;
-      await priceRef.delete(); //deletes payment-link
+      const linkFromPriceRef = findLinkFromPrice.docs[0].ref;
+
+      await linkFromPriceRef.update({
+        isDeleted: true,
+        lastUpdated: admin.firestore.Timestamp.now(),
+      }); //pseudo deletes payment-link; //cannot un-delete
 
       return;
     }
 
     if (stripeProduct) {
-      const findProduct = await db
+      const findLinkFromProduct = await db
         .collection('payment-links')
         .where('product.id', '==', stripeProduct.id)
         .get();
 
-      const productRef = findProduct.docs[0].ref;
-      await productRef.delete(); //deletes payment-link
+      const linkFromProductRef = findLinkFromProduct.docs[0].ref;
+
+      await linkFromProductRef.update({
+        isDeleted: true,
+        lastUpdated: admin.firestore.Timestamp.now(),
+      }); //pseudo deletes payment-link; //cannot un-delete
 
       return;
     }
