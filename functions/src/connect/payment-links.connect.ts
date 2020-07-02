@@ -87,7 +87,7 @@ export async function onCreatePaymentLink(data: any, userID: string) {
       lastUpdated: admin.firestore.Timestamp.now(),
       eventID: productIdempotencyKey, //check if this event has already been processed
       successfulTransactions: null,
-      currentSubscriptionsCount: null,
+      currentSubscriptionsCount: 0,
     });
 
     return newDoc;

@@ -4,6 +4,10 @@ import Stripe from 'stripe';
 import * as functions from 'firebase-functions';
 import * as customers from './customers.connect';
 import { stripe } from '../config';
+import * as admin from 'firebase-admin';
+import { subscriptionFieldType, customerFieldType } from '../helpers';
+
+const db = admin.firestore();
 
 // export const getSubscribers = functions.https.onCall(
 //   async (data, context) => {}
@@ -63,6 +67,77 @@ export async function createSubscription(data: any) {
   } catch (err) {
     console.error('create sub ', err);
     throw new functions.https.HttpsError('unknown', err);
+  }
+}
+
+export async function createFirestoreSubscription(
+  subscription: Stripe.Subscription,
+  connectID: string,
+  merchantUID: string,
+  idempotencyKey: string
+) {
+  const eventIDQuery = await db
+    .collection('subscriptions')
+    .where('eventID', '==', idempotencyKey)
+    .get();
+
+  if (eventIDQuery.docs.length !== 0) {
+    throw Error('This subscription has already been created');
+  }
+
+  const expandedSubscription = await retrieveExpandedSubscription(
+    subscription.id,
+    connectID
+  );
+
+  const { chimp_charge_payment_link_id } = expandedSubscription.metadata;
+
+  //Fields
+  const customerFromExpand = expandedSubscription.customer as Stripe.Customer;
+
+  const priceFromExpand = expandedSubscription.items.data[0].price;
+  const productFromExpand = expandedSubscription.plan
+    ?.product as Stripe.Product;
+
+  const subscriptionField: subscriptionFieldType = {
+    subscriptionID: expandedSubscription.id,
+    created: expandedSubscription.created,
+  };
+
+  const customerField: customerFieldType = {
+    name: customerFromExpand.name,
+    email: customerFromExpand.email,
+    customerID: customerFromExpand.id,
+    created: customerFromExpand.created,
+  };
+
+  await db.collection('subscriptions').add({
+    lastUpdated: admin.firestore.Timestamp.now(),
+    customer: customerField,
+    price: priceFromExpand,
+    product: productFromExpand,
+    subscription: subscriptionField,
+    paymentLinkID: chimp_charge_payment_link_id || null,
+    merchantUID,
+    connectID,
+    eventID: idempotencyKey,
+    status: expandedSubscription.status,
+  });
+}
+
+async function retrieveExpandedSubscription(id: string, connectID: string) {
+  try {
+    const subscription = await stripe.subscriptions.retrieve(
+      id,
+      {
+        expand: ['customer', 'plan.product'],
+      },
+      { stripeAccount: connectID }
+    );
+
+    return subscription;
+  } catch (error) {
+    throw Error(error);
   }
 }
 

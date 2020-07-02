@@ -212,7 +212,7 @@ export async function createFirestoreCustomer(
       connectID: connectID,
       isDeleted: false,
       eventID: idempotencyKey, //check if this event has already been processed
-      currentSubscriptionsCount: null,
+      currentSubscriptionsCount: 0,
       successfulTransactions: null,
     });
   } catch (err) {

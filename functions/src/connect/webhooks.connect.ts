@@ -13,6 +13,7 @@ import {
   refundFirestoreTransaction,
 } from './transactions.connect';
 import { stripe } from '../config';
+import { createFirestoreSubscription } from './subscriptions.connect';
 
 //TODO:
 export async function handleStripeConnectWebhooks(event: Stripe.Event) {
@@ -71,6 +72,7 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
       //
       //Customer Events ===========================>
       //
+      //TODO: update customer for subscription
       case 'customer.updated':
         const customerUpdated = eventObject as Stripe.Customer;
         const customerUpdatedMerchantUID = await validateStripeWebhook(
@@ -102,6 +104,7 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
       //
       //PaymentLink Events (Products/Prices) ==================>
       //
+      //TODO: update product/price for subscription
       case 'product.updated':
         const productUpdated = eventObject as Stripe.Product;
         await validateStripeWebhook(event, 'product');
@@ -158,9 +161,28 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
         return;
       //Subscriptions
       case 'customer.subscription.created':
-        //only active ones
-        //TODO: validate
-        //create firestore subscription
+        //only active or trialing === success
+        const subscriptionCreated = eventObject as Stripe.Subscription;
+        if (
+          !(
+            subscriptionCreated.status === 'active' ||
+            subscriptionCreated.status === 'trialing'
+          )
+        ) {
+          return;
+        }
+
+        const subscriptionCreatedMechantUID = await validateStripeWebhook(
+          event,
+          'subscription'
+        );
+
+        await createFirestoreSubscription(
+          subscriptionCreated,
+          connectID,
+          subscriptionCreatedMechantUID,
+          eventID
+        );
         //aggregateSubscription(up)
         //TODO: sendgrid
         return;
@@ -195,7 +217,8 @@ type stripeEventType =
   | 'customer'
   | 'product'
   | 'price'
-  | 'charge';
+  | 'charge'
+  | 'subscription';
 
 async function validateStripeWebhook(
   stripeEvent: Stripe.Event,

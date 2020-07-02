@@ -14,3 +14,9 @@ export type paymentIntentFieldType = {
   invoiceID: string | null; //if subscription
   created: number; //unix
 };
+
+//Subscriptions
+export type subscriptionFieldType = {
+  subscriptionID: string;
+  created: number; //unix
+};

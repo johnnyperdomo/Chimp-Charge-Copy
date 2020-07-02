@@ -64,12 +64,12 @@ export async function createFirestoreTransaction(
       lastUpdated: admin.firestore.Timestamp.now(),
       paymentIntent: paymentIntentField,
       customer: customerField,
-      productName: chimp_charge_product_name,
-      paymentLinkID: chimp_charge_payment_link_id,
+      productName: chimp_charge_product_name || null,
+      paymentLinkID: chimp_charge_payment_link_id || null,
       merchantUID,
       connectID,
       eventID: idempotencyKey,
-      shortID: chimp_charge_short_id,
+      shortID: chimp_charge_short_id || null,
       isRefunded: false,
     });
 
@@ -139,12 +139,12 @@ export async function createFirestoreTransactionFromInvoice(
       lastUpdated: admin.firestore.Timestamp.now(),
       paymentIntent: paymentIntentField,
       customer: customerField,
-      productName: chimp_charge_product_name,
-      paymentLinkID: chimp_charge_payment_link_id,
+      productName: chimp_charge_product_name || null,
+      paymentLinkID: chimp_charge_payment_link_id || null,
       merchantUID,
       connectID,
       eventID: idempotencyKey,
-      shortID: chimp_charge_short_id,
+      shortID: chimp_charge_short_id || null, //TODO: remove
       isRefunded: false,
     });
 
