@@ -5,7 +5,7 @@ import * as functions from 'firebase-functions';
 import * as customers from './customers.connect';
 import { stripe } from '../config';
 import * as admin from 'firebase-admin';
-import { subscriptionFieldType, customerFieldType } from '../helpers';
+import { subscriptionFieldType } from '../helpers';
 
 const db = admin.firestore();
 
@@ -85,60 +85,23 @@ export async function createFirestoreSubscription(
     throw Error('This subscription has already been created');
   }
 
-  const expandedSubscription = await retrieveExpandedSubscription(
-    subscription.id,
-    connectID
-  );
-
-  const { chimp_charge_payment_link_id } = expandedSubscription.metadata;
-
-  //Fields
-  const customerFromExpand = expandedSubscription.customer as Stripe.Customer;
-
-  const priceFromExpand = expandedSubscription.items.data[0].price;
-  const productFromExpand = expandedSubscription.plan
-    ?.product as Stripe.Product;
+  const { chimp_charge_payment_link_id } = subscription.metadata;
 
   const subscriptionField: subscriptionFieldType = {
-    subscriptionID: expandedSubscription.id,
-    created: expandedSubscription.created,
-  };
-
-  const customerField: customerFieldType = {
-    name: customerFromExpand.name,
-    email: customerFromExpand.email,
-    customerID: customerFromExpand.id,
-    created: customerFromExpand.created,
+    subscriptionID: subscription.id,
+    created: subscription.created,
   };
 
   await db.collection('subscriptions').add({
     lastUpdated: admin.firestore.Timestamp.now(),
-    customer: customerField,
-    price: priceFromExpand,
-    product: productFromExpand,
+    customerID: subscription.customer as string,
     subscription: subscriptionField,
     paymentLinkID: chimp_charge_payment_link_id || null,
     merchantUID,
     connectID,
     eventID: idempotencyKey,
-    status: expandedSubscription.status,
+    status: subscription.status,
   });
-}
-
-async function retrieveExpandedSubscription(id: string, connectID: string) {
-  try {
-    const subscription = await stripe.subscriptions.retrieve(
-      id,
-      {
-        expand: ['customer', 'plan.product'],
-      },
-      { stripeAccount: connectID }
-    );
-
-    return subscription;
-  } catch (error) {
-    throw Error(error);
-  }
 }
 
 //TODO: when retriving subscription.items, make sure to expand items...data.product, to get product information
