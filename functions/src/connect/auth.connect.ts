@@ -24,3 +24,26 @@ export async function connectStandardIntegration(data: any, userID: string) {
     throw new functions.https.HttpsError('unknown', err);
   }
 }
+
+export async function deauthorizeStripeAccountWebhook(connectID: string) {
+  try {
+    const findAssociatedAccount = await db
+      .collection('merchants')
+      .where('connectID', '==', connectID)
+      .get();
+
+    if (findAssociatedAccount.docs.length === 0) {
+      return;
+    }
+
+    const accountRef = findAssociatedAccount.docs[0].ref;
+
+    await accountRef.update({
+      connectID: null, //remove connectID from merchant
+    });
+
+    return;
+  } catch (error) {
+    throw Error(error);
+  }
+}

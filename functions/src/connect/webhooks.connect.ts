@@ -17,6 +17,7 @@ import {
   createFirestoreSubscription,
   updateFirestoreSubscription,
 } from './subscriptions.connect';
+import { deauthorizeStripeAccountWebhook } from './auth.connect';
 
 //TODO:
 export async function handleStripeConnectWebhooks(event: Stripe.Event) {
@@ -60,6 +61,7 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
 
         return;
       case 'charge.refunded':
+        //FUTURE-UPDATE: handle failed refund webhooks; send email to merchant that refund failed
         const chargeRefunded = eventObject as Stripe.Charge;
 
         if (chargeRefunded.refunded === false) {
@@ -157,11 +159,11 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
         // TODO:sendgrid send sendgrid email, to customer -> updated payment method, contact merchant for help
 
         return;
-      case 'invoice.payment_failed':
-        //TODO: validate
-        //FUTURE-UPDATE: handle this failure
+      // FUTURE-UPDATE: case 'invoice.payment_failed':
+      //   //FUTURE-UPDATE: validate
+      //   //FUTURE-UPDATE: handle this failure
 
-        return;
+      //   return;
       //Subscriptions
       case 'customer.subscription.created':
         //only active or trialing === success
@@ -225,7 +227,8 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
         return;
 
       case 'account.application.deauthorized':
-        //
+        await deauthorizeStripeAccountWebhook(connectID);
+
         return;
       default:
         return;
