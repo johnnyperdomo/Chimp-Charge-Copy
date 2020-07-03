@@ -18,6 +18,7 @@ import {
   updateFirestoreSubscription,
 } from './subscriptions.connect';
 import { deauthorizeStripeAccountWebhook } from './auth.connect';
+import { stripeEventType } from '../helpers';
 
 //TODO:
 export async function handleStripeConnectWebhooks(event: Stripe.Event) {
@@ -30,9 +31,6 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
   const eventObject = event.data.object;
 
   try {
-    //TODO: account deauthorized payment intent
-    //ensures this webhook is associated with chimp charge
-
     //TODO: take into account batch or transaction for multiple update values
     switch (event.type) {
       //4 Event Categories
@@ -139,7 +137,7 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
 
         return;
       //
-      //Subscription Events ==================> //TODO:
+      //Subscription Events ==================>
       //
       //TODO: error for recurring payments
       case 'invoice.payment_succeeded':
@@ -155,8 +153,6 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
           invoicePaymentSuccessMerchantUID,
           eventID
         );
-        //FUTURE-UPDATE: handle this failure
-        // TODO:sendgrid send sendgrid email, to customer -> updated payment method, contact merchant for help
 
         return;
       // FUTURE-UPDATE: case 'invoice.payment_failed':
@@ -208,7 +204,7 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
         );
 
         // TODO:sendgrid send sendgrid email, to customer on payment failure-> updated payment method, contact merchant for help
-
+        //FUTURE-UPDATE: handle this failure
         return;
       case 'customer.subscription.deleted':
         const subscriptionDeleted = eventObject as Stripe.Subscription;
@@ -238,14 +234,7 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
   }
 }
 
-type stripeEventType =
-  | 'payment_intent'
-  | 'invoice'
-  | 'customer'
-  | 'product'
-  | 'price'
-  | 'charge'
-  | 'subscription';
+//ensures this webhook is associated with chimp charge
 
 async function validateStripeWebhook(
   stripeEvent: Stripe.Event,

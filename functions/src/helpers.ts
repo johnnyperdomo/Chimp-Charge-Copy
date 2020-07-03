@@ -20,3 +20,13 @@ export type subscriptionFieldType = {
   subscriptionID: string;
   created: number; //unix
 };
+
+//Webhooks
+export type stripeEventType =
+  | 'payment_intent'
+  | 'invoice'
+  | 'customer'
+  | 'product'
+  | 'price'
+  | 'charge'
+  | 'subscription';

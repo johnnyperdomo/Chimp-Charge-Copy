@@ -1,14 +1,14 @@
 import * as functions from 'firebase-functions';
 import * as express from 'express';
 import * as cors from 'cors';
-import * as paymentLinks from './payment-links.connect';
-import * as connectAuth from './auth.connect';
+import * as paymentLinks from './connect/payment-links.connect';
+import * as connectAuth from './connect/auth.connect';
 import * as admin from 'firebase-admin';
-import { stripeClientID, stripe, stripeWebhookSecret } from '../config';
+import { stripeClientID, stripe, stripeWebhookSecret } from './config';
 import * as qs from 'querystring';
-import { createPaymentIntent } from './onetime-payments.connect';
-import { createSubscription } from './subscriptions.connect';
-import { handleStripeConnectWebhooks } from './webhooks.connect';
+import { createPaymentIntent } from './connect/onetime-payments.connect';
+import { createSubscription } from './connect/subscriptions.connect';
+import { handleStripeConnectWebhooks } from './connect/webhooks.connect';
 
 const app = express();
 
