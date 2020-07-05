@@ -23,8 +23,8 @@ export async function aggregateCustomer(connectID: string) {
       .list({ stripeAccount: connectID })
       .autoPagingToArray({ limit: 10000 });
 
-    const filteredCustomers = customers.filter((data) =>
-      getOnlyChimpChargeData(data)
+    const filteredCustomers = customers.filter(
+      (data) => data.metadata.chimp_charge_firebase_merchant_uid
     );
 
     await db
@@ -43,6 +43,20 @@ export async function aggregateCustomer(connectID: string) {
 
 export async function aggregatePaymentLink(connectID: string) {
   await createAggregationMapIfNecessary(connectID);
+
+  const products: Stripe.Customer[] = await stripe.customers
+    .list({ stripeAccount: connectID })
+    .autoPagingToArray({ limit: 10000 });
+
+  const filteredProducts = products.filter(
+    (data) => data.metadata.chimp_charge_firebase_merchant_uid
+  );
+
+  await db
+    .collection('aggregations')
+    .doc(connectID)
+    .set({ paymentLinkCount: filteredProducts.length }, { merge: true });
+
   //aggregations.paymentLinks(up/down)
 }
 
@@ -55,7 +69,8 @@ export async function aggregateSubscription(connectID: string) {
   //customers.currentSubscriptionsCount(up/down) //active
 }
 
-//Helper ================>
+//Helpers ================>
+
 //creates aggregation document by merchantUID in firestore if doesn't exist
 async function createAggregationMapIfNecessary(connectID: string) {
   try {
@@ -82,12 +97,5 @@ async function createAggregationMapIfNecessary(connectID: string) {
     return;
   } catch (error) {
     throw Error(error);
-  }
-}
-
-function getOnlyChimpChargeData(data: any) {
-  //return only objects with chimp charge metadata
-  if (data.metadata.chimp_charge_firebase_merchant_uid) {
-    return data;
   }
 }

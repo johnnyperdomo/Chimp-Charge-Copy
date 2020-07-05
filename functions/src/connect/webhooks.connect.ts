@@ -19,7 +19,10 @@ import {
 } from './subscriptions.connect';
 import { deauthorizeStripeAccountWebhook } from './auth.connect';
 import { stripeEventType } from '../helpers';
-import { aggregateCustomer } from './aggregations.connect';
+import {
+  aggregateCustomer,
+  aggregatePaymentLink,
+} from './aggregations.connect';
 
 //TODO:
 export async function handleStripeConnectWebhooks(event: Stripe.Event) {
@@ -132,6 +135,8 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
         await validateStripeWebhook(event, 'product');
         await deletePaymentLinkFromWebhook(productDeleted);
 
+        await aggregatePaymentLink(connectID);
+
         //TODO: aggregate(down)
         return;
       case 'price.deleted':
@@ -139,6 +144,7 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
         await validateStripeWebhook(event, 'price');
         await deletePaymentLinkFromWebhook(undefined, deletedPrice);
 
+        await aggregatePaymentLink(connectID);
         //TODO: aggregate(down)
 
         return;
