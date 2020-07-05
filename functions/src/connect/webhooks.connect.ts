@@ -19,7 +19,6 @@ import {
 } from './subscriptions.connect';
 import { deauthorizeStripeAccountWebhook } from './auth.connect';
 import { stripeEventType } from '../helpers';
-import { aggregateCustomer } from './aggregations.connect';
 
 //TODO:
 export async function handleStripeConnectWebhooks(event: Stripe.Event) {
@@ -79,7 +78,6 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
       //
       //TODO: update customer for subscription
 
-      case 'customer.created':
       case 'customer.updated':
         const customerUpdated = eventObject as Stripe.Customer;
         const customerUpdatedMerchantUID = await validateStripeWebhook(
@@ -98,6 +96,7 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
 
         return;
       case 'customer.deleted':
+        //customer will not be deleted in aggregation map
         const customerDeleted = eventObject as Stripe.Customer;
         await validateStripeWebhook(event, 'customer');
 
@@ -107,8 +106,6 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
           eventID,
           true
         );
-
-        await aggregateCustomer(connectID);
 
         return;
       //

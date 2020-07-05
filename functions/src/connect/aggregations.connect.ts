@@ -1,5 +1,3 @@
-import Stripe from 'stripe';
-import { stripe } from '../config';
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 
@@ -13,29 +11,6 @@ export async function aggregatePaymentIntent(connectID: string) {
   //aggregations.successfulTransactions(up/down)
   //customers.successfulTransactions(up/down)
   //payment-links.successfulTransactions(up/down)
-}
-
-export async function aggregateCustomer(connectID: string) {
-  try {
-    await createAggregationMapIfNecessary(connectID);
-
-    const customers: Stripe.Customer[] = await stripe.customers
-      .list({ stripeAccount: connectID })
-      .autoPagingToArray({ limit: 10000 });
-
-    const filteredCustomers = customers.filter(
-      (data) => data.metadata.chimp_charge_firebase_merchant_uid
-    );
-
-    await db
-      .collection('aggregations')
-      .doc(connectID)
-      .set({ customerCount: filteredCustomers.length }, { merge: true });
-
-    return;
-  } catch (error) {
-    throw Error(error);
-  }
 }
 
 export async function aggregateSubscription(connectID: string) {

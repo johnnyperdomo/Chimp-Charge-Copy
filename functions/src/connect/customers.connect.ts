@@ -2,7 +2,6 @@ import Stripe from 'stripe';
 import { stripe } from '../config';
 import * as admin from 'firebase-admin';
 import { customerFieldType } from '../helpers';
-import { aggregateCustomer } from './aggregations.connect';
 
 const db = admin.firestore();
 
@@ -43,6 +42,14 @@ export async function getOrCreateCustomer(
         { stripeAccount: connectID, idempotencyKey: newCustomerIdempotencyKey }
       );
 
+      //customer should be created in firebase before completing payment, to make sure aggregation completes successfully
+      await createFirestoreCustomer(
+        createdCustomer,
+        merchantUID,
+        connectID,
+        newCustomerIdempotencyKey
+      );
+
       return createdCustomer;
     } else {
       //update and return existing customer
@@ -54,6 +61,16 @@ export async function getOrCreateCustomer(
         merchantUID,
         connectID
       );
+
+      //customer should be updated/created in firebase before completing payment, to make sure aggregation completes successfully
+      await updateFirestoreCustomer(
+        updatedCustomer,
+        connectID,
+        newCustomerIdempotencyKey,
+        false,
+        merchantUID
+      );
+
       return updatedCustomer;
     }
   } catch (err) {
@@ -199,7 +216,13 @@ export async function createFirestoreCustomer(
       created: customer.created,
     };
 
-    await db.collection('customers').add({
+    const newDoc = db.collection('customers').doc();
+    const aggregationRef = db.collection('aggregations').doc(connectID);
+
+    const increment = admin.firestore.FieldValue.increment(1);
+    const batch = db.batch(); //atomic
+
+    batch.set(newDoc, {
       lastUpdated: admin.firestore.Timestamp.now(),
       customer: customerField,
       merchantUID: merchantUID,
@@ -210,7 +233,9 @@ export async function createFirestoreCustomer(
       successfulTransactions: null,
     });
 
-    await aggregateCustomer(connectID); //don't await bcuz we don't want to wait for this
+    batch.set(aggregationRef, { customerCount: increment }, { merge: true }); //aggregate customer count
+
+    await batch.commit();
 
     return;
   } catch (err) {
