@@ -36,28 +36,6 @@ export async function aggregateCustomer(connectID: string) {
   } catch (error) {
     throw Error(error);
   }
-
-  //TODO: set timeout to 180 seconds
-  //aggregations.customers(up)
-}
-
-export async function aggregatePaymentLink(connectID: string) {
-  await createAggregationMapIfNecessary(connectID);
-
-  const products: Stripe.Customer[] = await stripe.customers
-    .list({ stripeAccount: connectID })
-    .autoPagingToArray({ limit: 10000 });
-
-  const filteredProducts = products.filter(
-    (data) => data.metadata.chimp_charge_firebase_merchant_uid
-  );
-
-  await db
-    .collection('aggregations')
-    .doc(connectID)
-    .set({ paymentLinkCount: filteredProducts.length }, { merge: true });
-
-  //aggregations.paymentLinks(up/down)
 }
 
 export async function aggregateSubscription(connectID: string) {

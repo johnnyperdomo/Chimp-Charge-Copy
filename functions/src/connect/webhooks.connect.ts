@@ -19,10 +19,7 @@ import {
 } from './subscriptions.connect';
 import { deauthorizeStripeAccountWebhook } from './auth.connect';
 import { stripeEventType } from '../helpers';
-import {
-  aggregateCustomer,
-  aggregatePaymentLink,
-} from './aggregations.connect';
+import { aggregateCustomer } from './aggregations.connect';
 
 //TODO:
 export async function handleStripeConnectWebhooks(event: Stripe.Event) {
@@ -121,31 +118,25 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
       case 'product.updated':
         const productUpdated = eventObject as Stripe.Product;
         await validateStripeWebhook(event, 'product');
-        await updateFirestoreProductFromWebhook(productUpdated);
+        await updateFirestoreProductFromWebhook(productUpdated, connectID);
 
         return;
       case 'price.updated': //user can't update price from chimp_charge, but they can from stripe dashboard
         const priceUpdated = eventObject as Stripe.Price;
         await validateStripeWebhook(event, 'price');
-        await updateFirestorePriceFromWebhook(priceUpdated);
+        await updateFirestorePriceFromWebhook(priceUpdated, connectID);
 
         return;
       case 'product.deleted':
         const productDeleted = eventObject as Stripe.Product;
         await validateStripeWebhook(event, 'product');
-        await deletePaymentLinkFromWebhook(productDeleted);
+        await deletePaymentLinkFromWebhook(connectID, productDeleted);
 
-        await aggregatePaymentLink(connectID);
-
-        //TODO: aggregate(down)
         return;
       case 'price.deleted':
         const deletedPrice = eventObject as Stripe.Price;
         await validateStripeWebhook(event, 'price');
-        await deletePaymentLinkFromWebhook(undefined, deletedPrice);
-
-        await aggregatePaymentLink(connectID);
-        //TODO: aggregate(down)
+        await deletePaymentLinkFromWebhook(connectID, undefined, deletedPrice);
 
         return;
       //
