@@ -103,8 +103,7 @@ export async function createFirestoreSubscription(
       eventID: idempotencyKey,
       status: subscription.status,
     });
-
-    functions.logger.log('could not create sub cuz its not a success one');
+    return;
   } catch (error) {
     throw Error(error);
   }
@@ -154,6 +153,7 @@ export async function updateFirestoreSubscription(
       status: stripeSubscription.status,
       lastUpdated: admin.firestore.Timestamp.now(),
     });
+    return;
   } catch (error) {
     throw Error(error);
   }

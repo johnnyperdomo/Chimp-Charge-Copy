@@ -2,6 +2,7 @@ import Stripe from 'stripe';
 import { stripe } from '../config';
 import * as admin from 'firebase-admin';
 import { customerFieldType } from '../helpers';
+import { aggregateCustomer } from './aggregations.connect';
 
 const db = admin.firestore();
 
@@ -40,13 +41,6 @@ export async function getOrCreateCustomer(
           ...customerParams, //name is included here
         },
         { stripeAccount: connectID, idempotencyKey: newCustomerIdempotencyKey }
-      );
-
-      await createFirestoreCustomer(
-        createdCustomer,
-        merchantUID,
-        connectID,
-        newCustomerIdempotencyKey
       );
 
       return createdCustomer;
@@ -215,6 +209,10 @@ export async function createFirestoreCustomer(
       currentSubscriptionsCount: 0,
       successfulTransactions: null,
     });
+
+    await aggregateCustomer(connectID); //don't await bcuz we don't want to wait for this
+
+    return;
   } catch (err) {
     throw Error(err);
   }

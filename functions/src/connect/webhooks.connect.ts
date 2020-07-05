@@ -19,6 +19,7 @@ import {
 } from './subscriptions.connect';
 import { deauthorizeStripeAccountWebhook } from './auth.connect';
 import { stripeEventType } from '../helpers';
+import { aggregateCustomer } from './aggregations.connect';
 
 //TODO:
 export async function handleStripeConnectWebhooks(event: Stripe.Event) {
@@ -77,6 +78,8 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
       //Customer Events ===========================>
       //
       //TODO: update customer for subscription
+
+      case 'customer.created':
       case 'customer.updated':
         const customerUpdated = eventObject as Stripe.Customer;
         const customerUpdatedMerchantUID = await validateStripeWebhook(
@@ -84,6 +87,7 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
           'customer'
         );
 
+        //creates customer if necessary
         await updateFirestoreCustomer(
           customerUpdated,
           connectID,
@@ -103,6 +107,8 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
           eventID,
           true
         );
+
+        await aggregateCustomer(connectID);
 
         return;
       //
@@ -184,6 +190,7 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
           subscriptionCreatedMechantUID,
           eventID
         );
+
         //aggregateSubscription(up)
         //TODO: sendgrid
         return;
@@ -216,13 +223,14 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
           connectID,
           eventID
         );
-
         //aggregateSubscription(down)
 
         //TODO: sendgrid
         return;
 
       case 'account.application.deauthorized':
+        //FUTURE-UPDATE: Send email about deauthorized account,
+        //FUTURE-UPDATE send email about new authorized account as well
         await deauthorizeStripeAccountWebhook(connectID);
 
         return;
@@ -290,3 +298,5 @@ async function validateStripeWebhook(
     throw Error(err);
   }
 }
+
+//FUTURE-UPDATE: maybe create email funnels, when user first signs up, depending on webhook actions: i.e. step by step guide using sendbox email template

@@ -21,7 +21,7 @@ export type subscriptionFieldType = {
   created: number; //unix
 };
 
-//Webhooks
+//Webhooks ==============>
 export type stripeEventType =
   | 'payment_intent'
   | 'invoice'
@@ -30,3 +30,13 @@ export type stripeEventType =
   | 'price'
   | 'charge'
   | 'subscription';
+
+//Aggregations =============>
+export type transactionsType = {
+  currency: string; //usd
+  refundedCount: number;
+  refundedGrossAmount: number;
+  successfulCount: number; //this may also include refunded amounts, since they were originally successful
+  successfulAmountGross: number; //without stripe fees, original
+  successfulAmountNet: number; //with stripe fees
+};
