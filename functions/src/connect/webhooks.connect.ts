@@ -16,6 +16,7 @@ import { stripe } from '../config';
 import {
   createFirestoreSubscription,
   updateFirestoreSubscription,
+  cancelFirestoreSubscription,
 } from './subscriptions.connect';
 import { deauthorizeStripeAccountWebhook } from './auth.connect';
 import { stripeEventType } from '../helpers';
@@ -211,12 +212,7 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
         const subscriptionDeleted = eventObject as Stripe.Subscription;
 
         await validateStripeWebhook(event, 'subscription');
-
-        await updateFirestoreSubscription(
-          subscriptionDeleted,
-          connectID,
-          eventID
-        );
+        await cancelFirestoreSubscription(subscriptionDeleted, connectID);
         //aggregateSubscription(down)
 
         //TODO: sendgrid

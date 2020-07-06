@@ -93,7 +93,13 @@ export async function createFirestoreSubscription(
       created: subscription.created,
     };
 
-    await db.collection('subscriptions').add({
+    const subscriptionDoc = db.collection('subscriptions').doc();
+    const aggregationRef = db.collection('aggregations').doc(connectID);
+
+    const increment = admin.firestore.FieldValue.increment(1);
+    const batch = db.batch(); //atomic
+
+    batch.set(subscriptionDoc, {
       lastUpdated: admin.firestore.Timestamp.now(),
       customerID: subscription.customer as string,
       subscription: subscriptionField,
@@ -103,6 +109,16 @@ export async function createFirestoreSubscription(
       eventID: idempotencyKey,
       status: subscription.status,
     });
+
+    //increment 'active'
+    batch.set(
+      aggregationRef,
+      { subscriptions: { activeCount: increment } },
+      { merge: true }
+    ); //aggregate subscription
+
+    await batch.commit();
+
     return;
   } catch (error) {
     throw Error(error);
@@ -159,4 +175,43 @@ export async function updateFirestoreSubscription(
   }
 }
 
-//TODO: when retriving subscription.items, make sure to expand items...data.product, to get product information
+export async function cancelFirestoreSubscription(
+  stripeSubscription: Stripe.Subscription,
+  connectID: string
+) {
+  try {
+    const findSubscription = await db
+      .collection('subscriptions')
+      .where('subscription.subscriptionID', '==', stripeSubscription.id)
+      .get();
+
+    if (stripeSubscription.status !== 'canceled') {
+      return;
+    }
+    const subscriptionRef = findSubscription.docs[0].ref;
+    const aggregationRef = db.collection('aggregations').doc(connectID);
+
+    const increment = admin.firestore.FieldValue.increment(1);
+    const decrement = admin.firestore.FieldValue.increment(-1);
+
+    const batch = db.batch(); //atomic
+
+    batch.update(subscriptionRef, {
+      status: stripeSubscription.status,
+      lastUpdated: admin.firestore.Timestamp.now(),
+    });
+
+    //increment 'cancelled', decrement 'active'
+    batch.set(
+      aggregationRef,
+      { subscriptions: { cancelledCount: increment, activeCount: decrement } },
+      { merge: true }
+    ); //aggregate subscription
+
+    await batch.commit();
+
+    return;
+  } catch (error) {
+    throw Error(error);
+  }
+}
