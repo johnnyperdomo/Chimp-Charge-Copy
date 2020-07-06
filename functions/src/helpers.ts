@@ -21,6 +21,16 @@ export type subscriptionFieldType = {
   created: number; //unix
 };
 
+export type planFieldType = {
+  priceID: string;
+  productID: string;
+  created: number; //unix
+  amount: number;
+  currency: string;
+  interval: string; //month,
+  interval_count: number; //gets charged every '1' month
+};
+
 //Webhooks ==============>
 export type stripeEventType =
   | 'payment_intent'

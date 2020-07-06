@@ -123,7 +123,7 @@ export class HelperService {
     amount: number,
     customerParams: { email: string; name: string },
     paymentLinkMetadata: {
-      chimp_charge_payment_link_id: string;
+      chimp_charge_product_id: string;
       chimp_charge_product_name: string;
     },
     connectID: string,
@@ -161,7 +161,7 @@ export class HelperService {
     paymentMethodID: string,
     customerParams: { email: string; name: string },
     paymentLinkMetadata: {
-      chimp_charge_payment_link_id: string;
+      chimp_charge_product_id: string;
       chimp_charge_product_name: string;
     },
     connectID: string,

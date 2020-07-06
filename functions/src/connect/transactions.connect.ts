@@ -3,7 +3,6 @@ import Stripe from 'stripe';
 import { stripe } from '../config';
 const db = admin.firestore();
 import { paymentIntentFieldType, customerFieldType } from '../helpers';
-import * as shortid from 'shortid';
 
 // export const onRefundPayment = functions.https.onCall(
 //   async (data, context) => {}
@@ -39,7 +38,7 @@ export async function createFirestoreTransaction(
     //extracted from paymentIntent
     const {
       chimp_charge_product_name,
-      chimp_charge_payment_link_id,
+      chimp_charge_product_id,
     } = expandedPaymentIntent.metadata;
 
     //Fields
@@ -65,11 +64,10 @@ export async function createFirestoreTransaction(
       paymentIntent: paymentIntentField,
       customer: customerField,
       productName: chimp_charge_product_name || null,
-      paymentLinkID: chimp_charge_payment_link_id || null,
+      productID: chimp_charge_product_id || null,
       merchantUID,
       connectID,
       eventID: idempotencyKey,
-      shortID: shortid.generate(), //unique to this doc
       isRefunded: false,
     });
 
@@ -103,7 +101,7 @@ export async function createFirestoreTransactionFromInvoice(
 
     const {
       chimp_charge_product_name,
-      chimp_charge_payment_link_id,
+      chimp_charge_product_id,
     } = invoiceMetadata;
 
     //Fields
@@ -139,13 +137,19 @@ export async function createFirestoreTransactionFromInvoice(
       paymentIntent: paymentIntentField,
       customer: customerField,
       productName: chimp_charge_product_name || null,
-      paymentLinkID: chimp_charge_payment_link_id || null,
+      productID: chimp_charge_product_id || null,
       merchantUID,
       connectID,
       eventID: idempotencyKey,
-      shortID: shortid.generate(), //unique to this doc
       isRefunded: false,
     });
+
+    //update invoice metadata to payment intent metadata for easier referencing later
+    await updateStripePaymentIntentMetadata(
+      paymentIntentField.paymentIntentID,
+      connectID,
+      invoiceMetadata
+    );
 
     return;
   } catch (error) {
@@ -198,4 +202,20 @@ export async function retrieveExpandedPaymentIntent(
   }
 }
 
+async function updateStripePaymentIntentMetadata(
+  id: string,
+  connectID: string,
+  metadata: Stripe.Metadata
+) {
+  try {
+    await stripe.paymentIntents.update(
+      id,
+      { metadata },
+      { stripeAccount: connectID }
+    );
+    return;
+  } catch (error) {
+    throw error();
+  }
+}
 //TODO: add function, when new payment intent webhook is succeeded, add product/price to document of firestore.transaction to map product/price with transaction {update => product: stripe.product, price: stripe.price}

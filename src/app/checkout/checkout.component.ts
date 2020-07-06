@@ -53,6 +53,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   linkID: string;
   billingType: StripeTypes.Stripe.Price.Type;
   priceID: string;
+  productID: string;
 
   paymentLinkDetails: string;
   checkoutBtnText: string;
@@ -103,6 +104,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
           this.billingType = linkData.price.type;
           this.priceID = linkData.price.id;
+          this.productID = linkData.product.id;
 
           this.linkName = linkData.product.name;
           this.linkDescription = linkData.product.description;
@@ -243,7 +245,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         !this.connectID ||
         !this.merchantUID ||
         !this.minorAmount ||
-        !this.linkID ||
+        !this.productID ||
         !this.linkName
       ) {
         throw Error('Invalid form. Please try again!');
@@ -253,7 +255,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         this.minorAmount,
         { email, name: customerName },
         {
-          chimp_charge_payment_link_id: this.linkID,
+          chimp_charge_product_id: this.productID,
           chimp_charge_product_name: this.linkName,
         },
         this.connectID,
@@ -296,7 +298,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         !this.connectID ||
         !this.merchantUID ||
         !this.priceID ||
-        !this.linkID ||
+        !this.productID ||
         !this.linkName
       ) {
         throw Error('Invalid form. Please try again!');
@@ -316,7 +318,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         paymentMethod.paymentMethod.id,
         { email, name: customerName },
         {
-          chimp_charge_payment_link_id: this.linkID,
+          chimp_charge_product_id: this.productID,
           chimp_charge_product_name: this.linkName,
         },
         this.connectID,

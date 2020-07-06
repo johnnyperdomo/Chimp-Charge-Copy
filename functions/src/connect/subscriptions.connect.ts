@@ -5,7 +5,7 @@ import * as functions from 'firebase-functions';
 import * as customers from './customers.connect';
 import { stripe } from '../config';
 import * as admin from 'firebase-admin';
-import { subscriptionFieldType } from '../helpers';
+import { subscriptionFieldType, planFieldType } from '../helpers';
 
 const db = admin.firestore();
 
@@ -86,11 +86,21 @@ export async function createFirestoreSubscription(
       throw Error('This subscription has already been created');
     }
 
-    const { chimp_charge_payment_link_id } = subscription.metadata;
-
     const subscriptionField: subscriptionFieldType = {
       subscriptionID: subscription.id,
       created: subscription.created,
+    };
+
+    const stripePlan = subscription.items.data[0].plan;
+
+    const planField: planFieldType = {
+      priceID: stripePlan.id,
+      productID: stripePlan.product as string,
+      created: stripePlan.created,
+      amount: stripePlan.amount!,
+      currency: stripePlan.currency,
+      interval: stripePlan.interval,
+      interval_count: stripePlan.interval_count,
     };
 
     const subscriptionDoc = db.collection('subscriptions').doc();
@@ -103,7 +113,7 @@ export async function createFirestoreSubscription(
       lastUpdated: admin.firestore.Timestamp.now(),
       customerID: subscription.customer as string,
       subscription: subscriptionField,
-      paymentLinkID: chimp_charge_payment_link_id || null,
+      plan: planField,
       merchantUID,
       connectID,
       eventID: idempotencyKey,
