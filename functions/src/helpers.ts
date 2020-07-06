@@ -25,10 +25,6 @@ export type planFieldType = {
   priceID: string;
   productID: string;
   created: number; //unix
-  amount: number;
-  currency: string;
-  interval: string; //month,
-  interval_count: number; //gets charged every '1' month
 };
 
 //Webhooks ==============>

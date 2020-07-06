@@ -229,8 +229,8 @@ export async function createFirestoreCustomer(
       connectID: connectID,
       isDeleted: false,
       eventID: idempotencyKey, //check if this event has already been processed
-      currentSubscriptionsCount: 0,
-      successfulTransactions: null,
+      activeSubscriptionsCount: 0,
+      transactions: null,
     });
 
     batch.set(aggregationRef, { customerCount: increment }, { merge: true }); //aggregate customer count

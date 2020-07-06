@@ -92,8 +92,8 @@ export async function onCreatePaymentLink(data: any, userID: string) {
       connectID: stripeConnectID,
       lastUpdated: admin.firestore.Timestamp.now(),
       eventID: productIdempotencyKey,
-      successfulTransactions: null,
-      currentSubscriptionsCount: 0,
+      transactions: null,
+      activeSubscriptionsCount: 0,
       isDeleted: false,
     });
 
@@ -473,6 +473,7 @@ function getStripeIntervalFromString(
   }
 }
 
+//aggregation =================>
 async function batchDeletePaymentLink(
   paymentLinkRef: FirebaseFirestore.DocumentReference<
     FirebaseFirestore.DocumentData

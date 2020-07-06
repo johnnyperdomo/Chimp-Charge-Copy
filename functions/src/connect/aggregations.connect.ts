@@ -7,7 +7,7 @@
 //TODO: Batch firestore writes
 export async function aggregatePaymentIntent(connectID: string) {
   //TODO: set timeout to 180 seconds
-  //aggregations.successfulTransactions(up/down)
-  //customers.successfulTransactions(up/down)
-  //payment-links.successfulTransactions(up/down)
+  //aggregations.transactions(up/down)
+  //customers.transactions(up/down)
+  //payment-links.transactions(up/down)
 }

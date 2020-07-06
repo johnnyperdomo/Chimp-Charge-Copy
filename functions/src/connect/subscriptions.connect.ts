@@ -97,19 +97,9 @@ export async function createFirestoreSubscription(
       priceID: stripePlan.id,
       productID: stripePlan.product as string,
       created: stripePlan.created,
-      amount: stripePlan.amount!,
-      currency: stripePlan.currency,
-      interval: stripePlan.interval,
-      interval_count: stripePlan.interval_count,
     };
 
-    const subscriptionDoc = db.collection('subscriptions').doc();
-    const aggregationRef = db.collection('aggregations').doc(connectID);
-
-    const increment = admin.firestore.FieldValue.increment(1);
-    const batch = db.batch(); //atomic
-
-    batch.set(subscriptionDoc, {
+    const subscriptionDocBody = {
       lastUpdated: admin.firestore.Timestamp.now(),
       customerID: subscription.customer as string,
       subscription: subscriptionField,
@@ -118,16 +108,16 @@ export async function createFirestoreSubscription(
       connectID,
       eventID: idempotencyKey,
       status: subscription.status,
-    });
+    };
 
-    //increment 'active'
-    batch.set(
-      aggregationRef,
-      { subscriptions: { activeCount: increment } },
-      { merge: true }
-    ); //aggregate subscription
+    const subscriptionDoc = db.collection('subscriptions').doc();
 
-    await batch.commit();
+    await batchCreateFirestoreSubscription(
+      subscriptionDoc,
+      subscription,
+      subscriptionDocBody,
+      connectID
+    );
 
     return;
   } catch (error) {
@@ -190,6 +180,8 @@ export async function cancelFirestoreSubscription(
   connectID: string
 ) {
   try {
+    //FUTURE-UPDATE: check if this object is already cancelled, so that we don't trigger twice, depending on webhook or client trigger
+
     const findSubscription = await db
       .collection('subscriptions')
       .where('subscription.subscriptionID', '==', stripeSubscription.id)
@@ -199,6 +191,108 @@ export async function cancelFirestoreSubscription(
       return;
     }
     const subscriptionRef = findSubscription.docs[0].ref;
+
+    await batchCancelFirestoreSubscription(
+      subscriptionRef,
+      stripeSubscription,
+      connectID
+    );
+
+    return;
+  } catch (error) {
+    throw Error(error);
+  }
+}
+
+//aggregation =================>
+//TODO: batch cancel firestore sub
+//TODO: batch create firestore sub
+async function batchCreateFirestoreSubscription(
+  subscriptionRef: FirebaseFirestore.DocumentReference<
+    FirebaseFirestore.DocumentData
+  >,
+  stripeSubscription: Stripe.Subscription,
+  subscriptionDocBody: any,
+  connectID: string
+) {
+  try {
+    const stripePlan = stripeSubscription.items.data[0].plan;
+
+    const findCustomer = await db
+      .collection('customers')
+      .where('customer.customerID', '==', stripeSubscription.customer as string)
+      .get();
+
+    const findPaymentLinkFromProduct = await db
+      .collection('payment-links')
+      .where('product.id', '==', stripePlan.product as string)
+      .get();
+
+    const paymentLinkRef = findPaymentLinkFromProduct.docs[0].ref;
+    const customerRef = findCustomer.docs[0].ref;
+    const aggregationRef = db.collection('aggregations').doc(connectID);
+
+    const increment = admin.firestore.FieldValue.increment(1);
+
+    const batch = db.batch(); //atomic
+
+    //create sub doc
+    batch.set(subscriptionRef, subscriptionDocBody);
+
+    //increment 'active'
+    //aggregation map
+    batch.set(
+      aggregationRef,
+      { subscriptions: { activeCount: increment } },
+      { merge: true }
+    );
+
+    //customer aggregation
+    batch.set(
+      customerRef,
+      { activeSubscriptionsCount: increment },
+      { merge: true }
+    );
+
+    //paymentLink aggregation
+    batch.set(
+      paymentLinkRef,
+      { activeSubscriptionsCount: increment },
+      { merge: true }
+    );
+
+    await batch.commit();
+    functions.logger.log('batch cancel sub success');
+
+    return;
+  } catch (error) {
+    functions.logger.error(error);
+    throw Error(error);
+  }
+}
+
+async function batchCancelFirestoreSubscription(
+  subscriptionRef: FirebaseFirestore.DocumentReference<
+    FirebaseFirestore.DocumentData
+  >,
+  stripeSubscription: Stripe.Subscription,
+  connectID: string
+) {
+  try {
+    const stripePlan = stripeSubscription.items.data[0].plan;
+
+    const findCustomer = await db
+      .collection('customers')
+      .where('customer.customerID', '==', stripeSubscription.customer as string)
+      .get();
+
+    const findPaymentLinkFromProduct = await db
+      .collection('payment-links')
+      .where('product.id', '==', stripePlan.product as string)
+      .get();
+
+    const paymentLinkRef = findPaymentLinkFromProduct.docs[0].ref;
+    const customerRef = findCustomer.docs[0].ref;
     const aggregationRef = db.collection('aggregations').doc(connectID);
 
     const increment = admin.firestore.FieldValue.increment(1);
@@ -206,20 +300,35 @@ export async function cancelFirestoreSubscription(
 
     const batch = db.batch(); //atomic
 
+    //cancel sub
     batch.update(subscriptionRef, {
       status: stripeSubscription.status,
       lastUpdated: admin.firestore.Timestamp.now(),
     });
 
     //increment 'cancelled', decrement 'active'
+    //aggregation map
     batch.set(
       aggregationRef,
       { subscriptions: { cancelledCount: increment, activeCount: decrement } },
       { merge: true }
-    ); //aggregate subscription
+    );
+
+    //customer aggregation
+    batch.set(
+      customerRef,
+      { activeSubscriptionsCount: decrement },
+      { merge: true }
+    );
+
+    //paymentLink aggregation
+    batch.set(
+      paymentLinkRef,
+      { activeSubscriptionsCount: decrement },
+      { merge: true }
+    );
 
     await batch.commit();
-
     return;
   } catch (error) {
     throw Error(error);
