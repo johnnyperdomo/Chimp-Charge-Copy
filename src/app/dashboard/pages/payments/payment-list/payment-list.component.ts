@@ -1,8 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Payment } from '../payment.model';
-import { Subscription, BehaviorSubject } from 'rxjs';
+import { Subscription, BehaviorSubject, empty } from 'rxjs';
 import { Merchant } from 'src/app/merchants/merchant.model';
-import { map, filter, mergeMap } from 'rxjs/operators';
+import { map, filter, mergeMap, catchError } from 'rxjs/operators';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Store } from '@ngrx/store';
 import * as fromApp from 'src/app/shared/app-store/app.reducer';
@@ -17,48 +17,7 @@ export class PaymentListComponent implements OnInit, OnDestroy {
   currentMerchantSub: Subscription;
   currentMerchant = new BehaviorSubject<Merchant>(null);
 
-  payments: Payment[] = [
-    new Payment(
-      '1Qsd23r',
-      'Johnny J',
-      'johnny@jim.com',
-      '30.84',
-      'Plumbing',
-      'Success',
-      '11/1/2020',
-      'Single'
-    ),
-    new Payment(
-      '4rwe5Re',
-      'Bobby B',
-      'bobby@bob.com',
-      '50',
-      'Marketing Service',
-      'Dispute',
-      '11/18/2020',
-      'Recurring'
-    ),
-    new Payment(
-      'sf34fsd',
-      'Peter T',
-      'peter@thiel.com',
-      '80',
-      'Graphic Logo',
-      'Refunded',
-      '11/19/2020',
-      'Single'
-    ),
-    new Payment(
-      '3E32f2',
-      'Lenny L',
-      'lenny@lion.com',
-      '24.57',
-      'Consultation Fee',
-      'Success',
-      '11/20/2020',
-      'Recurring'
-    ),
-  ];
+  payments: Payment[] = [];
 
   constructor(
     private db: AngularFirestore,
@@ -81,12 +40,41 @@ export class PaymentListComponent implements OnInit, OnDestroy {
           //TODO: add <Payments> to collectionref
           //TODO: , (ref) => ref.where('merchantUID', '==', retrievedMerchant.uid)
           return this.db
-            .collection('transactions')
+            .collection<Payment>(
+              'transactions',
+              (ref) =>
+                ref
+                  .where('merchantUID', '==', retrievedMerchant.merchantUID)
+                  .where('connectID', '==', retrievedMerchant.connectID)
+                  .orderBy('paymentIntent.created', 'desc') //sort: newest to last
+            )
             .valueChanges({ idField: 'id' });
         })
       )
+      .pipe(
+        catchError((err) => {
+          alert(
+            'Unknown error, please try again. Error: Firebase - ' + err.code
+          );
+          return empty();
+        })
+      )
       .subscribe((data) => {
-        console.log(data);
+        this.payments = data.map((i) => {
+          return new Payment(
+            i.id,
+            i.merchantUID,
+            i.connectID,
+            i.paymentIntent,
+            i.customer,
+            i.productID,
+            i.productName,
+            i.isRefunded,
+            i.lastUpdated
+          );
+        });
+
+        console.log(this.payments);
       });
   }
 

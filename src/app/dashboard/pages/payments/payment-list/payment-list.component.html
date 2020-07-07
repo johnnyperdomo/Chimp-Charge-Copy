@@ -43,38 +43,44 @@
         <!-- FUTURE-UPDATE: Make table rows fully tappable, or just allow txn id to be a tappable link, then leads to more in-depth information about the payment -->
         <tr *ngFor="let paymentEl of payments">
           <td>
-            <h5 class="mb-0">{{ paymentEl.customerName }}</h5>
+            <h5 class="mb-0">{{ paymentEl.customer.name }}</h5>
             <p class="card-text small text-muted mb-0">
-              {{ paymentEl.customerEmail }}
+              {{ paymentEl.customer.email }}
             </p>
           </td>
-          <td>{{ paymentEl.paymentID }}</td>
+          <td>{{ paymentEl.shortTxnID }}</td>
           <td>
             <h5 class="mb-0">{{ paymentEl.amount }}</h5>
             <p class="card-text small text-muted mb-0">
-              {{ paymentEl.linkName }}
+              {{ paymentEl.productName }}
             </p>
           </td>
           <td>
-            <!-- Badge -->
-            <!-- TODO: Change badge types according to status -->
-            <h4 class="mb-0">
-              <span class="badge badge-soft-success">
-                <b>{{ paymentEl.status }}</b>
+            <h3 class="mb-0">
+              <span
+                class="badge badge-pill"
+                [ngClass]="{
+                  'badge-soft-primary': paymentEl.status === 'Succeeded',
+                  'badge-soft-secondary': paymentEl.status === 'Refunded'
+                }"
+              >
+                {{ paymentEl.status }}
               </span>
-            </h4>
+            </h3>
           </td>
-          <td>{{ paymentEl.date }}</td>
-          <!-- TODO: add grey badges to type like in subscribers list -->
-          <td>{{ paymentEl.type }}</td>
-          <!-- TODO: Only make refundable if available -->
-
-          <!-- //TODO: pass in real id -->
+          <td>
+            <span>{{ paymentEl.created }}</span>
+          </td>
+          <td>
+            <span>{{ paymentEl.transactionType }} </span>
+          </td>
 
           <!-- //TODO: use a simple js alert -->
           <!-- FUTURE-UPDATE: add refund confirmation modal, if available for refund, "sure you want to refund?", if not available for refund => "sorry refund not available" -->
+
           <td class="text-right">
             <button
+              *ngIf="paymentEl.isRefunded === false"
               type="button"
               (click)="onRefundAtRow(paymentEl.paymentID)"
               class="btn btn-outline-danger btn-sm"

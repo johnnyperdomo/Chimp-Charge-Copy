@@ -1,10 +1,11 @@
 import * as moment from 'moment';
+import { customerFieldInterface } from 'src/app/shared/interfaces';
 
 export class Customer {
   public id: string;
   public merchantUID: string;
   public connectID: string;
-  public customer: customerFieldType;
+  public customer: customerFieldInterface;
   public lastUpdated: Date;
   //FUTURE-UPDATE: active subs, isdeleted,transactions
 
@@ -12,7 +13,7 @@ export class Customer {
     id: string,
     merchantUID: string,
     connectID: string,
-    customer: customerFieldType,
+    customer: customerFieldInterface,
     lastUpdated: Date
   ) {
     this.id = id;
@@ -28,11 +29,4 @@ export class Customer {
     const formattedDate = moment.unix(createdDate).format('MMMM Do, YYYY');
     return formattedDate;
   }
-}
-
-interface customerFieldType {
-  created: number; //unix
-  customerID: string;
-  email: string;
-  name: string;
 }

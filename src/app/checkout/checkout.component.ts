@@ -121,7 +121,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             this.checkoutBtnText = `Pay ${formattedPrice}`;
           }
 
-          //TODO: add public info in subcollection of merchant for security rules, we don't want client to be able to read sensitive info
           return from(
             this.db.collection('merchants').doc(merchantUID).ref.get()
           );

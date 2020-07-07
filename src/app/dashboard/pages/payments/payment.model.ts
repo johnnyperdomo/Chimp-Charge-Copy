@@ -1,31 +1,72 @@
-//TODO: pseudo code
+import * as moment from 'moment';
+import {
+  customerFieldInterface,
+  paymentIntentFieldInterface,
+} from 'src/app/shared/interfaces';
+import * as MoneyFormatter from 'src/app/shared/accounting';
+
 export class Payment {
-  public paymentID: string;
-  public customerName: string;
-  public customerEmail: string;
-  public amount: string;
-  public linkName: string;
-  public status: string;
-  public date: string; //TODO: should be date
-  public type: string;
+  public id: string;
+  public merchantUID: string;
+  public connectID: string;
+  public paymentIntent: paymentIntentFieldInterface;
+  public customer: customerFieldInterface;
+  public productID: string;
+  public productName: string;
+  public isRefunded: boolean;
+  public lastUpdated: Date;
+  //FUTURE-UPDATE: //isdisputed
 
   constructor(
-    paymentID: string,
-    customerName: string,
-    customerEmail: string,
-    amount: string,
-    linkName: string,
-    status: string,
-    date: string,
-    type: string
+    id: string,
+    merchantUID: string,
+    connectID: string,
+    paymentIntent: paymentIntentFieldInterface,
+    customer: customerFieldInterface,
+    productID: string,
+    productName: string,
+    isRefunded: boolean,
+    lastUpdated: Date
   ) {
-    this.paymentID = paymentID;
-    this.customerName = customerName;
-    this.customerEmail = customerEmail;
-    this.amount = amount;
-    this.linkName = linkName;
-    this.status = status;
-    this.date = date;
-    this.type = type;
+    (this.id = id),
+      (this.merchantUID = merchantUID),
+      (this.connectID = connectID),
+      (this.paymentIntent = paymentIntent),
+      (this.customer = customer),
+      (this.productID = productID),
+      (this.productName = productName),
+      (this.isRefunded = isRefunded),
+      (this.lastUpdated = lastUpdated);
+  }
+
+  get created() {
+    //product.created => Date()
+    const createdDate = this.paymentIntent.created; //unix epoch
+    const formattedDate = moment.unix(createdDate).format('MMMM Do, YYYY');
+    return formattedDate;
+  }
+
+  get transactionType() {
+    if (this.paymentIntent.invoiceID) {
+      return 'recurring';
+    }
+    return 'one time';
+  }
+
+  get status() {
+    if (this.isRefunded === true) {
+      return 'Refunded';
+    }
+    return 'Succeeded';
+  }
+
+  get shortTxnID() {
+    //truncated id of paymentIntentID
+    return this.paymentIntent.paymentIntentID.slice(-6); //last 6 characters
+  }
+
+  get amount() {
+    //i.e. $350.00
+    return MoneyFormatter.convertMinorUnitToStandard(this.paymentIntent.amount);
   }
 }

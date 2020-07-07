@@ -61,13 +61,13 @@ export class CustomerListComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe((data) => {
-        this.customers = data.map((item) => {
+        this.customers = data.map((i) => {
           return new Customer(
-            item.id,
-            item.merchantUID,
-            item.connectID,
-            item.customer,
-            item.lastUpdated
+            i.id,
+            i.merchantUID,
+            i.connectID,
+            i.customer,
+            i.lastUpdated
           );
         });
 

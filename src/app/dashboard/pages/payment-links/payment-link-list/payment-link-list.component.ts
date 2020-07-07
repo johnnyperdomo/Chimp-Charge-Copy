@@ -79,14 +79,14 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe((data) => {
-        this.paymentLinks = data.map((item) => {
+        this.paymentLinks = data.map((i) => {
           return new PaymentLink(
-            item.id,
-            item.merchantUID,
-            item.connectID,
-            item.product,
-            item.price,
-            item.lastUpdated
+            i.id,
+            i.merchantUID,
+            i.connectID,
+            i.product,
+            i.price,
+            i.lastUpdated
           );
         });
         console.log(this.paymentLinks);
