@@ -12,7 +12,7 @@ import { environment } from 'src/environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { map, switchMap, catchError } from 'rxjs/operators';
-import { from, Subscription, empty, throwError } from 'rxjs';
+import { from, Subscription, empty } from 'rxjs';
 import * as MoneyFormatter from 'src/app/shared/accounting';
 import * as StripeTypes from 'stripe';
 import { HelperService } from '../shared/helper.service';
