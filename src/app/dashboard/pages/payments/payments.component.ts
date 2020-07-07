@@ -19,7 +19,6 @@ export class PaymentsComponent implements OnInit, OnDestroy {
   currentMerchant = new BehaviorSubject<Merchant>(null);
 
   aggregation: Aggregation = null; //aggregation map
-  successfulAmount: string; //calculated amount of all transactions => $937.54
 
   constructor(
     private db: AngularFirestore,
@@ -54,12 +53,14 @@ export class PaymentsComponent implements OnInit, OnDestroy {
           return empty();
         })
       )
-      .subscribe((aggregation) => {
+      .subscribe((i) => {
         //FUTURE-UPDATE: check to see if field item exists, if not, return 0
-        this.aggregation = aggregation;
-
-        this.successfulAmount = MoneyFormatter.convertMinorUnitToStandard(
-          this.aggregation.transactions.successfulAmount
+        this.aggregation = new Aggregation(
+          i.merchantUID,
+          i.connectID,
+          i.customerCount,
+          i.subscriptions,
+          i.transactions
         );
 
         console.log(this.aggregation);
