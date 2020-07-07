@@ -32,7 +32,6 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
   const eventObject = event.data.object;
 
   try {
-    //TODO: take into account batch or transaction for multiple update values
     switch (event.type) {
       //4 Event Categories
       //
@@ -68,7 +67,7 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
         }
 
         await validateStripeWebhook(event, 'charge', connectID);
-        await refundFirestoreTransaction(chargeRefunded);
+        await refundFirestoreTransaction(chargeRefunded, connectID);
 
         //aggregatePaymentIntent(down)
 
@@ -231,6 +230,8 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
     throw new Error(err);
   }
 }
+//FUTURE-UPDATE: charge.dispute.created(send email to merchant to check their stripe account)
+//FUTURE-UPDATE: charge.dispute.closed[lost](update firestore transaction)
 
 //ensures this webhook is associated with chimp charge
 

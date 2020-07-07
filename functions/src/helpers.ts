@@ -39,10 +39,12 @@ export type stripeEventType =
 
 //Aggregations =============>
 export type transactionsType = {
-  currency: string; //usd
+  //currency is 'usd' by default
+
   refundedCount: number;
-  refundedGrossAmount: number;
+  refundedAmount: number; //stripe fees not included
   successfulCount: number; //this may also include refunded amounts, since they were originally successful
-  successfulAmountGross: number; //without stripe fees, original
-  successfulAmountNet: number; //with stripe fees
+  successfulAmount: number; //stripe fees not included
+
+  //FUTURE-UPDATE: maybe add disputed amount/total, when handling disputed webhooks, for only lost disputes charge.dispute.closed(lost)
 };

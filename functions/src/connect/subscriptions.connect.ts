@@ -205,8 +205,6 @@ export async function cancelFirestoreSubscription(
 }
 
 //aggregation =================>
-//TODO: batch cancel firestore sub
-//TODO: batch create firestore sub
 async function batchCreateFirestoreSubscription(
   subscriptionRef: FirebaseFirestore.DocumentReference<
     FirebaseFirestore.DocumentData

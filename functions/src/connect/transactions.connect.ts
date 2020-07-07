@@ -59,7 +59,7 @@ export async function createFirestoreTransaction(
       created: customerFromExpand.created,
     };
 
-    await db.collection('transactions').add({
+    const transactionDocBody = {
       lastUpdated: admin.firestore.Timestamp.now(),
       paymentIntent: paymentIntentField,
       customer: customerField,
@@ -69,7 +69,31 @@ export async function createFirestoreTransaction(
       connectID,
       eventID: idempotencyKey,
       isRefunded: false,
-    });
+      isDisputed: false, //lost dispute only//FUTURE-UPDATE
+    };
+
+    const transactionRef = db.collection('transactions').doc();
+
+    await batchCreateTransaction(
+      transactionRef,
+      transactionDocBody,
+      expandedPaymentIntent.amount,
+      customerFromExpand.id,
+      chimp_charge_product_id,
+      connectID
+    );
+    // await db.collection('transactions').add({
+    //   lastUpdated: admin.firestore.Timestamp.now(),
+    //   paymentIntent: paymentIntentField,
+    //   customer: customerField,
+    //   productName: chimp_charge_product_name || null,
+    //   productID: chimp_charge_product_id || null,
+    //   merchantUID,
+    //   connectID,
+    //   eventID: idempotencyKey,
+    //   isRefunded: false,
+    //   isDisputed: false, //lost dispute only//FUTURE-UPDATE
+    // });
 
     return;
   } catch (err) {
@@ -132,7 +156,14 @@ export async function createFirestoreTransactionFromInvoice(
       created: invoice.created,
     };
 
-    await db.collection('transactions').add({
+    //update invoice metadata to payment intent metadata for easier referencing later
+    await updateStripePaymentIntentMetadata(
+      paymentIntentField.paymentIntentID,
+      connectID,
+      invoiceMetadata
+    );
+
+    const transactionDocBody = {
       lastUpdated: admin.firestore.Timestamp.now(),
       paymentIntent: paymentIntentField,
       customer: customerField,
@@ -142,13 +173,18 @@ export async function createFirestoreTransactionFromInvoice(
       connectID,
       eventID: idempotencyKey,
       isRefunded: false,
-    });
+      isDisputed: false, //lost dispute only //FUTURE-UPDATE
+    };
 
-    //update invoice metadata to payment intent metadata for easier referencing later
-    await updateStripePaymentIntentMetadata(
-      paymentIntentField.paymentIntentID,
-      connectID,
-      invoiceMetadata
+    const transactionRef = db.collection('transactions').doc();
+
+    await batchCreateTransaction(
+      transactionRef,
+      transactionDocBody,
+      invoice.amount_paid,
+      invoice.customer as string,
+      chimp_charge_product_id,
+      connectID
     );
 
     return;
@@ -157,8 +193,12 @@ export async function createFirestoreTransactionFromInvoice(
   }
 }
 
-export async function refundFirestoreTransaction(charge: Stripe.Charge) {
+export async function refundFirestoreTransaction(
+  charge: Stripe.Charge,
+  connectID: string
+) {
   try {
+    //FUTURE-UPDATE: check to see if object is already refunded, so we don't trigger twice and mess with aggregation
     const findTransaction = await db
       .collection('transactions')
       .where(
@@ -173,11 +213,36 @@ export async function refundFirestoreTransaction(charge: Stripe.Charge) {
     }
 
     const transactionRef = findTransaction.docs[0].ref;
+    //if refund has an invoice(from sub), get metadata from stripe invoice
+    if (charge.invoice) {
+      const retrieveInvoice = await stripe.invoices.retrieve(
+        charge.invoice as string,
+        { stripeAccount: connectID }
+      );
 
-    await transactionRef.update({
-      isRefunded: true,
-      lastUpdated: admin.firestore.Timestamp.now(),
-    });
+      const stripeProductID = retrieveInvoice.lines.data[0].plan
+        ?.product as string;
+
+      await batchRefundTransaction(
+        transactionRef,
+        charge.amount,
+        charge.customer as string,
+        stripeProductID,
+        connectID
+      );
+
+      return;
+    }
+
+    const { chimp_charge_product_id } = charge.metadata;
+
+    await batchRefundTransaction(
+      transactionRef,
+      charge.amount,
+      charge.customer as string,
+      chimp_charge_product_id,
+      connectID
+    );
 
     return;
   } catch (error) {
@@ -218,4 +283,163 @@ async function updateStripePaymentIntentMetadata(
     throw error();
   }
 }
-//TODO: add function, when new payment intent webhook is succeeded, add product/price to document of firestore.transaction to map product/price with transaction {update => product: stripe.product, price: stripe.price}
+
+//aggregation =================>
+async function batchCreateTransaction(
+  transactionRef: FirebaseFirestore.DocumentReference<
+    FirebaseFirestore.DocumentData
+  >,
+  transactionDocBody: any,
+  transactionAmount: number,
+  stripeCustomerID: string,
+  productID: string,
+  connectID: string
+) {
+  try {
+    const findCustomer = await db
+      .collection('customers')
+      .where('customer.customerID', '==', stripeCustomerID)
+      .get();
+
+    const findPaymentLinkFromProduct = await db
+      .collection('payment-links')
+      .where('product.id', '==', productID)
+      .get();
+
+    const paymentLinkRef = findPaymentLinkFromProduct.docs[0].ref;
+    const customerRef = findCustomer.docs[0].ref;
+    const aggregationRef = db.collection('aggregations').doc(connectID);
+
+    const increment = admin.firestore.FieldValue.increment(1);
+    const transactionAmountIncrement = admin.firestore.FieldValue.increment(
+      transactionAmount
+    );
+
+    const batch = db.batch(); //atomic
+
+    //create transaction doc
+    batch.set(transactionRef, transactionDocBody);
+
+    //aggregation map
+    batch.set(
+      aggregationRef,
+      {
+        transactions: {
+          successfulCount: increment,
+          successfulAmount: transactionAmountIncrement,
+        },
+      },
+      { merge: true }
+    );
+
+    //customer aggregation
+    batch.set(
+      customerRef,
+      {
+        transactions: {
+          successfulCount: increment,
+          successfulAmount: transactionAmountIncrement,
+        },
+      },
+      { merge: true }
+    );
+
+    //paymentLink aggregation
+    batch.set(
+      paymentLinkRef,
+      {
+        transactions: {
+          successfulCount: increment,
+          successfulAmount: transactionAmountIncrement,
+        },
+      },
+      { merge: true }
+    );
+
+    await batch.commit();
+    return;
+  } catch (error) {
+    throw Error(error);
+  }
+}
+
+async function batchRefundTransaction(
+  transactionRef: FirebaseFirestore.DocumentReference<
+    FirebaseFirestore.DocumentData
+  >,
+  refundAmount: number,
+  stripeCustomerID: string,
+  productID: string,
+  connectID: string
+) {
+  try {
+    const findCustomer = await db
+      .collection('customers')
+      .where('customer.customerID', '==', stripeCustomerID)
+      .get();
+
+    const findPaymentLinkFromProduct = await db
+      .collection('payment-links')
+      .where('product.id', '==', productID)
+      .get();
+
+    const paymentLinkRef = findPaymentLinkFromProduct.docs[0].ref;
+    const customerRef = findCustomer.docs[0].ref;
+    const aggregationRef = db.collection('aggregations').doc(connectID);
+
+    const increment = admin.firestore.FieldValue.increment(1);
+    const refundAmountIncrement = admin.firestore.FieldValue.increment(
+      refundAmount
+    );
+
+    const batch = db.batch(); //atomic
+
+    //create transaction doc for refund
+    batch.update(transactionRef, {
+      isRefunded: true,
+      lastUpdated: admin.firestore.Timestamp.now(),
+    });
+
+    //aggregation map
+    batch.set(
+      aggregationRef,
+      {
+        transactions: {
+          refundedCount: increment,
+          refundedAmount: refundAmountIncrement,
+        },
+      },
+      { merge: true }
+    );
+
+    //customer aggregation
+    batch.set(
+      customerRef,
+      {
+        transactions: {
+          refundedCount: increment,
+          refundedAmount: refundAmountIncrement,
+        },
+      },
+      { merge: true }
+    );
+
+    //paymentLink aggregation
+    batch.set(
+      paymentLinkRef,
+      {
+        transactions: {
+          refundedCount: increment,
+          refundedAmount: refundAmountIncrement,
+        },
+      },
+      { merge: true }
+    );
+
+    await batch.commit();
+
+    return;
+  } catch (error) {
+    throw Error(error);
+  }
+}
