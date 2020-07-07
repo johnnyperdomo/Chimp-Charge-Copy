@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Payment } from '../payment.model';
 import { Subscription, BehaviorSubject, empty } from 'rxjs';
 import { Merchant } from 'src/app/merchants/merchant.model';
-import { map, filter, mergeMap, catchError } from 'rxjs/operators';
+import { map, filter, mergeMap, catchError, take } from 'rxjs/operators';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Store } from '@ngrx/store';
 import * as fromApp from 'src/app/shared/app-store/app.reducer';
@@ -34,11 +34,9 @@ export class PaymentListComponent implements OnInit, OnDestroy {
 
     this.currentMerchantSub = this.currentMerchant
       .pipe(
-        filter((payload) => payload !== null),
+        filter((retrievedMerchant) => retrievedMerchant !== null),
+        take(1),
         mergeMap((retrievedMerchant) => {
-          //only execute if merchant not null
-          //TODO: add <Payments> to collectionref
-          //TODO: , (ref) => ref.where('merchantUID', '==', retrievedMerchant.uid)
           return this.db
             .collection<Payment>(
               'transactions',
@@ -54,7 +52,8 @@ export class PaymentListComponent implements OnInit, OnDestroy {
       .pipe(
         catchError((err) => {
           alert(
-            'Unknown error, please try again. Error: Firebase - ' + err.code
+            'Unknown error, please try reloading page. Error: Firebase - ' +
+              err.code
           );
           return empty();
         })
@@ -79,7 +78,13 @@ export class PaymentListComponent implements OnInit, OnDestroy {
   }
 
   onRefundAtRow(itemID: string) {
-    console.log('refund clicked, ' + itemID);
+    if (
+      confirm(
+        `Are you sure you want to refund this transaction? \n Refunds take 5-10 days to appear on a customer's statement.`
+      )
+    ) {
+      console.log('refund clicked, ' + itemID);
+    }
   }
 
   ngOnDestroy() {

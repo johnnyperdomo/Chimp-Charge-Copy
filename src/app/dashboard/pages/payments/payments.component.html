@@ -64,7 +64,9 @@
                       </h6>
 
                       <!-- Heading -->
-                      <span class="h2 mb-0"> {{ customerCount }} </span>
+                      <span *ngIf="aggregation" class="h2 mb-0">
+                        {{ aggregation.customerCount }}
+                      </span>
                     </div>
 
                     <div class="col-auto">
@@ -85,7 +87,9 @@
                       </h6>
 
                       <!-- Heading -->
-                      <span class="h2 mb-0"> {{ activeSubscriberCount }} </span>
+                      <span *ngIf="aggregation" class="h2 mb-0">
+                        {{ aggregation.subscriptions.activeCount }}
+                      </span>
                     </div>
 
                     <div class="col-auto">
@@ -106,7 +110,9 @@
                       </h6>
 
                       <!-- Heading -->
-                      <span class="h2 mb-0"> {{ paymentsTotal }} </span>
+                      <span *ngIf="successfulAmount" class="h2 mb-0">
+                        {{ successfulAmount }}
+                      </span>
                     </div>
 
                     <div class="col-auto">

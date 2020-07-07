@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 import {
-  customerFieldInterface,
-  paymentIntentFieldInterface,
+  CustomerFieldInterface,
+  PaymentIntentFieldInterface,
 } from 'src/app/shared/interfaces';
 import * as MoneyFormatter from 'src/app/shared/accounting';
 
@@ -9,8 +9,8 @@ export class Payment {
   public id: string;
   public merchantUID: string;
   public connectID: string;
-  public paymentIntent: paymentIntentFieldInterface;
-  public customer: customerFieldInterface;
+  public paymentIntent: PaymentIntentFieldInterface;
+  public customer: CustomerFieldInterface;
   public productID: string;
   public productName: string;
   public isRefunded: boolean;
@@ -21,8 +21,8 @@ export class Payment {
     id: string,
     merchantUID: string,
     connectID: string,
-    paymentIntent: paymentIntentFieldInterface,
-    customer: customerFieldInterface,
+    paymentIntent: PaymentIntentFieldInterface,
+    customer: CustomerFieldInterface,
     productID: string,
     productName: string,
     isRefunded: boolean,

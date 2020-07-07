@@ -82,7 +82,7 @@
             <button
               *ngIf="paymentEl.isRefunded === false"
               type="button"
-              (click)="onRefundAtRow(paymentEl.paymentID)"
+              (click)="onRefundAtRow(paymentEl.paymentIntent.paymentIntentID)"
               class="btn btn-outline-danger btn-sm"
             >
               Refund

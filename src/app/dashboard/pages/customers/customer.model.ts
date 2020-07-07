@@ -1,11 +1,11 @@
 import * as moment from 'moment';
-import { customerFieldInterface } from 'src/app/shared/interfaces';
+import { CustomerFieldInterface } from 'src/app/shared/interfaces';
 
 export class Customer {
   public id: string;
   public merchantUID: string;
   public connectID: string;
-  public customer: customerFieldInterface;
+  public customer: CustomerFieldInterface;
   public lastUpdated: Date;
   //FUTURE-UPDATE: active subs, isdeleted,transactions
 
@@ -13,7 +13,7 @@ export class Customer {
     id: string,
     merchantUID: string,
     connectID: string,
-    customer: customerFieldInterface,
+    customer: CustomerFieldInterface,
     lastUpdated: Date
   ) {
     this.id = id;

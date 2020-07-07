@@ -53,7 +53,7 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
 
     this.currentMerchantSub = this.currentMerchant
       .pipe(
-        filter((payload) => payload !== null),
+        filter((retrievedMerchant) => retrievedMerchant !== null),
         mergeMap((retrievedMerchant) => {
           //only execute if merchant not null
 
@@ -73,7 +73,8 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
       .pipe(
         catchError((err) => {
           alert(
-            'Unknown error, please try again. Error: Firebase - ' + err.code
+            'Unknown error, please try reloading page. Error: Firebase - ' +
+              err.code
           );
           return empty();
         })

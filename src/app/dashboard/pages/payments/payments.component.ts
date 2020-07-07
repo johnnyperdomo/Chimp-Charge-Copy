@@ -1,17 +1,82 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { Store } from '@ngrx/store';
+import * as fromApp from 'src/app/shared/app-store/app.reducer';
+import { Subscription, BehaviorSubject, empty } from 'rxjs';
+import { Merchant } from 'src/app/merchants/merchant.model';
+import { map, filter, mergeMap, catchError, take } from 'rxjs/operators';
+import { Aggregation } from './aggregation.model';
+import * as MoneyFormatter from 'src/app/shared/accounting';
 
 @Component({
   selector: 'app-payments',
   templateUrl: './payments.component.html',
   styleUrls: ['./payments.component.scss'],
 })
-export class PaymentsComponent implements OnInit {
- //FUTURE-UPDATE: paymentsLastThirtyDays = '$2,534'; //pseudo code
-  customerCount = 9; //pseudo code
-  activeSubscriberCount = 3;
-  paymentsTotal = '$17,543';
+export class PaymentsComponent implements OnInit, OnDestroy {
+  merchantStoreSub: Subscription;
+  currentMerchantSub: Subscription;
+  currentMerchant = new BehaviorSubject<Merchant>(null);
 
-  constructor() {}
+  aggregation: Aggregation = null; //aggregation map
+  successfulAmount: string; //calculated amount of all transactions => $937.54
 
-  ngOnInit(): void {}
+  constructor(
+    private db: AngularFirestore,
+    private store: Store<fromApp.AppState>
+  ) {}
+
+  ngOnInit(): void {
+    this.merchantStoreSub = this.store
+      .select('merchant')
+      .pipe(map((merchantState) => merchantState.merchant))
+      .subscribe((payload) => {
+        this.currentMerchant.next(payload);
+      });
+
+    this.currentMerchantSub = this.currentMerchant
+      .pipe(
+        filter((retrievedMerchant) => retrievedMerchant !== null),
+        take(1),
+        mergeMap((retrievedMerchant) => {
+          return this.db
+            .collection('aggregations')
+            .doc<Aggregation>(retrievedMerchant.connectID)
+            .valueChanges();
+        })
+      )
+      .pipe(
+        catchError((err) => {
+          alert(
+            'Unknown error, please try reloading page. Error: Firebase - ' +
+              err.code
+          );
+          return empty();
+        })
+      )
+      .subscribe((aggregation) => {
+        //FUTURE-UPDATE: check to see if field item exists, if not, return 0
+        this.aggregation = aggregation;
+
+        this.successfulAmount = MoneyFormatter.convertMinorUnitToStandard(
+          this.aggregation.transactions.successfulAmount
+        );
+
+        console.log(this.aggregation);
+      });
+  }
+
+  ngOnDestroy() {
+    if (this.merchantStoreSub) {
+      this.merchantStoreSub.unsubscribe();
+    }
+
+    if (this.currentMerchant) {
+      this.currentMerchant.unsubscribe();
+    }
+
+    if (this.currentMerchantSub) {
+      this.currentMerchantSub.unsubscribe();
+    }
+  }
 }
