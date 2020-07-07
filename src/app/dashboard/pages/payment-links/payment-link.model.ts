@@ -4,7 +4,6 @@ import * as moment from 'moment';
 
 export class PaymentLink {
   public id: string;
-  //  public merchantInfo: any; //{a:1, b:2}
   public merchantUID: string;
   public connectID: string;
   public product: Stripe.Product;
@@ -13,7 +12,6 @@ export class PaymentLink {
 
   constructor(
     id: string,
-    //  merchantInfo: any, //{a:1, b:2}
     merchantUID: string,
     connectID: string,
     product: Stripe.Product, //one-time vs recurring
@@ -21,7 +19,6 @@ export class PaymentLink {
     lastUpdated: Date
   ) {
     this.id = id;
-    //this.merchantInfo = merchantInfo;
     this.merchantUID = merchantUID;
     this.connectID = connectID;
     this.product = product;

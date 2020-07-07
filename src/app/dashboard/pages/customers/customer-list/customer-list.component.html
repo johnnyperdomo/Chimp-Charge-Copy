@@ -10,12 +10,12 @@
               Name
             </h5>
           </th>
-          <th>
+          <!--FUTURE-UPDATE: total payments <th>
             <h5 class="text-muted mb-0">
               Total Payments
             </h5>
-          </th>
-          <th colspan="2">
+          </th> -->
+          <th>
             <h5 class="text-muted mb-0">
               Created
             </h5>
@@ -31,30 +31,30 @@
         <!-- FUTURE-UPDATE: Make table rows fully tappable, or just allow txn id to be a tappable link, then leads to more in-depth information about the payment -->
         <tr *ngFor="let customerEl of customers">
           <td>
-            <h5 class="mb-0">{{ customerEl.customerName }}</h5>
+            <h5 class="mb-0">{{ customerEl.customer.name }}</h5>
             <p class="card-text small text-muted mb-0">
-              {{ customerEl.customerEmail }}
+              {{ customerEl.customer.email }}
             </p>
           </td>
-          <td>
+          <!--FUTURE-UPDATE: total payments <td>
             <h5 class="mb-0">{{ customerEl.totalPayments }}</h5>
             <p class="card-text small text-muted mb-0">
               {{ customerEl.totalTransactions }} payments
-              <!-- FUTURE-UPDATE: Should be singular '1 payment', plural '2 payments' -->
+              FUTURE-UPDATE: Should be singular '1 payment', plural '2 payments'
             </p>
-          </td>
-          <td>{{ customerEl.createdDate }}</td>
+          </td> -->
+          <td>{{ customerEl.created }}</td>
           <!--FUTURE-UPDATE <td>{{ customerEl.recentTransaction }}</td> -->
-          <td class="text-right">
-            <!-- Only show badge if subscriber -->
-            <ng-container *ngIf="customerEl.isSubscriber">
+          <!--FUTURE-UPDATE: add badge to show if this customer is also a subscriber by looking at active subscriptions <td class="text-right"> -->
+          <!-- Only show badge if subscriber -->
+          <!-- <ng-container *ngIf="customerEl.isSubscriber">
               <h4 class="mb-0">
                 <span class="badge badge-soft-primary">
                   <b>Subscriber</b>
                 </span>
               </h4>
-            </ng-container>
-          </td>
+            </ng-container> 
+           </td> -->
         </tr>
       </tbody>
     </table>

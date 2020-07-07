@@ -2,16 +2,15 @@ import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
 import { PaymentLink } from '../payment-link.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { map, mergeMap, filter } from 'rxjs/operators';
+import { map, mergeMap, filter, catchError } from 'rxjs/operators';
 import * as fromApp from 'src/app/shared/app-store/app.reducer';
 import { Store } from '@ngrx/store';
-import { Subscription, BehaviorSubject } from 'rxjs';
+import { Subscription, BehaviorSubject, empty } from 'rxjs';
 import { Merchant } from 'src/app/merchants/merchant.model';
 import { HelperService } from 'src/app/shared/helper.service';
 import { PaymentLinkService } from '../payment-link.service';
 import { Clipboard } from '@angular/cdk/clipboard';
 
-//FUTURE-UPDATE: add sorting abilities, and pagination
 @Component({
   selector: 'app-payment-link-list',
   templateUrl: './payment-link-list.component.html',
@@ -38,8 +37,9 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    //FUTURE-UPDATE: add sorting abilities, and pagination
+
     //FUTURE-UPDATE: //add loading spinner
-    //TODO: catch errors
     //FUTURE-UPDATE// turn into ngrx reducer
     //FUTURE-UPDATE: render content faster
 
@@ -68,6 +68,14 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
                   .orderBy('product.created', 'desc') //sort: newest to last
             )
             .valueChanges({ idField: 'id' });
+        })
+      )
+      .pipe(
+        catchError((err) => {
+          alert(
+            'Unknown error, please try again. Error: Firebase - ' + err.code
+          );
+          return empty();
         })
       )
       .subscribe((data) => {

@@ -1,38 +1,38 @@
-// TODO: Pseudo code - update model
-
-//TODO: use firebase model:
-// customer: Stripe.Customer {}
+import * as moment from 'moment';
 
 export class Customer {
   public id: string;
-  public customerName: string;
-  public customerEmail: string;
-  public totalTransactions: Number;
-  public totalPayments: string;
-  public linkName: string;
-  public createdDate: string;
-  public recentTransaction: string;
-  public isSubscriber: Boolean;
+  public merchantUID: string;
+  public connectID: string;
+  public customer: customerFieldType;
+  public lastUpdated: Date;
+  //FUTURE-UPDATE: active subs, isdeleted,transactions
 
   constructor(
     id: string,
-    customerName: string,
-    customerEmail: string,
-    totalTransactions: Number,
-    totalPayments: string,
-    linkName: string, //TODO: make this a one-to-many relationship, one customer can be on many subscriptions //should be array of linkids
-    createdDate: string, //TODO: should be date
-    recentTransaction: string, //TODO: should be date
-    isSubscriber: Boolean
+    merchantUID: string,
+    connectID: string,
+    customer: customerFieldType,
+    lastUpdated: Date
   ) {
     this.id = id;
-    this.customerName = customerName;
-    this.customerEmail = customerEmail;
-    this.totalTransactions = totalTransactions;
-    this.totalPayments = totalPayments;
-    this.linkName = linkName;
-    this.createdDate = createdDate;
-    this.recentTransaction = recentTransaction;
-    this.isSubscriber = isSubscriber;
+    this.merchantUID = merchantUID;
+    this.connectID = connectID;
+    this.customer = customer;
+    this.lastUpdated = lastUpdated;
   }
+
+  get created() {
+    //product.created => Date()
+    const createdDate = this.customer.created; //unix epoch
+    const formattedDate = moment.unix(createdDate).format('MMMM Do, YYYY');
+    return formattedDate;
+  }
+}
+
+interface customerFieldType {
+  created: number; //unix
+  customerID: string;
+  email: string;
+  name: string;
 }

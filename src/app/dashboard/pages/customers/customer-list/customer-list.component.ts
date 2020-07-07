@@ -1,11 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Customer } from '../customer.model';
-import { Subscription, BehaviorSubject } from 'rxjs';
+import { Subscription, BehaviorSubject, empty } from 'rxjs';
 import { Merchant } from 'src/app/merchants/merchant.model';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Store } from '@ngrx/store';
 import * as fromApp from 'src/app/shared/app-store/app.reducer';
-import { map, filter, mergeMap } from 'rxjs/operators';
+import { map, filter, mergeMap, catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-customer-list',
@@ -17,41 +17,7 @@ export class CustomerListComponent implements OnInit, OnDestroy {
   currentMerchantSub: Subscription;
   currentMerchant = new BehaviorSubject<Merchant>(null);
 
-  customers: Customer[] = [
-    new Customer(
-      '123fsd',
-      'Johnny P',
-      'Johnny@test.com',
-      5,
-      '$837.69',
-      'Marketing Fee',
-      '11/17/19',
-      '05/12/20',
-      true
-    ),
-    new Customer(
-      '3fsd56',
-      'Bobby P',
-      'Bobb@test.com',
-      10,
-      '$8377.69',
-      'Consultation 30 mins',
-      '11/17/19',
-      '05/12/20',
-      false
-    ),
-    new Customer(
-      '543fsd',
-      'tommy P',
-      'tommy@test.com',
-      7,
-      '$250',
-      'Logo Design',
-      '11/17/19',
-      '05/12/20',
-      true
-    ),
-  ];
+  customers: Customer[] = [];
 
   constructor(
     private db: AngularFirestore,
@@ -59,6 +25,10 @@ export class CustomerListComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    //FUTURE-UPDATE: add sorting abilities, and pagination
+    //FUTURE-UPDATE: //add loading spinner
+    //FUTURE-UPDATE// turn into ngrx reducer
+    //FUTURE-UPDATE: render content faster
     this.merchantStoreSub = this.store
       .select('merchant')
       .pipe(map((merchantState) => merchantState.merchant))
@@ -70,16 +40,38 @@ export class CustomerListComponent implements OnInit, OnDestroy {
       .pipe(
         filter((payload) => payload !== null),
         mergeMap((retrievedMerchant) => {
-          //only execute if merchant not null
-          //TODO: add <Customers> to collectionref
-          //TODO: , (ref) => ref.where('merchantUID', '==', retrievedMerchant.uid)
           return this.db
-            .collection('customers')
+            .collection<Customer>(
+              'customers',
+              (ref) =>
+                ref
+                  .where('merchantUID', '==', retrievedMerchant.merchantUID)
+                  .where('connectID', '==', retrievedMerchant.connectID)
+                  .orderBy('customer.created', 'desc') //sort: newest to last
+            )
             .valueChanges({ idField: 'id' });
         })
       )
+      .pipe(
+        catchError((err) => {
+          alert(
+            'Unknown error, please try again. Error: Firebase - ' + err.code
+          );
+          return empty();
+        })
+      )
       .subscribe((data) => {
-        console.log(data);
+        this.customers = data.map((item) => {
+          return new Customer(
+            item.id,
+            item.merchantUID,
+            item.connectID,
+            item.customer,
+            item.lastUpdated
+          );
+        });
+
+        console.log(this.customers);
       });
   }
 
