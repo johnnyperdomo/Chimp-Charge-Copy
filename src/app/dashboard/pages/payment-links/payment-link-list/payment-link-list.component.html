@@ -65,16 +65,14 @@
             </td>
             <td>
               <h4 class="mb-0">
-                <span class="badge badge-light">
-                  <!-- FUTURE-UPDATE: make badge 'light' when single, make badge 'outline-info' [ngclass]
-                when recurring ; or another color -->
+                <span class="badge badge-pill badge-light">
                   <b>{{ linkEl.linkType }}</b>
                 </span>
               </h4>
             </td>
             <td>
               <h5 class="mb-0">{{ linkEl.priceAmount }}</h5>
-              
+
               <p
                 *ngIf="linkEl.billingInterval"
                 class="card-text small text-muted mb-0"

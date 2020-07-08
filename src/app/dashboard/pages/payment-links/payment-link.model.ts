@@ -35,6 +35,10 @@ export class PaymentLink {
 
   get linkType() {
     //one time, recurring
+    if (this.price.type === 'one_time') {
+      return 'one time';
+    }
+
     return this.price.type;
   }
 

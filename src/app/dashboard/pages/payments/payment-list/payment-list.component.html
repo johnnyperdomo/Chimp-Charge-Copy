@@ -61,9 +61,10 @@
                 class="badge badge-pill"
                 [ngClass]="{
                   'badge-soft-primary': paymentEl.status === 'Succeeded',
-                  'badge-soft-secondary': paymentEl.status === 'Refunded'
+                  'badge-warning': paymentEl.status === 'Refunded'
                 }"
               >
+                <!-- FUTURE-UPDATE: disputed is red 'danger' -->
                 <b>{{ paymentEl.status }}</b>
               </span>
             </h4>
@@ -72,7 +73,11 @@
             <span>{{ paymentEl.created }}</span>
           </td>
           <td>
-            <span>{{ paymentEl.transactionType }} </span>
+            <h4>
+              <span class="badge badge-pill badge-light">
+                <b>{{ paymentEl.transactionType }}</b>
+              </span>
+            </h4>
           </td>
 
           <!-- //TODO: use a simple js alert -->

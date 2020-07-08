@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
 import { PaymentLink } from '../payment-link.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { map, mergeMap, filter, catchError } from 'rxjs/operators';
+import { map, mergeMap, filter, catchError, take } from 'rxjs/operators';
 import * as fromApp from 'src/app/shared/app-store/app.reducer';
 import { Store } from '@ngrx/store';
 import { Subscription, BehaviorSubject, empty } from 'rxjs';
@@ -54,6 +54,7 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
     this.currentMerchantSub = this.currentMerchant
       .pipe(
         filter((retrievedMerchant) => retrievedMerchant !== null),
+        take(1),
         mergeMap((retrievedMerchant) => {
           //only execute if merchant not null
 
