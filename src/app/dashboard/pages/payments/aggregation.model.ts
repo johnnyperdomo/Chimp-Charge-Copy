@@ -2,7 +2,6 @@ import {
   SubscriptionsInterface,
   TransactionsInterface,
 } from 'src/app/shared/interfaces';
-
 import * as MoneyFormatter from 'src/app/shared/accounting';
 
 //aggregation map, quick stats on connect data
@@ -30,6 +29,7 @@ export class Aggregation {
   }
 
   get successfulAmount() {
+    //FUTURE-UPDATE: take into account refunded payments
     //calculated amount of all transactions => $937.54
     return MoneyFormatter.convertMinorUnitToStandard(
       this.transactions && this.transactions.successfulAmount

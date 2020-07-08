@@ -10,21 +10,21 @@
               Name
             </h5>
           </th>
-          <!--FUTURE-UPDATE: total payments <th>
+          <th>
             <h5 class="text-muted mb-0">
               Total Payments
             </h5>
-          </th> -->
+          </th>
           <th>
+            <h5 class="text-muted mb-0 text-center">
+              Active Subs
+            </h5>
+          </th>
+          <th colspan="2">
             <h5 class="text-muted mb-0">
               Created
             </h5>
           </th>
-          <!-- FUTURE-UPDATE: <th colspan="2">
-            <h5 class="text-muted mb-0">
-              Latest Transaction
-            </h5>
-          </th> -->
         </tr>
       </thead>
       <tbody class="list">
@@ -36,25 +36,46 @@
               {{ customerEl.customer.email }}
             </p>
           </td>
-          <!--FUTURE-UPDATE: total payments <td>
-            <h5 class="mb-0">{{ customerEl.totalPayments }}</h5>
+          <!-- FUTURE-UPDATE: total payments  -->
+          <td>
+            <h5 class="mb-0">{{ customerEl.successfulAmount }}</h5>
             <p class="card-text small text-muted mb-0">
-              {{ customerEl.totalTransactions }} payments
-              FUTURE-UPDATE: Should be singular '1 payment', plural '2 payments'
+              {{
+                (customerEl.transactions &&
+                  customerEl.transactions.successfulCount) ||
+                  0
+              }}
+              payments
+              <!-- FUTURE-UPDATE: Should be singular '1 payment', plural '2 payments' -->
             </p>
-          </td> -->
-          <td>{{ customerEl.created }}</td>
-          <!--FUTURE-UPDATE <td>{{ customerEl.recentTransaction }}</td> -->
-          <!--FUTURE-UPDATE: add badge to show if this customer is also a subscriber by looking at active subscriptions <td class="text-right"> -->
+          </td>
+          <td class="text-center">
+            <h4>
+              <span
+                class="badge badge-pill"
+                [ngClass]="{
+                  ' badge-light': customerEl.activeSubscriptionsCount > 0,
+                  'badge-soft-light': customerEl.activeSubscriptionsCount === 0
+                }"
+              >
+                <b>{{ customerEl.activeSubscriptionsCount }}</b>
+              </span>
+            </h4>
+          </td>
+          <td>
+            <span>{{ customerEl.created }}</span>
+          </td>
+
           <!-- Only show badge if subscriber -->
-          <!-- <ng-container *ngIf="customerEl.isSubscriber">
+          <td class="text-right">
+            <ng-container *ngIf="customerEl.isSubscriber">
               <h4 class="mb-0">
-                <span class="badge badge-soft-primary">
+                <span class="badge badge-pill badge-soft-primary">
                   <b>Subscriber</b>
                 </span>
               </h4>
-            </ng-container> 
-           </td> -->
+            </ng-container>
+          </td>
         </tr>
       </tbody>
     </table>

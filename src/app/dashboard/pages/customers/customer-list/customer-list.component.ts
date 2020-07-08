@@ -5,7 +5,7 @@ import { Merchant } from 'src/app/merchants/merchant.model';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Store } from '@ngrx/store';
 import * as fromApp from 'src/app/shared/app-store/app.reducer';
-import { map, filter, mergeMap, catchError } from 'rxjs/operators';
+import { map, filter, mergeMap, catchError, take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-customer-list',
@@ -39,6 +39,7 @@ export class CustomerListComponent implements OnInit, OnDestroy {
     this.currentMerchantSub = this.currentMerchant
       .pipe(
         filter((retrievedMerchant) => retrievedMerchant !== null),
+        take(1),
         mergeMap((retrievedMerchant) => {
           return this.db
             .collection<Customer>(
@@ -67,6 +68,8 @@ export class CustomerListComponent implements OnInit, OnDestroy {
             i.id,
             i.merchantUID,
             i.connectID,
+            i.transactions,
+            i.activeSubscriptionsCount,
             i.customer,
             i.lastUpdated
           );

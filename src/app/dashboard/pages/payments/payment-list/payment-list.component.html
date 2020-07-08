@@ -56,7 +56,7 @@
             </p>
           </td>
           <td>
-            <h3 class="mb-0">
+            <h4 class="mb-0">
               <span
                 class="badge badge-pill"
                 [ngClass]="{
@@ -64,9 +64,9 @@
                   'badge-soft-secondary': paymentEl.status === 'Refunded'
                 }"
               >
-                {{ paymentEl.status }}
+                <b>{{ paymentEl.status }}</b>
               </span>
-            </h3>
+            </h4>
           </td>
           <td>
             <span>{{ paymentEl.created }}</span>

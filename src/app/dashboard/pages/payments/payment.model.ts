@@ -67,6 +67,8 @@ export class Payment {
 
   get amount() {
     //i.e. $350.00
+    //FUTURE-UPDATE: take into account refunded payments
+
     return MoneyFormatter.convertMinorUnitToStandard(this.paymentIntent.amount);
   }
 }
