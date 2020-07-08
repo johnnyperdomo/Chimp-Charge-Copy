@@ -97,7 +97,11 @@ export async function onCreatePaymentLink(data: any, userID: string) {
       isDeleted: false,
     });
 
-    batch.set(aggregationRef, { paymentLinkCount: increment }, { merge: true }); //aggregate paymentLink count
+    batch.set(
+      aggregationRef,
+      { paymentLinkCount: increment, connectID: stripeConnectID, merchantUID },
+      { merge: true }
+    ); //aggregate paymentLink count
 
     await batch.commit();
     return batch;
@@ -196,7 +200,11 @@ export async function onDeletePaymentLink(data: any, userID: string) {
         .get();
 
       const docRef = query.docs[0].ref;
-      const batchDelete = await batchDeletePaymentLink(docRef, stripeConnectID);
+      const batchDelete = await batchDeletePaymentLink(
+        docRef,
+        stripeConnectID,
+        userID
+      );
 
       return batchDelete;
     } else {
@@ -217,11 +225,12 @@ export async function onDeletePaymentLink(data: any, userID: string) {
 
 export async function updateFirestoreProductFromWebhook(
   stripeProduct: Stripe.Product,
-  connectID: string
+  connectID: string,
+  merchantUID: string
 ) {
   try {
     if (stripeProduct.active === false) {
-      await deletePaymentLinkFromWebhook(connectID, stripeProduct);
+      await deletePaymentLinkFromWebhook(connectID, merchantUID, stripeProduct);
       return;
     }
 
@@ -245,11 +254,17 @@ export async function updateFirestoreProductFromWebhook(
 
 export async function updateFirestorePriceFromWebhook(
   stripePrice: Stripe.Price,
-  connectID: string
+  connectID: string,
+  merchantUID: string
 ) {
   try {
     if (stripePrice.active === false) {
-      await deletePaymentLinkFromWebhook(connectID, undefined, stripePrice);
+      await deletePaymentLinkFromWebhook(
+        connectID,
+        merchantUID,
+        undefined,
+        stripePrice
+      );
       return;
     }
 
@@ -273,6 +288,7 @@ export async function updateFirestorePriceFromWebhook(
 
 export async function deletePaymentLinkFromWebhook(
   connectID: string,
+  merchantUID: string,
   stripeProduct?: Stripe.Product,
   stripePrice?: Stripe.Price
 ) {
@@ -293,7 +309,7 @@ export async function deletePaymentLinkFromWebhook(
       }
 
       const linkFromPriceRef = findLinkFromPrice.docs[0].ref;
-      await batchDeletePaymentLink(linkFromPriceRef, connectID);
+      await batchDeletePaymentLink(linkFromPriceRef, connectID, merchantUID);
 
       return;
     }
@@ -315,7 +331,7 @@ export async function deletePaymentLinkFromWebhook(
 
       const linkFromProductRef = findLinkFromProduct.docs[0].ref;
 
-      await batchDeletePaymentLink(linkFromProductRef, connectID);
+      await batchDeletePaymentLink(linkFromProductRef, connectID, merchantUID);
       return;
     }
   } catch (err) {
@@ -478,7 +494,8 @@ async function batchDeletePaymentLink(
   paymentLinkRef: FirebaseFirestore.DocumentReference<
     FirebaseFirestore.DocumentData
   >,
-  connectID: string
+  connectID: string,
+  merchantUID: string
 ) {
   try {
     const aggregationRef = db.collection('aggregations').doc(connectID);
@@ -491,7 +508,11 @@ async function batchDeletePaymentLink(
       lastUpdated: admin.firestore.Timestamp.now(),
     });
 
-    batch.set(aggregationRef, { paymentLinkCount: decrement }, { merge: true }); //aggregate paymentLink count
+    batch.set(
+      aggregationRef,
+      { paymentLinkCount: decrement, connectID, merchantUID },
+      { merge: true }
+    ); //aggregate paymentLink count
     return await batch.commit();
   } catch (error) {
     throw Error();

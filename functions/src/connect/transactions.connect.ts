@@ -3,6 +3,7 @@ import Stripe from 'stripe';
 import { stripe } from '../config';
 const db = admin.firestore();
 import { paymentIntentFieldType, customerFieldType } from '../helpers';
+import * as functions from 'firebase-functions';
 
 // export const onRefundPayment = functions.https.onCall(
 //   async (data, context) => {}
@@ -80,20 +81,9 @@ export async function createFirestoreTransaction(
       expandedPaymentIntent.amount,
       customerFromExpand.id,
       chimp_charge_product_id,
-      connectID
+      connectID,
+      merchantUID
     );
-    // await db.collection('transactions').add({
-    //   lastUpdated: admin.firestore.Timestamp.now(),
-    //   paymentIntent: paymentIntentField,
-    //   customer: customerField,
-    //   productName: chimp_charge_product_name || null,
-    //   productID: chimp_charge_product_id || null,
-    //   merchantUID,
-    //   connectID,
-    //   eventID: idempotencyKey,
-    //   isRefunded: false,
-    //   isDisputed: false, //lost dispute only//FUTURE-UPDATE
-    // });
 
     return;
   } catch (err) {
@@ -184,18 +174,21 @@ export async function createFirestoreTransactionFromInvoice(
       invoice.amount_paid,
       invoice.customer as string,
       chimp_charge_product_id,
-      connectID
+      connectID,
+      merchantUID
     );
 
     return;
   } catch (error) {
+    functions.logger.error(' invoice transaction error: ' + error);
     throw Error(error);
   }
 }
 
 export async function refundFirestoreTransaction(
   charge: Stripe.Charge,
-  connectID: string
+  connectID: string,
+  merchantUID: string
 ) {
   try {
     //FUTURE-UPDATE: check to see if object is already refunded, so we don't trigger twice and mess with aggregation
@@ -228,7 +221,8 @@ export async function refundFirestoreTransaction(
         charge.amount,
         charge.customer as string,
         stripeProductID,
-        connectID
+        connectID,
+        merchantUID
       );
 
       return;
@@ -241,7 +235,8 @@ export async function refundFirestoreTransaction(
       charge.amount,
       charge.customer as string,
       chimp_charge_product_id,
-      connectID
+      connectID,
+      merchantUID
     );
 
     return;
@@ -293,7 +288,8 @@ async function batchCreateTransaction(
   transactionAmount: number,
   stripeCustomerID: string,
   productID: string,
-  connectID: string
+  connectID: string,
+  merchantUID: string
 ) {
   try {
     const findCustomer = await db
@@ -328,6 +324,8 @@ async function batchCreateTransaction(
           successfulCount: increment,
           successfulAmount: transactionAmountIncrement,
         },
+        connectID,
+        merchantUID,
       },
       { merge: true }
     );
@@ -357,8 +355,12 @@ async function batchCreateTransaction(
     );
 
     await batch.commit();
+    functions.logger.log('batch invoice transaction success');
+
     return;
   } catch (error) {
+    functions.logger.error('batch invoice transaction error: ' + error);
+
     throw Error(error);
   }
 }
@@ -370,7 +372,8 @@ async function batchRefundTransaction(
   refundAmount: number,
   stripeCustomerID: string,
   productID: string,
-  connectID: string
+  connectID: string,
+  merchantUID: string
 ) {
   try {
     const findCustomer = await db
@@ -408,6 +411,8 @@ async function batchRefundTransaction(
           refundedCount: increment,
           refundedAmount: refundAmountIncrement,
         },
+        connectID,
+        merchantUID,
       },
       { merge: true }
     );

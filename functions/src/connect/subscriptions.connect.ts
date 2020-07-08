@@ -116,7 +116,8 @@ export async function createFirestoreSubscription(
       subscriptionDoc,
       subscription,
       subscriptionDocBody,
-      connectID
+      connectID,
+      merchantUID
     );
 
     return;
@@ -177,7 +178,8 @@ export async function updateFirestoreSubscription(
 
 export async function cancelFirestoreSubscription(
   stripeSubscription: Stripe.Subscription,
-  connectID: string
+  connectID: string,
+  merchantUID: string
 ) {
   try {
     //FUTURE-UPDATE: check if this object is already cancelled, so that we don't trigger twice, depending on webhook or client trigger
@@ -195,7 +197,8 @@ export async function cancelFirestoreSubscription(
     await batchCancelFirestoreSubscription(
       subscriptionRef,
       stripeSubscription,
-      connectID
+      connectID,
+      merchantUID
     );
 
     return;
@@ -211,7 +214,8 @@ async function batchCreateFirestoreSubscription(
   >,
   stripeSubscription: Stripe.Subscription,
   subscriptionDocBody: any,
-  connectID: string
+  connectID: string,
+  merchantUID: string
 ) {
   try {
     const stripePlan = stripeSubscription.items.data[0].plan;
@@ -241,7 +245,7 @@ async function batchCreateFirestoreSubscription(
     //aggregation map
     batch.set(
       aggregationRef,
-      { subscriptions: { activeCount: increment } },
+      { subscriptions: { activeCount: increment }, connectID, merchantUID },
       { merge: true }
     );
 
@@ -260,11 +264,11 @@ async function batchCreateFirestoreSubscription(
     );
 
     await batch.commit();
-    functions.logger.log('batch cancel sub success');
+    functions.logger.log('batch create sub success');
 
     return;
   } catch (error) {
-    functions.logger.error(error);
+    functions.logger.error('batch create sub error: ' + error);
     throw Error(error);
   }
 }
@@ -274,7 +278,8 @@ async function batchCancelFirestoreSubscription(
     FirebaseFirestore.DocumentData
   >,
   stripeSubscription: Stripe.Subscription,
-  connectID: string
+  connectID: string,
+  merchantUID: string
 ) {
   try {
     const stripePlan = stripeSubscription.items.data[0].plan;
@@ -308,7 +313,11 @@ async function batchCancelFirestoreSubscription(
     //aggregation map
     batch.set(
       aggregationRef,
-      { subscriptions: { cancelledCount: increment, activeCount: decrement } },
+      {
+        subscriptions: { cancelledCount: increment, activeCount: decrement },
+        connectID,
+        merchantUID,
+      },
       { merge: true }
     );
 

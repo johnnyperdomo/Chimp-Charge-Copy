@@ -233,7 +233,11 @@ export async function createFirestoreCustomer(
       transactions: null,
     });
 
-    batch.set(aggregationRef, { customerCount: increment }, { merge: true }); //aggregate customer count
+    batch.set(
+      aggregationRef,
+      { customerCount: increment, connectID, merchantUID },
+      { merge: true }
+    ); //aggregate customer count
 
     await batch.commit();
 

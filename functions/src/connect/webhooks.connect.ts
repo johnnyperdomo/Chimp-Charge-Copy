@@ -55,7 +55,6 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
           paymentIntentSuccessMerchantUID,
           eventID
         );
-        //aggregatePaymentIntents(up)
 
         return;
       case 'charge.refunded':
@@ -66,18 +65,22 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
           return;
         }
 
-        await validateStripeWebhook(event, 'charge', connectID);
-        await refundFirestoreTransaction(chargeRefunded, connectID);
-
-        //aggregatePaymentIntent(down)
+        const chargeRefundedMerchantUID = await validateStripeWebhook(
+          event,
+          'charge',
+          connectID
+        );
+        await refundFirestoreTransaction(
+          chargeRefunded,
+          connectID,
+          chargeRefundedMerchantUID
+        );
 
         //TODO: sendgrid
         return;
       //
       //Customer Events ===========================>
       //
-      //TODO: update customer for subscription
-
       case 'customer.updated':
         const customerUpdated = eventObject as Stripe.Customer;
         const customerUpdatedMerchantUID = await validateStripeWebhook(
@@ -111,35 +114,62 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
       //
       //PaymentLink Events (Products/Prices) ==================>
       //
-      //TODO: update product/price for subscription
       case 'product.updated':
         const productUpdated = eventObject as Stripe.Product;
-        await validateStripeWebhook(event, 'product');
-        await updateFirestoreProductFromWebhook(productUpdated, connectID);
+        const productUpdatedMerchantUID = await validateStripeWebhook(
+          event,
+          'product'
+        );
+        await updateFirestoreProductFromWebhook(
+          productUpdated,
+          connectID,
+          productUpdatedMerchantUID
+        );
 
         return;
       case 'price.updated': //user can't update price from chimp_charge, but they can from stripe dashboard
         const priceUpdated = eventObject as Stripe.Price;
-        await validateStripeWebhook(event, 'price');
-        await updateFirestorePriceFromWebhook(priceUpdated, connectID);
+        const priceUpdatedMerchantUID = await validateStripeWebhook(
+          event,
+          'price'
+        );
+        await updateFirestorePriceFromWebhook(
+          priceUpdated,
+          connectID,
+          priceUpdatedMerchantUID
+        );
 
         return;
       case 'product.deleted':
         const productDeleted = eventObject as Stripe.Product;
-        await validateStripeWebhook(event, 'product');
-        await deletePaymentLinkFromWebhook(connectID, productDeleted);
+        const productDeletedMerchantUID = await validateStripeWebhook(
+          event,
+          'product'
+        );
+        await deletePaymentLinkFromWebhook(
+          connectID,
+          productDeletedMerchantUID,
+          productDeleted
+        );
 
         return;
       case 'price.deleted':
         const deletedPrice = eventObject as Stripe.Price;
-        await validateStripeWebhook(event, 'price');
-        await deletePaymentLinkFromWebhook(connectID, undefined, deletedPrice);
+        const priceDeletedMerchantUID = await validateStripeWebhook(
+          event,
+          'price'
+        );
+        await deletePaymentLinkFromWebhook(
+          connectID,
+          priceDeletedMerchantUID,
+          undefined,
+          deletedPrice
+        );
 
         return;
       //
       //Subscription Events ==================>
       //
-      //TODO: error for recurring payments
       case 'invoice.payment_succeeded':
         const invoicePaymentSucceeded = eventObject as Stripe.Invoice;
         const invoicePaymentSuccessMerchantUID = await validateStripeWebhook(
@@ -159,7 +189,6 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
       //   //FUTURE-UPDATE: validate
       //   //FUTURE-UPDATE: handle this failure
 
-      //   return;
       //Subscriptions
       case 'customer.subscription.created':
         //only active or trialing === success
@@ -185,7 +214,6 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
           eventID
         );
 
-        //aggregateSubscription(up)
         //TODO: sendgrid
         return;
 
@@ -210,9 +238,15 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
       case 'customer.subscription.deleted':
         const subscriptionDeleted = eventObject as Stripe.Subscription;
 
-        await validateStripeWebhook(event, 'subscription');
-        await cancelFirestoreSubscription(subscriptionDeleted, connectID);
-        //aggregateSubscription(down)
+        const subscriptionDeletedMerchantUID = await validateStripeWebhook(
+          event,
+          'subscription'
+        );
+        await cancelFirestoreSubscription(
+          subscriptionDeleted,
+          connectID,
+          subscriptionDeletedMerchantUID
+        );
 
         //TODO: sendgrid
         return;
