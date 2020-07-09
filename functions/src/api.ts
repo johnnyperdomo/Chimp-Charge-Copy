@@ -11,6 +11,10 @@ import { createSubscription } from './connect/subscriptions.connect';
 import { handleStripeConnectWebhooks } from './connect/webhooks.connect';
 
 const app = express();
+const runtimeOpts: functions.RuntimeOptions = {
+  memory: '1GB',
+  timeoutSeconds: 180,
+}; //FUTURE-UPDATE: might need to raise this when creating 'large data sync' functionality in app, to handle data processing
 
 //Helpers ==============================>
 app.use(cors({ origin: true })); //cors => any other url can access this api
@@ -230,4 +234,11 @@ app.post('/connect/stripeWebhooks', async (req: any, res: express.Response) => {
   }
 });
 
-export const chimpApi = functions.https.onRequest(app);
+//Pubsub ==================>
+//used to awaken cloud function every minute from chron scheduler => eliminate cold start time
+app.get('/awake', (req, res) => {
+  functions.logger.log('yay function has been awoken at this time: , ', Date());
+  res.send(200);
+});
+
+export const chimpApi = functions.runWith(runtimeOpts).https.onRequest(app);

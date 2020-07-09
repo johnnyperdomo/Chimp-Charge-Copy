@@ -119,9 +119,6 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
         if (
           this.subscriberSequenceArray.length === this.expectedSubscribersCount
         ) {
-          console.log(this.subscriberSequenceArray.length);
-          console.log(this.expectedSubscribersCount);
-
           //filter out objects that are missing relational data in the rare case, needs to be 3 items
           const filteredArr = this.subscriberSequenceArray.filter(
             (arr) => arr.length == 3
