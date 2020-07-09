@@ -13,14 +13,28 @@ export interface PaymentIntentFieldInterface {
   paymentIntentID: string;
 }
 
-export interface SubscriptionsInterface {
+export interface SubscriptionsAggregationFieldInterface {
   activeCount: number;
   cancelledCount: number;
 }
 
-export interface TransactionsInterface {
+export interface TransactionsAggregationInterface {
   //FUTURE-UPDATE: refundedAmount: number;
   //FUTURE-UPDATE: refundedCount: number;
   successfulAmount: number;
   successfulCount: number;
+}
+
+export interface SubscriptionFieldInterface {
+  created: number; //unix,
+  subscriptionID: string;
+}
+
+export interface PaymentLinkFieldInterface {
+  created: number; //unix
+  paymentLinkID: string;
+  name: string;
+  description: string | null;
+  amount: number;
+  billingInterval: string | null;
 }

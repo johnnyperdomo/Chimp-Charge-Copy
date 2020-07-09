@@ -1,7 +1,7 @@
 import * as moment from 'moment';
 import {
   CustomerFieldInterface,
-  TransactionsInterface,
+  TransactionsAggregationInterface,
 } from 'src/app/shared/interfaces';
 import * as MoneyFormatter from 'src/app/shared/accounting';
 
@@ -9,7 +9,7 @@ export class Customer {
   public id: string;
   public merchantUID: string;
   public connectID: string;
-  public transactions: TransactionsInterface;
+  public transactions: TransactionsAggregationInterface;
   public activeSubscriptionsCount: number;
   public customer: CustomerFieldInterface;
   public lastUpdated: Date;
@@ -19,7 +19,7 @@ export class Customer {
     id: string,
     merchantUID: string,
     connectID: string,
-    transactions: TransactionsInterface,
+    transactions: TransactionsAggregationInterface,
     activeSubscriptionsCount: number,
     customer: CustomerFieldInterface,
     lastUpdated: Date

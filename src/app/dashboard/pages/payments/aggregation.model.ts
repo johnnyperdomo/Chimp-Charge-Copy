@@ -1,6 +1,6 @@
 import {
-  SubscriptionsInterface,
-  TransactionsInterface,
+  SubscriptionsAggregationFieldInterface,
+  TransactionsAggregationInterface,
 } from 'src/app/shared/interfaces';
 import * as MoneyFormatter from 'src/app/shared/accounting';
 
@@ -10,16 +10,16 @@ export class Aggregation {
   public merchantUID: string;
   public connectID: string;
   public customerCount: number;
-  public subscriptions: SubscriptionsInterface;
-  public transactions: TransactionsInterface;
+  public subscriptions: SubscriptionsAggregationFieldInterface;
+  public transactions: TransactionsAggregationInterface;
   //FUTURE-UPDATE: paymentLinkCount
 
   constructor(
     merchantUID: string,
     connectID: string,
     customerCount: number,
-    subscriptions: SubscriptionsInterface,
-    transactions: TransactionsInterface
+    subscriptions: SubscriptionsAggregationFieldInterface,
+    transactions: TransactionsAggregationInterface
   ) {
     this.merchantUID = merchantUID;
     this.connectID = connectID;

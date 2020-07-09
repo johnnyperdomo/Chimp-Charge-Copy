@@ -20,14 +20,9 @@
               Status
             </h5>
           </th>
-          <th>
-            <h5 class="text-muted mb-0">
-              Subscribed At
-            </h5>
-          </th>
           <th colspan="2">
             <h5 class="text-muted mb-0">
-              Last Charged At
+              Subscribed At
             </h5>
           </th>
         </tr>
@@ -36,28 +31,37 @@
         <!-- FUTURE-UPDATE: Make table rows fully tappable, or just allow txn id to be a tappable link, then leads to more in-depth information about the payment -->
         <tr *ngFor="let subscriberEl of subscribers">
           <td>
-            <h5 class="mb-0">{{ subscriberEl.customerName }}</h5>
+            <h5 class="mb-0">{{ subscriberEl.customer.name }}</h5>
             <p class="card-text small text-muted mb-0">
-              {{ subscriberEl.customerEmail }}
+              {{ subscriberEl.customer.email }}
             </p>
           </td>
           <td>
-            <h5 class="mb-0">{{ subscriberEl.linkName }}</h5>
+            <h5 class="mb-0">{{ subscriberEl.paymentLink.name }}</h5>
             <p class="card-text small text-muted mb-0">
               <!-- TODO: add dynamic link name -->
-              $15 - Monthly
+              {{ subscriberEl.linkAmount }} -
+              {{ subscriberEl.billingInterval }}
             </p>
           </td>
           <td>
             <!-- TODO: change badge based on status -->
             <h4 class="mb-0">
-              <span class="badge badge-soft-success">
-                <b>Active</b>
+              <span
+                class="badge badge-pill"
+                [ngClass]="{
+                  'badge-soft-primary': subscriberEl.status === 'active',
+                  'badge-soft-info': subscriberEl.status === 'trialing',
+                  'badge-soft-warning': subscriberEl.status === 'past_due',
+                  'badge-soft-danger': subscriberEl.status === 'unpaid',
+                  'badge-soft-secondary': subscriberEl.status === 'canceled'
+                }"
+              >
+                {{ subscriberEl.status }}
               </span>
             </h4>
           </td>
-          <td>{{ subscriberEl.createdDate }}</td>
-          <td>{{ subscriberEl.recentTransaction }}</td>
+          <td>{{ subscriberEl.created }}</td>
           <td class="text-right">
             <!-- TODO: only cancel if status if active -->
             <button type="button" class="btn btn-link btn-sm destructive">
