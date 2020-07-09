@@ -61,7 +61,7 @@
                 class="badge badge-pill"
                 [ngClass]="{
                   'badge-soft-primary': paymentEl.status === 'Succeeded',
-                  'badge-warning': paymentEl.status === 'Refunded'
+                  'badge-soft-warning': paymentEl.status === 'Refunded'
                 }"
               >
                 <!-- FUTURE-UPDATE: disputed is red 'danger' -->
@@ -73,7 +73,7 @@
             <span>{{ paymentEl.created }}</span>
           </td>
           <td>
-            <h4>
+            <h4 class="mb-0">
               <span class="badge badge-pill badge-light">
                 <b>{{ paymentEl.transactionType }}</b>
               </span>

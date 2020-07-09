@@ -49,6 +49,13 @@ export class Subscriber {
     return MoneyFormatter.convertMinorUnitToStandard(this.paymentLink.amount);
   }
 
+  get isCancelled() {
+    if (this.status === 'canceled') {
+      return true;
+    }
+    return false;
+  }
+
   get billingInterval() {
     //i.e. Billed monthly
     const interval = this.paymentLink.billingInterval;

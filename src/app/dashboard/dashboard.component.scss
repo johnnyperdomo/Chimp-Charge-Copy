@@ -1,1 +1,30 @@
 //FUTURE-UPDATE: Make sure to optimize tables for long words, emails, and mobile, to truncate if necessary.
+
+//Badge Overrides =================>
+.badge-soft-primary {
+  color: #3d4eac;
+  background-color: #d6ecff;
+}
+
+.badge-soft-warning {
+  color: #a74819;
+  background-color: #f8e5b9;
+}
+
+.badge-soft-secondary {
+  color: #4f566b;
+  background-color: #e3e8ee;
+}
+
+.badge-soft-info {
+  color: #0170a3;
+}
+
+.badge-soft-danger {
+  color: #e02d00;
+  background-color: #ffe1d6;
+}
+
+.badge-soft-light {
+  color: #cadef5;
+}

@@ -46,7 +46,7 @@
           </td>
           <td>
             <!-- TODO: change badge based on status -->
-            <h4 class="mb-0">
+            <h4 class="mb-0 capitalize">
               <span
                 class="badge badge-pill"
                 [ngClass]="{
@@ -57,14 +57,17 @@
                   'badge-soft-secondary': subscriberEl.status === 'canceled'
                 }"
               >
-                {{ subscriberEl.status }}
+                <b>{{ subscriberEl.status }}</b>
               </span>
             </h4>
           </td>
           <td>{{ subscriberEl.created }}</td>
           <td class="text-right">
-            <!-- TODO: only cancel if status if active -->
-            <button type="button" class="btn btn-link btn-sm destructive">
+            <button
+              *ngIf="subscriberEl.isCancelled === false"
+              type="button"
+              class="btn btn-outline-danger btn-sm"
+            >
               Cancel
             </button>
           </td>

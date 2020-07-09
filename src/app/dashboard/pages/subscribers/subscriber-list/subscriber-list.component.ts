@@ -53,6 +53,7 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
         this.currentMerchant.next(payload);
       });
 
+    //FUTURE-UPDATE: listen to snapshot changes of payment links, and customers, if something changes there, retrigger sub function
     this.currentMerchantSub = this.currentMerchant
       .pipe(
         filter((retrievedMerchant) => retrievedMerchant !== null),
@@ -71,9 +72,9 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
             .valueChanges({ idField: 'id' });
         }),
         mergeMap((subscriptions) => {
-          this.expectedSubscribersCount = subscriptions.length; //to calculate mapping sequence position
-
           return subscriptions.map((sub) => {
+            this.expectedSubscribersCount = subscriptions.length; //to calculate mapping sequence position
+
             //get customer that belongs from this subscription
             const customerObs = this.db
               .collection<Customer>('customers', (ref) =>
@@ -111,13 +112,15 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
       )
       .subscribe((data) => {
         const flattenedArr: any[] = Array.prototype.concat.apply([], data); //[[0]sub{}, [1]customer{}, [2] link{} ]
+
         this.subscriberSequenceArray.push(flattenedArr);
 
         //wait until observable sequence mapping finishes;
         if (
           this.subscriberSequenceArray.length === this.expectedSubscribersCount
         ) {
-          console.log(this.subscriberSequenceArray);
+          console.log(this.subscriberSequenceArray.length);
+          console.log(this.expectedSubscribersCount);
 
           //filter out objects that are missing relational data in the rare case, needs to be 3 items
           const filteredArr = this.subscriberSequenceArray.filter(
@@ -150,6 +153,8 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
               subscription.lastUpdated
             );
           });
+          this.expectedSubscribersCount = 0;
+          this.subscriberSequenceArray = [];
         }
       });
   }
