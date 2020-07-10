@@ -9,14 +9,43 @@ import { subscriptionFieldType, planFieldType } from '../shared/extensions';
 
 const db = admin.firestore();
 
-// export const getSubscribers = functions.https.onCall(
-//   async (data, context) => {}
-// );
+//Client Side =====================>
+export async function onCancelSubscription(data: any, userID: string) {
+  const subscriptionID: string = data.subscriptionID;
 
-// export const onCancelSubscriber = functions.https.onCall(
-//   async (data, context) => {}
-// );
+  try {
+    const userRef = db.doc(`merchants/${userID}`);
+    const userSnap = await userRef.get();
+    const userData = userSnap.data()!;
 
+    const stripeConnectID = userData.connectID;
+
+    if (!stripeConnectID) {
+      throw new functions.https.HttpsError(
+        'not-found',
+        'Stripe Connect ID not found'
+      );
+    }
+
+    const stripeCancelSubResponse = await cancelStripeSubscription(
+      subscriptionID,
+      stripeConnectID
+    );
+
+    await cancelFirestoreSubscription(
+      stripeCancelSubResponse,
+      stripeConnectID,
+      userID
+    );
+
+    return;
+  } catch (err) {
+    console.error(err);
+    throw new functions.https.HttpsError('unknown', err);
+  }
+}
+
+/////
 export async function createSubscription(data: any) {
   const priceID: string = data.priceID;
   const paymentMethodID: string = data.paymentMethodID;
@@ -182,8 +211,6 @@ export async function cancelFirestoreSubscription(
   merchantUID: string
 ) {
   try {
-    //FUTURE-UPDATE: check if this object is already cancelled, so that we don't trigger twice, depending on webhook or client trigger
-
     const findSubscription = await db
       .collection('subscriptions')
       .where('subscription.subscriptionID', '==', stripeSubscription.id)
@@ -351,5 +378,21 @@ async function batchCancelFirestoreSubscription(
     return;
   } catch (error) {
     throw Error(error);
+  }
+}
+
+//Stripe methods =============>
+
+async function cancelStripeSubscription(
+  subscriptionID: string,
+  connectID: string
+) {
+  try {
+    const response = await stripe.subscriptions.del(subscriptionID, {
+      stripeAccount: connectID,
+    });
+    return response;
+  } catch (error) {
+    throw error;
   }
 }

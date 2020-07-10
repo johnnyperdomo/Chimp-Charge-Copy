@@ -84,7 +84,7 @@ export class PaymentListComponent implements OnInit, OnDestroy {
   async onRefundAtRow(paymentIntentID: string) {
     if (
       confirm(
-        `Are you sure you want to refund this transaction? \n Refunds take 5-10 days to appear on a customer's statement.`
+        `Are you sure you want to refund this transaction? \nRefunds take 5-10 days to appear on a customer's statement.`
       )
     ) {
       this.isLoading = true;
@@ -102,8 +102,6 @@ export class PaymentListComponent implements OnInit, OnDestroy {
         console.log(err);
         //FUTURE-UPDATE: present better error
       }
-
-      console.log('refund clicked, ' + paymentIntentID);
     }
   }
 

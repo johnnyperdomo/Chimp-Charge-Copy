@@ -119,7 +119,6 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
   }
 
   onEditLinkAtRow(itemID: string) {
-    console.log('edit clicked, ' + itemID);
     this.router.navigate([`${itemID}/edit`], { relativeTo: this.route });
   }
 
@@ -128,7 +127,7 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
 
     if (
       confirm(
-        `Are you sure you want to delete the '${currentLink.product.name}' payment link? \n You will no longer be able to accept new payments with this link.`
+        `Are you sure you want to delete the '${currentLink.product.name}' payment link? \nYou will no longer be able to accept new payments with this link.`
       )
     ) {
       this.isLoading = true;

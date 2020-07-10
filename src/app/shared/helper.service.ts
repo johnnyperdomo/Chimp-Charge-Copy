@@ -194,7 +194,23 @@ export class HelperService {
     }
   }
 
-  //Transactions ====>
+  async cancelSubscription(subscriptionID: string) {
+    const body = {
+      subscriptionID,
+    };
+
+    try {
+      const response = await this.chimpApi.post(
+        '/connect/onCancelSubscription',
+        body
+      );
+      return response;
+    } catch (err) {
+      throw Error(err.message);
+    }
+  }
+
+  //Transactions ==================>
 
   async refundTransaction(paymentIntentID: string) {
     const body = {

@@ -22,6 +22,7 @@ import {
 } from 'rxjs/operators';
 import { Customer } from '../../customers/customer.model';
 import { PaymentLink } from '../../payment-links/payment-link.model';
+import { HelperService } from 'src/app/shared/helper.service';
 
 @Component({
   selector: 'app-subscriber-list',
@@ -33,7 +34,8 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
   currentMerchantSub: Subscription;
   currentMerchant = new BehaviorSubject<Merchant>(null);
 
-  //TODO: pseudo code => real code should grab array of customers from stripe api, and only return those who are subscribed to a payment link, whether active or cancelled.
+  isLoading: boolean = false;
+
   subscribers: Subscriber[] = [];
 
   //measure data mapping sequence
@@ -42,7 +44,8 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
 
   constructor(
     private db: AngularFirestore,
-    private store: Store<fromApp.AppState>
+    private store: Store<fromApp.AppState>,
+    private helperService: HelperService
   ) {}
 
   ngOnInit(): void {
@@ -80,7 +83,8 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
               .collection<Customer>('customers', (ref) =>
                 ref.where('customer.customerID', '==', sub.customerID).limit(1)
               )
-              .valueChanges();
+              .get()
+              .pipe(map((doc) => doc.docs[0].data()));
 
             //get payment link that belongs to this subscription
             const paymentLinkObs = this.db
@@ -90,7 +94,8 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
                   .where('product.id', '==', sub.plan.productID)
                   .limit(1)
               )
-              .valueChanges();
+              .get()
+              .pipe(map((doc) => doc.docs[0].data()));
 
             return combineLatest(of(sub), customerObs, paymentLinkObs);
           });
@@ -154,6 +159,30 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
           this.subscriberSequenceArray = [];
         }
       });
+  }
+
+  async onCancelSubAtRow(subscriptionID: string) {
+    if (
+      confirm(
+        `Are you sure you want to cancel this subscription? \nYou will not be able to re-active it.`
+      )
+    ) {
+      this.isLoading = true;
+      //FUTURE-UPDATE: add loading spinner on button instead of card
+      try {
+        const response = await this.helperService.cancelSubscription(
+          subscriptionID
+        );
+
+        this.isLoading = false;
+        return response;
+      } catch (err) {
+        this.isLoading = false;
+        alert(err);
+        console.log(err);
+        //FUTURE-UPDATE: present better error
+      }
+    }
   }
 
   ngOnDestroy() {

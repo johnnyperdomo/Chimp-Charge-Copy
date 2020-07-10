@@ -7,7 +7,10 @@ import * as admin from 'firebase-admin';
 import { stripeClientID, stripe, stripeWebhookSecret } from './shared/config';
 import * as qs from 'querystring';
 import { createPaymentIntent } from './connect/onetime-payments.connect';
-import { createSubscription } from './connect/subscriptions.connect';
+import {
+  createSubscription,
+  onCancelSubscription,
+} from './connect/subscriptions.connect';
 import { handleStripeConnectWebhooks } from './connect/webhooks.connect';
 import { onRefundTransaction } from './connect/transactions.connect';
 
@@ -197,32 +200,28 @@ app.post(
   }
 );
 
-//TODO:
 //Subscriptions =========================>
-// app.post(
-//   '/connect/onCancelSubscription',
-//   async (req: express.Request, res: express.Response) => {
-//     if (!req.headers.authorization) {
-//       res
-//         .status(403)
-//         .json({ error: 'You must be logged in to make this request.' });
-//     }
+app.post(
+  '/connect/onCancelSubscription',
+  async (req: express.Request, res: express.Response) => {
+    if (!req.headers.authorization) {
+      res
+        .status(403)
+        .json({ error: 'You must be logged in to make this request.' });
+    }
 
-//     const tokenId = req.headers.authorization!.split('Bearer ')[1];
+    const tokenId = req.headers.authorization!.split('Bearer ')[1];
 
-//     try {
-//       const authenticated = await authenticate(tokenId);
+    try {
+      const authenticated = await authenticate(tokenId);
+      await onCancelSubscription(req.body, authenticated.uid);
 
-//       // const response = await onRefundTransaction(
-//       //   req.body,
-//       //   authenticated.uid
-//       // );
-//       res.send(response);
-//     } catch (err) {
-//       res.status(400).send(err);
-//     }
-//   }
-// );
+      res.send({ message: 'success' });
+    } catch (err) {
+      res.status(400).send(err);
+    }
+  }
+);
 
 //Checkout ==============================>
 //non-authenticated customers
