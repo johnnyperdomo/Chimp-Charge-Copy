@@ -6,6 +6,7 @@ import { map, filter, mergeMap, catchError, take } from 'rxjs/operators';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Store } from '@ngrx/store';
 import * as fromApp from 'src/app/shared/app-store/app.reducer';
+import { HelperService } from 'src/app/shared/helper.service';
 
 @Component({
   selector: 'app-payment-list',
@@ -17,11 +18,14 @@ export class PaymentListComponent implements OnInit, OnDestroy {
   currentMerchantSub: Subscription;
   currentMerchant = new BehaviorSubject<Merchant>(null);
 
+  isLoading: boolean = false;
+
   payments: Payment[] = [];
 
   constructor(
     private db: AngularFirestore,
-    private store: Store<fromApp.AppState>
+    private store: Store<fromApp.AppState>,
+    private helperService: HelperService
   ) {}
 
   ngOnInit(): void {
@@ -77,13 +81,29 @@ export class PaymentListComponent implements OnInit, OnDestroy {
       });
   }
 
-  onRefundAtRow(itemID: string) {
+  async onRefundAtRow(paymentIntentID: string) {
     if (
       confirm(
         `Are you sure you want to refund this transaction? \n Refunds take 5-10 days to appear on a customer's statement.`
       )
     ) {
-      console.log('refund clicked, ' + itemID);
+      this.isLoading = true;
+      //FUTURE-UPDATE: add loading spinner on button instead of card
+      try {
+        const response = await this.helperService.refundTransaction(
+          paymentIntentID
+        );
+
+        this.isLoading = false;
+        return response;
+      } catch (err) {
+        this.isLoading = false;
+        alert(err);
+        console.log(err);
+        //FUTURE-UPDATE: present better error
+      }
+
+      console.log('refund clicked, ' + paymentIntentID);
     }
   }
 

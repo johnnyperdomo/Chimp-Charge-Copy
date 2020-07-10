@@ -15,7 +15,7 @@ export class ChimpApiService {
 
   constructor(private http: HttpClient, private auth: AngularFireAuth) {}
 
-  //post: creating a new resource
+  //post: creating, update, delete a resource
   async post(pathUrl: string, httpBody: any, requiresAuth: boolean = true) {
     try {
       const headers = requiresAuth ? await this.getAuthHeaders() : null;
@@ -36,23 +36,6 @@ export class ChimpApiService {
       throw Error(err);
     }
   }
-
-  //patch, delete: updating an existing resource
-  // async patch(pathUrl: string, httpBody: any, requiresAuth: boolean = true) {
-  //   try {
-  //     const headers = requiresAuth ? await this.getAuthHeaders() : null;
-
-  //     const serverData = await this.http
-  //       .patch(this.chimpApiUrl + pathUrl, httpBody, {
-  //         headers: headers,
-  //       })
-  //       .toPromise();
-
-  //     return serverData;
-  //   } catch (err) {
-  //     throw Error(err);
-  //   }
-  // }
 
   //get: get existing resource
   async get(pathUrl: string, requiresAuth: boolean = true) {

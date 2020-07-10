@@ -110,7 +110,6 @@ export async function onCreatePaymentLink(data: any, userID: string) {
   }
 }
 
-/////////////
 export async function onEditPaymentLink(data: any, userID: string) {
   const paymentLinkID: string = data.paymentLinkID;
   const productName: string = data.productName;

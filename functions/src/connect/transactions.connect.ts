@@ -8,9 +8,44 @@ import {
 } from '../shared/extensions';
 import * as functions from 'firebase-functions';
 
-// export const onRefundPayment = functions.https.onCall(
-//   async (data, context) => {}
-// );
+//Client side ========================>
+
+export async function onRefundTransaction(data: any, userID: string) {
+  const paymentIntentID: string = data.paymentIntentID;
+
+  try {
+    const userRef = db.doc(`merchants/${userID}`);
+    const userSnap = await userRef.get();
+    const userData = userSnap.data()!;
+
+    const stripeConnectID = userData.connectID;
+
+    if (!stripeConnectID) {
+      throw new functions.https.HttpsError(
+        'not-found',
+        'Stripe Connect ID not found'
+      );
+    }
+
+    const stripeRefundResponse = await refundStripeTransaction(
+      paymentIntentID,
+      stripeConnectID
+    );
+
+    await refundFirestoreTransaction(
+      stripeRefundResponse.charge as Stripe.Charge,
+      stripeConnectID,
+      userID
+    );
+
+    return;
+  } catch (err) {
+    console.error(err);
+    throw new functions.https.HttpsError('unknown', err);
+  }
+}
+
+//////////////////////////////////////
 
 //payment_intent.success || invoice.success
 export async function createFirestoreTransaction(
@@ -213,8 +248,6 @@ export async function refundFirestoreTransaction(
       findTransaction.docs[0].data().isRefunded &&
       findTransaction.docs[0].data().isRefunded === true
     ) {
-      functions.logger.log('transaction already refunded, exit out');
-
       //should not try to refund again if already refunded
       return;
     }
@@ -458,6 +491,25 @@ async function batchRefundTransaction(
     await batch.commit();
 
     return;
+  } catch (error) {
+    throw Error(error);
+  }
+}
+
+//Stripe Methods =====================>
+
+async function refundStripeTransaction(
+  paymentIntentID: string,
+  connectID: string
+) {
+  try {
+    const response = await stripe.refunds.create(
+      { payment_intent: paymentIntentID, expand: ['charge'] },
+      {
+        stripeAccount: connectID,
+      }
+    );
+    return response;
   } catch (error) {
     throw Error(error);
   }

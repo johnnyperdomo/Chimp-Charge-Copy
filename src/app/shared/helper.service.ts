@@ -193,6 +193,24 @@ export class HelperService {
       throw Error(err.message);
     }
   }
+
+  //Transactions ====>
+
+  async refundTransaction(paymentIntentID: string) {
+    const body = {
+      paymentIntentID,
+    };
+
+    try {
+      const response = await this.chimpApi.post(
+        '/connect/onRefundTransaction',
+        body
+      );
+      return response;
+    } catch (err) {
+      throw Error(err.message);
+    }
+  }
 }
 
 //FUTURE-UPDATE: some of these error messages may not work. fix .err, .err.message etc...
