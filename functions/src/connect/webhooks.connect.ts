@@ -12,14 +12,14 @@ import {
   createFirestoreTransactionFromInvoice,
   refundFirestoreTransaction,
 } from './transactions.connect';
-import { stripe } from '../config';
+import { stripe } from '../shared/config';
 import {
   createFirestoreSubscription,
   updateFirestoreSubscription,
   cancelFirestoreSubscription,
 } from './subscriptions.connect';
 import { deauthorizeStripeAccountWebhook } from './auth.connect';
-import { stripeEventType } from '../helpers';
+import { stripeEventType } from '../shared/extensions';
 
 //TODO:
 export async function handleStripeConnectWebhooks(event: Stripe.Event) {

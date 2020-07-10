@@ -38,21 +38,21 @@ export class ChimpApiService {
   }
 
   //patch, delete: updating an existing resource
-  async patch(pathUrl: string, httpBody: any, requiresAuth: boolean = true) {
-    try {
-      const headers = requiresAuth ? await this.getAuthHeaders() : null;
+  // async patch(pathUrl: string, httpBody: any, requiresAuth: boolean = true) {
+  //   try {
+  //     const headers = requiresAuth ? await this.getAuthHeaders() : null;
 
-      const serverData = await this.http
-        .patch(this.chimpApiUrl + pathUrl, httpBody, {
-          headers: headers,
-        })
-        .toPromise();
+  //     const serverData = await this.http
+  //       .patch(this.chimpApiUrl + pathUrl, httpBody, {
+  //         headers: headers,
+  //       })
+  //       .toPromise();
 
-      return serverData;
-    } catch (err) {
-      throw Error(err);
-    }
-  }
+  //     return serverData;
+  //   } catch (err) {
+  //     throw Error(err);
+  //   }
+  // }
 
   //get: get existing resource
   async get(pathUrl: string, requiresAuth: boolean = true) {

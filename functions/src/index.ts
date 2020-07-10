@@ -1,22 +1,13 @@
 import * as admin from 'firebase-admin';
-// import * as functions from 'firebase-functions';
-// import * as request from 'request';
-
 admin.initializeApp();
 
 export { chimpApi } from './api';
 
-//pub sub to trigger 'chimpApi' cloud function every minute, to eliminate cold start time
-//TODO: 'active when ready to deploy app to production' export const warmApiRunner = functions.pubsub
-//   .schedule('* * * * *')
-//   .onRun(() => {
-//     request(
-//       'https://us-central1-chimp-charge-developer.cloudfunctions.net/chimpApi/awake'
-//     );
-//   });
+//TODO: 'active when ready to deploy app to production'
+// export { warmApiRunner } from './task-runners';
 
 //FUTURE-UPDATE: when retrieving items, auto pagination to get all list items - autoPagingToArray - https://github.com/stripe/stripe-node
-//FUTURE-UPDATE: add stricter static typing, especially when it has to do with callable functions, with return 'data: any'. Overall code in general
+//FUTURE-UPDATE: add stricter static typing,, with return 'data: any'. Overall code in general
 
 //FUTURE-UPDATE: better server logging, error handling, error messages for client side, status codes
 

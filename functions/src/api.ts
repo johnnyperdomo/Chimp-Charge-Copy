@@ -4,7 +4,7 @@ import * as cors from 'cors';
 import * as paymentLinks from './connect/payment-links.connect';
 import * as connectAuth from './connect/auth.connect';
 import * as admin from 'firebase-admin';
-import { stripeClientID, stripe, stripeWebhookSecret } from './config';
+import { stripeClientID, stripe, stripeWebhookSecret } from './shared/config';
 import * as qs from 'querystring';
 import { createPaymentIntent } from './connect/onetime-payments.connect';
 import { createSubscription } from './connect/subscriptions.connect';
@@ -34,6 +34,7 @@ const authenticate = async (tokenId: string) => {
     });
 };
 
+//get raw value of stripe webhooks
 app.use(
   express.json({
     verify: (req: any, res, buffer) => (req['rawBody'] = buffer),
@@ -122,7 +123,7 @@ app.post(
   }
 );
 
-app.patch(
+app.post(
   '/connect/onEditPaymentLink',
   async (req: express.Request, res: express.Response) => {
     if (!req.headers.authorization) {
@@ -147,7 +148,7 @@ app.patch(
   }
 );
 
-app.patch(
+app.post(
   '/connect/onDeletePaymentLink',
   async (req: express.Request, res: express.Response) => {
     if (!req.headers.authorization) {
@@ -241,3 +242,5 @@ app.get('/awake', (req, res) => {
 });
 
 export const chimpApi = functions.runWith(runtimeOpts).https.onRequest(app);
+
+//FUTURE-UPDATE: maybe clean up this code by separating these api functions in one big api folder

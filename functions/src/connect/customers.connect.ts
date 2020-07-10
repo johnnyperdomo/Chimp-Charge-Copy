@@ -1,7 +1,7 @@
 import Stripe from 'stripe';
-import { stripe } from '../config';
+import { stripe } from '../shared/config';
 import * as admin from 'firebase-admin';
-import { customerFieldType } from '../helpers';
+import { customerFieldType } from '../shared/extensions';
 
 const db = admin.firestore();
 

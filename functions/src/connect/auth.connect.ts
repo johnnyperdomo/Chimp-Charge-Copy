@@ -1,5 +1,5 @@
 import * as functions from 'firebase-functions';
-import { stripe } from '../config';
+import { stripe } from '../shared/config';
 import * as admin from 'firebase-admin';
 
 const db = admin.firestore();

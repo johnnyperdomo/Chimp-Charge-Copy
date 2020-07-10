@@ -89,7 +89,7 @@ export class HelperService {
     };
 
     try {
-      const editLink = await this.chimpApi.patch(
+      const editLink = await this.chimpApi.post(
         '/connect/onEditPaymentLink',
         body
       );
@@ -106,7 +106,7 @@ export class HelperService {
     };
 
     try {
-      const deleteLink = await this.chimpApi.patch(
+      const deleteLink = await this.chimpApi.post(
         '/connect/onDeletePaymentLink',
         body
       );

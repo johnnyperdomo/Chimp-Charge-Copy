@@ -1,8 +1,11 @@
 import * as admin from 'firebase-admin';
 import Stripe from 'stripe';
-import { stripe } from '../config';
+import { stripe } from '../shared/config';
 const db = admin.firestore();
-import { paymentIntentFieldType, customerFieldType } from '../helpers';
+import {
+  paymentIntentFieldType,
+  customerFieldType,
+} from '../shared/extensions';
 import * as functions from 'firebase-functions';
 
 // export const onRefundPayment = functions.https.onCall(
