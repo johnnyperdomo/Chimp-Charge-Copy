@@ -189,9 +189,21 @@ export async function cancelFirestoreSubscription(
       .where('subscription.subscriptionID', '==', stripeSubscription.id)
       .get();
 
+    //FUTURE-UPDATE: make sure collection queries are not returned empty
+
+    if (
+      findSubscription.docs[0].exists &&
+      findSubscription.docs[0].data().status &&
+      findSubscription.docs[0].data().status === 'canceled'
+    ) {
+      //should not try to cancel again if already canceled
+      return;
+    }
+
     if (stripeSubscription.status !== 'canceled') {
       return;
     }
+
     const subscriptionRef = findSubscription.docs[0].ref;
 
     await batchCancelFirestoreSubscription(

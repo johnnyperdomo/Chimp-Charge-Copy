@@ -202,6 +202,17 @@ export async function refundFirestoreTransaction(
       .get();
 
     if (findTransaction.docs.length === 0) {
+      //FUTURE-UPDATE: make sure all collection queries across the app have this error check
+      return;
+    }
+
+    if (
+      findTransaction.docs[0].data().isRefunded &&
+      findTransaction.docs[0].data().isRefunded === true
+    ) {
+      functions.logger.log('transaction already refunded, exit out');
+
+      //should not try to refund again if already refunded
       return;
     }
 

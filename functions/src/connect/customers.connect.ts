@@ -158,6 +158,14 @@ export async function updateFirestoreCustomer(
     if (willDelete === true) {
       //pseudo delete
 
+      if (
+        findCustomer.docs[0].data().isDeleted &&
+        findCustomer.docs[0].data().isDeleted === true
+      ) {
+        //should not try to delete again if already deleted
+        return;
+      }
+
       const deletedCustomer: customerFieldType = {
         name: stripeCustomer.name,
         email: stripeCustomer.email,

@@ -199,6 +199,17 @@ export async function onDeletePaymentLink(data: any, userID: string) {
         .where('product.id', '==', prodResponse.id)
         .get();
 
+      if (
+        query.docs[0].exists &&
+        query.docs[0].data().isDeleted &&
+        query.docs[0].data().isDeleted === true
+      ) {
+        functions.logger.log('payment link already deleted, exit out');
+
+        //should not try to delete again if already deleted
+        return;
+      }
+
       const docRef = query.docs[0].ref;
       const batchDelete = await batchDeletePaymentLink(
         docRef,
@@ -304,6 +315,10 @@ export async function deletePaymentLinkFromWebhook(
         findLinkFromPrice.docs[0].data().isDeleted &&
         findLinkFromPrice.docs[0].data().isDeleted === true
       ) {
+        functions.logger.log(
+          'payment link already deleted(webhook call), exit out'
+        );
+
         //should not try to delete again if already deleted
         return;
       }

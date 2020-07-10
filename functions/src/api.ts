@@ -237,7 +237,6 @@ app.post('/connect/stripeWebhooks', async (req: any, res: express.Response) => {
 //Pubsub ==================>
 //used to awaken cloud function every minute from chron scheduler => eliminate cold start time
 app.get('/awake', (req, res) => {
-  functions.logger.log('yay function has been awoken at this time: , ', Date());
   res.send(200);
 });
 
