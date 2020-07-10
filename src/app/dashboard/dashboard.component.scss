@@ -1,5 +1,9 @@
 //FUTURE-UPDATE: Make sure to optimize tables for long words, emails, and mobile, to truncate if necessary.
 
+.first-word-capitalize::first-letter {
+  text-transform: capitalize;
+}
+
 //Badge Overrides =================>
 .badge-soft-primary {
   color: #3d4eac;
