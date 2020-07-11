@@ -4,9 +4,9 @@ import Stripe from 'stripe';
 import { Payout } from '../payout.model';
 
 @Component({
-  selector: 'app-payouts-list',
-  templateUrl: './payouts-list.component.html',
-  styleUrls: ['./payouts-list.component.scss'],
+  selector: 'app-payout-list',
+  templateUrl: './payout-list.component.html',
+  styleUrls: ['./payout-list.component.scss'],
 })
 export class PayoutsListComponent implements OnInit {
   payouts: Payout[] = [];

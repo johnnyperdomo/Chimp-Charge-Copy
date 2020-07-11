@@ -45,18 +45,18 @@
       </thead>
       <tbody class="list">
         <!-- FUTURE-UPDATE: Make table rows fully tappable, or just allow txn id to be a tappable link, then leads to more in-depth information about the payment -->
-        <tr *ngFor="let paymentEl of payments">
+        <tr *ngFor="let transactionEl of transactions">
           <td>
-            <h5 class="mb-0">{{ paymentEl.customer.name }}</h5>
+            <h5 class="mb-0">{{ transactionEl.customer.name }}</h5>
             <p class="card-text small text-muted mb-0">
-              {{ paymentEl.customer.email }}
+              {{ transactionEl.customer.email }}
             </p>
           </td>
-          <td>{{ paymentEl.shortTxnID }}</td>
+          <td>{{ transactionEl.shortTxnID }}</td>
           <td>
-            <h5 class="mb-0">{{ paymentEl.amount }}</h5>
+            <h5 class="mb-0">{{ transactionEl.amount }}</h5>
             <p class="card-text small text-muted mb-0">
-              {{ paymentEl.productName }}
+              {{ transactionEl.productName }}
             </p>
           </td>
           <td>
@@ -64,22 +64,22 @@
               <span
                 class="badge badge-pill"
                 [ngClass]="{
-                  'badge-soft-primary': paymentEl.status === 'Succeeded',
-                  'badge-soft-warning': paymentEl.status === 'Refunded'
+                  'badge-soft-primary': transactionEl.status === 'Succeeded',
+                  'badge-soft-warning': transactionEl.status === 'Refunded'
                 }"
               >
                 <!-- FUTURE-UPDATE: disputed is red 'danger' -->
-                <b>{{ paymentEl.status }}</b>
+                <b>{{ transactionEl.status }}</b>
               </span>
             </h4>
           </td>
           <td>
-            <span>{{ paymentEl.created }}</span>
+            <span>{{ transactionEl.created }}</span>
           </td>
           <td>
             <h4 class="mb-0">
               <span class="badge badge-pill badge-light first-word-capitalize">
-                <b>{{ paymentEl.transactionType }}</b>
+                <b>{{ transactionEl.transactionType }}</b>
               </span>
             </h4>
           </td>
@@ -89,9 +89,11 @@
 
           <td class="text-right">
             <button
-              *ngIf="paymentEl.isRefunded === false"
+              *ngIf="transactionEl.isRefunded === false"
               type="button"
-              (click)="onRefundAtRow(paymentEl.paymentIntent.paymentIntentID)"
+              (click)="
+                onRefundAtRow(transactionEl.paymentIntent.paymentIntentID)
+              "
               class="btn btn-outline-danger btn-sm"
             >
               Refund

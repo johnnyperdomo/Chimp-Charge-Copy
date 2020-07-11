@@ -5,7 +5,7 @@ import {
 } from 'src/app/shared/interfaces';
 import * as MoneyFormatter from 'src/app/shared/accounting';
 
-export class Payment {
+export class Transaction {
   public id: string;
   public merchantUID: string;
   public connectID: string;

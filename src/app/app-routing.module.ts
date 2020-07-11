@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { PaymentsComponent } from './dashboard/pages/payments/payments.component';
+import { PaymentsComponent } from './dashboard/pages/payments/transactions.component';
 import { CustomersComponent } from './dashboard/pages/customers/customers.component';
 import { SubscribersComponent } from './dashboard/pages/subscribers/subscribers.component';
 import { PaymentLinksComponent } from './dashboard/pages/payment-links/payment-links.component';

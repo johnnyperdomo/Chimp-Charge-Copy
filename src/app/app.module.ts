@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { HeaderComponent } from './dashboard/header/header.component';
-import { PaymentsComponent } from './dashboard/pages/payments/payments.component';
+import { PaymentsComponent } from './dashboard/pages/payments/transactions.component';
 import { CustomersComponent } from './dashboard/pages/customers/customers.component';
 import { SubscribersComponent } from './dashboard/pages/subscribers/subscribers.component';
 import { PaymentLinksComponent } from './dashboard/pages/payment-links/payment-links.component';
@@ -13,7 +13,7 @@ import { SettingsComponent } from './dashboard/pages/settings/settings.component
 import { AccountComponent } from './dashboard/pages/settings/account/account.component';
 import { BillingComponent } from './dashboard/pages/settings/billing/billing.component';
 import { PayoutsComponent } from './dashboard/pages/settings/payouts/payouts.component';
-import { PaymentListComponent } from './dashboard/pages/payments/payment-list/payment-list.component';
+import { PaymentListComponent } from './dashboard/pages/payments/transaction-list/transaction-list.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CustomerListComponent } from './dashboard/pages/customers/customer-list/customer-list.component';
 import { PaymentLinkListComponent } from './dashboard/pages/payment-links/payment-link-list/payment-link-list.component';
@@ -50,7 +50,7 @@ import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.
 import { PageNotFoundComponent } from './shared/page-not-found/page-not-found.component';
 import { CheckoutSuccessComponent } from './checkout/checkout-success/checkout-success.component';
 import { ConnectRedirectComponent } from './dashboard/connect-redirect/connect-redirect.component';
-import { PayoutsListComponent } from './dashboard/pages/settings/payouts/payouts-list/payouts-list.component';
+import { PayoutsListComponent } from './dashboard/pages/settings/payouts/payout-list/payout-list.component';
 import { BalanceComponent } from './dashboard/pages/settings/payouts/balance/balance.component';
 import { StatsComponent } from './dashboard/pages/payments/stats/stats.component';
 

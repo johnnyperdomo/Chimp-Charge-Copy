@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Payment } from '../payment.model';
+import { Transaction } from '../transaction.model';
 import { Subscription, BehaviorSubject, empty } from 'rxjs';
 import { Merchant } from 'src/app/merchants/merchant.model';
 import { map, filter, mergeMap, catchError, take } from 'rxjs/operators';
@@ -9,9 +9,9 @@ import * as fromApp from 'src/app/shared/app-store/app.reducer';
 import { HelperService } from 'src/app/shared/helper.service';
 
 @Component({
-  selector: 'app-payment-list',
-  templateUrl: './payment-list.component.html',
-  styleUrls: ['./payment-list.component.scss'],
+  selector: 'app-transaction-list',
+  templateUrl: './transaction-list.component.html',
+  styleUrls: ['./transaction-list.component.scss'],
 })
 export class PaymentListComponent implements OnInit, OnDestroy {
   merchantStoreSub: Subscription;
@@ -20,7 +20,7 @@ export class PaymentListComponent implements OnInit, OnDestroy {
 
   isLoading: boolean = false;
 
-  payments: Payment[] = [];
+  transactions: Transaction[] = [];
 
   constructor(
     private db: AngularFirestore,
@@ -42,7 +42,7 @@ export class PaymentListComponent implements OnInit, OnDestroy {
         take(1),
         mergeMap((retrievedMerchant) => {
           return this.db
-            .collection<Payment>(
+            .collection<Transaction>(
               'transactions',
               (ref) =>
                 ref
@@ -63,8 +63,8 @@ export class PaymentListComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe((data) => {
-        this.payments = data.map((i) => {
-          return new Payment(
+        this.transactions = data.map((i) => {
+          return new Transaction(
             i.id,
             i.merchantUID,
             i.connectID,
