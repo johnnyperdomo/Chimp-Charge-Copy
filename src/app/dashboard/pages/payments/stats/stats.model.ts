@@ -6,7 +6,7 @@ import * as MoneyFormatter from 'src/app/shared/accounting';
 
 //aggregation map, quick stats on connect data
 //check to see if field values exist
-export class Aggregation {
+export class Stats {
   public merchantUID: string;
   public connectID: string;
   public customerCount: number;

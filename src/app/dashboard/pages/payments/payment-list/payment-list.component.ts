@@ -76,8 +76,6 @@ export class PaymentListComponent implements OnInit, OnDestroy {
             i.lastUpdated
           );
         });
-
-        console.log(this.payments);
       });
   }
 

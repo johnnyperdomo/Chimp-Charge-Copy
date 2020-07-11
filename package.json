@@ -31,7 +31,6 @@
     "firebase": "^7.14.3",
     "moment": "^2.25.3",
     "rxjs": "~6.5.4",
-    "stripe": "^8.55.0",
     "tslib": "^1.10.0",
     "uuid": "^8.1.0",
     "zone.js": "~0.10.2"
@@ -46,7 +45,6 @@
     "@types/jasmine": "~3.5.0",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "^12.11.1",
-    "@types/stripe": "^7.13.23",
     "@types/uuid": "^8.0.0",
     "codelyzer": "^5.1.2",
     "firebase-tools": "^7.12.1",

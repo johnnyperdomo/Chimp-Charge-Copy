@@ -52,6 +52,7 @@ import { CheckoutSuccessComponent } from './checkout/checkout-success/checkout-s
 import { ConnectRedirectComponent } from './dashboard/connect-redirect/connect-redirect.component';
 import { PayoutsListComponent } from './dashboard/pages/settings/payouts/payouts-list/payouts-list.component';
 import { BalanceComponent } from './dashboard/pages/settings/payouts/balance/balance.component';
+import { StatsComponent } from './dashboard/pages/payments/stats/stats.component';
 
 firebase.initializeApp(environment.firebase);
 
@@ -84,6 +85,7 @@ firebase.initializeApp(environment.firebase);
     ConnectRedirectComponent,
     PayoutsListComponent,
     BalanceComponent,
+    StatsComponent,
   ],
   imports: [
     BrowserModule,

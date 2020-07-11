@@ -1,6 +1,5 @@
 import Stripe from 'stripe';
 import * as MoneyFormatter from 'src/app/shared/accounting';
-import * as currency from 'currency.js';
 
 export class Balance {
   public balance: Stripe.Balance;
