@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import { MerchantService } from '../merchants/merchants.service';
 import { ChimpApiService } from '../shared/chimp-api.service';
+import { getStripeMerchantPayouts } from 'functions/src/merchant/payouts.merchant';
 
 @Injectable({
   providedIn: 'root',
@@ -211,7 +212,6 @@ export class HelperService {
   }
 
   //Transactions ==================>
-
   async refundTransaction(paymentIntentID: string) {
     const body = {
       paymentIntentID,
@@ -222,6 +222,26 @@ export class HelperService {
         '/connect/onRefundTransaction',
         body
       );
+      return response;
+    } catch (err) {
+      throw Error(err.message);
+    }
+  }
+
+  //Payouts =======================>
+
+  async getStripeMerchantPayouts() {
+    try {
+      const response = await this.chimpApi.get('/merchant/payouts');
+      return response;
+    } catch (err) {
+      throw Error(err.message);
+    }
+  }
+
+  async getStripeMerchantBalance() {
+    try {
+      const response = await this.chimpApi.get('/merchant/balance');
       return response;
     } catch (err) {
       throw Error(err.message);

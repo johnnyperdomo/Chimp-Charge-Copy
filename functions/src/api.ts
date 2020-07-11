@@ -13,6 +13,10 @@ import {
 } from './connect/subscriptions.connect';
 import { handleStripeConnectWebhooks } from './connect/webhooks.connect';
 import { onRefundTransaction } from './connect/transactions.connect';
+import {
+  getStripeMerchantBalance,
+  getStripeMerchantPayouts,
+} from './merchant/payouts.merchant';
 
 const app = express();
 const runtimeOpts: functions.RuntimeOptions = {
@@ -290,6 +294,53 @@ app.post('/connect/stripeWebhooks', async (req: any, res: express.Response) => {
 app.get('/awake', (req, res) => {
   res.send(200);
 });
+
+//Merchant =========================>
+
+//Payouts ================>
+app.get(
+  '/merchant/payouts',
+  async (req: express.Request, res: express.Response) => {
+    if (!req.headers.authorization) {
+      res
+        .status(403)
+        .json({ error: 'You must be logged in to make this request.' });
+    }
+
+    const tokenId = req.headers.authorization!.split('Bearer ')[1];
+
+    try {
+      const authenticated = await authenticate(tokenId);
+      const response = await getStripeMerchantPayouts(authenticated.uid);
+
+      res.send(response);
+    } catch (err) {
+      res.status(400).send(err);
+    }
+  }
+);
+
+app.get(
+  '/merchant/balance',
+  async (req: express.Request, res: express.Response) => {
+    if (!req.headers.authorization) {
+      res
+        .status(403)
+        .json({ error: 'You must be logged in to make this request.' });
+    }
+
+    const tokenId = req.headers.authorization!.split('Bearer ')[1];
+
+    try {
+      const authenticated = await authenticate(tokenId);
+      const response = await getStripeMerchantBalance(authenticated.uid);
+
+      res.send(response);
+    } catch (err) {
+      res.status(400).send(err);
+    }
+  }
+);
 
 export const chimpApi = functions.runWith(runtimeOpts).https.onRequest(app);
 

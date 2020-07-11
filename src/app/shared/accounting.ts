@@ -21,3 +21,12 @@ export function unformatAmount(amount: number) {
   //use to parse unformatted amount in form
   return currency(amount).divide(100).value;
 }
+
+export function getSumOfNumbers(values: currency.Any[]) {
+  //convert numbers(in any form '$3.54' or 2) into integer and then get sum
+  const sum = values
+    .map((number) => currency(number).intValue)
+    .reduce((a, b) => a + b);
+
+  return sum;
+}
