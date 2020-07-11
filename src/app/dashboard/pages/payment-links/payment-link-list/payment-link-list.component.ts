@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { PaymentLink } from '../payment-link.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/firestore';
@@ -32,8 +32,7 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
     private store: Store<fromApp.AppState>,
     private helperService: HelperService,
     private linkService: PaymentLinkService,
-    private clipboard: Clipboard,
-    private zone: NgZone
+    private clipboard: Clipboard
   ) {}
 
   ngOnInit(): void {
@@ -94,12 +93,6 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
         });
         console.log(this.paymentLinks);
       });
-  }
-
-  onCreatePaymentLink() {
-    this.zone.run(() => {
-      this.router.navigate(['new'], { relativeTo: this.route });
-    });
   }
 
   onViewLinkAtRow(itemID: string) {

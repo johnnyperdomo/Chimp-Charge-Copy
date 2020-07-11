@@ -2,6 +2,28 @@
   <div class="container">
     <div class="row">
       <div class="col-md-12">
+        <!-- header -->
+        <div class="header">
+          <div class="header-body">
+            <div class="row align-items-end">
+              <div class="col">
+                <h1 class="header-title">
+                  Payment Links
+                </h1>
+              </div>
+              <div class="col-auto">
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  (click)="onCreatePaymentLink()"
+                >
+                  Create Payment Link
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <router-outlet></router-outlet>
       </div>
     </div>
