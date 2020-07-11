@@ -1,1 +1,80 @@
-<p>payouts-list works!</p>
+<!-- Payouts Links  -->
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-sm table-nowrap card-table">
+      <thead>
+        <tr>
+          <!-- FUTURE-UPDATE: add loading spinner -->
+          <th>
+            <h5 class="text-muted mb-0">
+              Amount
+            </h5>
+          </th>
+          <th>
+            <h5 class="text-muted mb-0">
+              Status
+            </h5>
+          </th>
+          <th>
+            <h5 class="text-muted mb-0">
+              Bank/Card
+            </h5>
+          </th>
+          <th colspan="2">
+            <h5 class="text-muted mb-0">
+              <u
+                class="more-info"
+                placement="top"
+                ngbTooltip="This is an estimate of when the payout should arrive in the bank."
+                >Arrival Date</u
+              >
+            </h5>
+          </th>
+        </tr>
+      </thead>
+      <tbody class="list">
+        <tr *ngFor="let payoutEl of payouts">
+          <td class="text-wrapper">
+            <h5 class="mb-0">{{ payoutEl.payoutAmount }}</h5>
+          </td>
+          <td>
+            <h4 class="mb-0">
+              <span class="badge badge-pill badge-light first-word-capitalize">
+                <!-- FUTURE-UPDATE: add different status colors -->
+                <b>{{ payoutEl.payout.status }}</b>
+              </span>
+            </h4>
+          </td>
+          <td>
+            <p class="card-text small">
+              {{ payoutEl.destinationName }} • {{ payoutEl.destinationLast4 }}
+            </p>
+          </td>
+          <td>{{ payoutEl.arrivalDate }}</td>
+          <td class="text-right">
+            <div class="dropdown">
+              <a
+                class="dropdown-ellipses dropdown-toggle"
+                href="#"
+                role="button"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                <i class="fe fe-more-vertical"></i>
+              </a>
+              <div class="dropdown-menu dropdown-menu-right" style>
+                <button
+                  (click)="onViewPayoutInStripe(payoutEl.payout.id)"
+                  class="dropdown-item"
+                >
+                  View in stripe
+                </button>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

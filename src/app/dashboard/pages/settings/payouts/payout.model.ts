@@ -1,11 +1,19 @@
 import Stripe from 'stripe';
 import * as MoneyFormatter from 'src/app/shared/accounting';
+import * as moment from 'moment';
 
 export class Payout {
   public payout: Stripe.Payout;
 
   constructor(payout: Stripe.Payout) {
     this.payout = payout;
+  }
+
+  get arrivalDate() {
+    //payout.arrivalDate => Date()
+    const arrival = this.payout.arrival_date; //unix epoch
+    const formattedDate = moment.unix(arrival).format('MMMM Do, YYYY');
+    return formattedDate;
   }
 
   get payoutAmount() {
@@ -18,8 +26,6 @@ export class Payout {
 
     //type 'bank-account'
     if (this.payout.type === 'bank_account') {
-      console.log('bank name');
-
       return (this.payout.destination as Stripe.BankAccount).bank_name;
     }
 
@@ -32,8 +38,6 @@ export class Payout {
 
     //type 'bank-account'
     if (this.payout.type === 'bank_account') {
-      console.log('bank');
-
       return (this.payout.destination as Stripe.BankAccount).last4;
     }
 

@@ -15,16 +15,18 @@ export class BalanceComponent implements OnInit {
 
   ngOnInit(): void {
     //FUTURE-UPDATE: add loading spinner
-
     this.getBalance();
   }
 
-  getBalance() {
-    this.helperService
-      .getStripeMerchantBalance()
-      .then((balance: Stripe.Balance) => {
-        this.balance = new Balance(balance);
-        console.log('balance: ', balance);
-      });
+  async getBalance() {
+    try {
+      const retrievedBalance = await this.helperService.getStripeMerchantBalance();
+
+      this.balance = new Balance(retrievedBalance as Stripe.Balance);
+
+      return;
+    } catch (error) {
+      alert('Unknown error, please try reloading page.' + error);
+    }
   }
 }
