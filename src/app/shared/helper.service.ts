@@ -246,6 +246,23 @@ export class HelperService {
       throw Error(err.message);
     }
   }
+
+  //Merchants ============>
+
+  //Billing ==============>
+  async createBillingPortalSession() {
+    const body = {}; //empty
+
+    try {
+      const response = await this.chimpApi.post(
+        '/merchant/onCreateBillingPortalSession',
+        body
+      );
+      return response;
+    } catch (err) {
+      throw Error(err.message);
+    }
+  }
 }
 
 //FUTURE-UPDATE: some of these error messages may not work. fix .err, .err.message etc...

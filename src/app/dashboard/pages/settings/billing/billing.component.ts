@@ -1,15 +1,28 @@
 import { Component, OnInit } from '@angular/core';
+import { HelperService } from 'src/app/shared/helper.service';
 
 @Component({
   selector: 'app-billing',
   templateUrl: './billing.component.html',
-  styleUrls: ['./billing.component.scss']
+  styleUrls: ['./billing.component.scss'],
 })
 export class BillingComponent implements OnInit {
+  constructor(private helperService: HelperService) {}
 
-  constructor() { }
+  ngOnInit(): void {}
 
-  ngOnInit(): void {
+  async onCreateBillingPortalSession() {
+    try {
+      const portalSession: any = await this.helperService.createBillingPortalSession();
+      const portalURL = portalSession.url;
+
+      window.open(portalURL);
+
+      return portalSession;
+    } catch (err) {
+      alert(
+        'Problem connecting to stripe, please try again. Error: ' + err.error
+      );
+    }
   }
-
 }
