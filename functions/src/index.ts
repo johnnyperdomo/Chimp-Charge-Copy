@@ -3,6 +3,8 @@ admin.initializeApp();
 
 export { chimpApi } from './api';
 
+export { createMerchant } from './triggers';
+
 //TODO: 'active when ready to deploy app to production'
 // export { warmApiRunner } from './task-runners';
 

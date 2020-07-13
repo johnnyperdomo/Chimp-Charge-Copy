@@ -34,6 +34,7 @@ export class StatsComponent implements OnInit, OnDestroy {
     this.currentMerchantSub = this.currentMerchant
       .pipe(
         filter((retrievedMerchant) => retrievedMerchant !== null),
+        filter((merchant) => merchant.connectID !== null),
         take(1),
         mergeMap((retrievedMerchant) => {
           return this.db

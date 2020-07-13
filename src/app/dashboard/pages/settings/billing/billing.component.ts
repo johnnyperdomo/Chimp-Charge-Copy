@@ -12,6 +12,8 @@ export class BillingComponent implements OnInit {
   ngOnInit(): void {}
 
   async onCreateBillingPortalSession() {
+    //FUTURE-UPDATE: add loading spinner and disable button when clicked to prevent spamming.
+    //FUTURE-UPDATE: instead of having billing portal, just have all the billing info on this page.
     try {
       const portalSession: any = await this.helperService.createBillingPortalSession();
       const portalURL = portalSession.url;
