@@ -4,7 +4,7 @@ import * as functions from 'firebase-functions';
 
 const db = admin.firestore();
 
-export async function getStripeMerchantPayouts(userID: string) {
+export async function getStripePayouts(userID: string) {
   const userRef = db.doc(`merchants/${userID}`);
   const userSnap = await userRef.get();
   const userData = userSnap.data()!;
@@ -32,7 +32,7 @@ export async function getStripeMerchantPayouts(userID: string) {
   }
 }
 
-export async function getStripeMerchantBalance(userID: string) {
+export async function getStripeBalance(userID: string) {
   const userRef = db.doc(`merchants/${userID}`);
   const userSnap = await userRef.get();
   const userData = userSnap.data()!;

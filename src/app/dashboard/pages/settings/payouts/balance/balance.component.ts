@@ -20,7 +20,7 @@ export class BalanceComponent implements OnInit {
 
   async getBalance() {
     try {
-      const retrievedBalance = await this.helperService.getStripeMerchantBalance();
+      const retrievedBalance = await this.helperService.getStripeBalance();
 
       this.balance = new Balance(retrievedBalance as Stripe.Balance);
 

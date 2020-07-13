@@ -13,10 +13,7 @@ import {
 } from './connect/subscriptions.connect';
 import { handleStripeConnectWebhooks } from './connect/webhooks.connect';
 import { onRefundTransaction } from './connect/transactions.connect';
-import {
-  getStripeMerchantBalance,
-  getStripeMerchantPayouts,
-} from './merchant/payouts.merchant';
+import { getStripeBalance, getStripePayouts } from './connect/payouts.connect';
 
 const app = express();
 const runtimeOpts: functions.RuntimeOptions = {
@@ -299,7 +296,7 @@ app.get('/awake', (req, res) => {
 
 //Payouts ================>
 app.get(
-  '/merchant/payouts',
+  '/connect/payouts',
   async (req: express.Request, res: express.Response) => {
     if (!req.headers.authorization) {
       res
@@ -311,7 +308,7 @@ app.get(
 
     try {
       const authenticated = await authenticate(tokenId);
-      const response = await getStripeMerchantPayouts(authenticated.uid);
+      const response = await getStripePayouts(authenticated.uid);
 
       res.send(response);
     } catch (err) {
@@ -321,7 +318,7 @@ app.get(
 );
 
 app.get(
-  '/merchant/balance',
+  '/connect/balance',
   async (req: express.Request, res: express.Response) => {
     if (!req.headers.authorization) {
       res
@@ -333,7 +330,7 @@ app.get(
 
     try {
       const authenticated = await authenticate(tokenId);
-      const response = await getStripeMerchantBalance(authenticated.uid);
+      const response = await getStripeBalance(authenticated.uid);
 
       res.send(response);
     } catch (err) {

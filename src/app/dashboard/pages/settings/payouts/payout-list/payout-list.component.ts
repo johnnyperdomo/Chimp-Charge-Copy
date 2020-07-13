@@ -20,7 +20,7 @@ export class PayoutsListComponent implements OnInit {
 
   async getPayouts() {
     try {
-      const retrievedPayouts = await this.helperService.getStripeMerchantPayouts();
+      const retrievedPayouts = await this.helperService.getStripePayouts();
 
       this.payouts = (retrievedPayouts as Stripe.Payout[]).map((payout) => {
         return new Payout(payout);
@@ -33,7 +33,7 @@ export class PayoutsListComponent implements OnInit {
   }
 
   onViewPayoutInStripe(payoutID: string) {
-    const stripePayoutURL = 'https://dashboard.stripe.com/payouts/' + payoutID; //make sure to remove 'test' url path if in production
+    const stripePayoutURL = 'https://dashboard.stripe.com/payouts/' + payoutID; //note: add 'test' url path in test mode
 
     window.open(stripePayoutURL);
   }
