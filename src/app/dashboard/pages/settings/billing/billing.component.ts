@@ -28,3 +28,5 @@ export class BillingComponent implements OnInit {
     }
   }
 }
+
+//FUTURE-UPDATE: if user every cancels, you can always send an email saying that they can always renew their sub before it expires if they change their mind, or add an in-app notification

@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { User } from '../user.model';
 import { MerchantService } from 'src/app/merchants/merchants.service';
 import { Merchant } from 'src/app/merchants/merchant.model';
+import * as firebase from 'firebase/app';
 
 let userFirstName: string = null;
 let userLastName: string = null;
@@ -50,6 +51,13 @@ export class AuthEffects {
             resData.payload.user.id
           );
           this.merchantService.setMerchantInfo(newMerchant);
+        }),
+        tap(() => {
+          const user = firebase.auth().currentUser;
+
+          if (user) {
+            user.sendEmailVerification();
+          }
         }),
         catchError((errorRes) => {
           return this.authService.handleError(errorRes);

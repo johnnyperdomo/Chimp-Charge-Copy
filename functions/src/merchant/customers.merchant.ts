@@ -1,6 +1,6 @@
 import { stripe } from '../shared/config';
 
-export async function getOrCreateCustomer(
+export async function getOrCreateCustomerMerchant(
   email: string,
   name: string,
   merchantUID: string,

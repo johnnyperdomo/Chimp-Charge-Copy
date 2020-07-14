@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { getOrCreateCustomer } from './merchant/customers.merchant';
+import { getOrCreateCustomerMerchant } from './merchant/customers.merchant';
 
 const auth = admin.auth();
 
@@ -16,7 +16,7 @@ export const createMerchant = functions.firestore
       const email = (await auth.getUser(merchantUID)).email!;
       const name = `${data.firstName} ${data.lastName}`;
 
-      const customer = await getOrCreateCustomer(
+      const customer = await getOrCreateCustomerMerchant(
         email,
         name,
         merchantUID,
