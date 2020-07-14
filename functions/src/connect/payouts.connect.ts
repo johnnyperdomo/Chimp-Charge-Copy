@@ -5,20 +5,20 @@ import * as functions from 'firebase-functions';
 const db = admin.firestore();
 
 export async function getStripePayouts(userID: string) {
-  const userRef = db.doc(`merchants/${userID}`);
-  const userSnap = await userRef.get();
-  const userData = userSnap.data()!;
-
-  const stripeConnectID = userData.connectID;
-
-  if (!stripeConnectID) {
-    throw new functions.https.HttpsError(
-      'not-found',
-      'Stripe Connect ID not found'
-    );
-  }
-
   try {
+    const userRef = db.doc(`merchants/${userID}`);
+    const userSnap = await userRef.get();
+    const userData = userSnap.data()!;
+
+    const stripeConnectID = userData.connectID;
+
+    if (!stripeConnectID) {
+      throw new functions.https.HttpsError(
+        'not-found',
+        'Stripe Connect ID not found'
+      );
+    }
+
     const payouts = await stripe.payouts
       .list(
         { expand: ['data.destination'] },
@@ -33,20 +33,20 @@ export async function getStripePayouts(userID: string) {
 }
 
 export async function getStripeBalance(userID: string) {
-  const userRef = db.doc(`merchants/${userID}`);
-  const userSnap = await userRef.get();
-  const userData = userSnap.data()!;
-
-  const stripeConnectID = userData.connectID;
-
-  if (!stripeConnectID) {
-    throw new functions.https.HttpsError(
-      'not-found',
-      'Stripe Connect ID not found'
-    );
-  }
-
   try {
+    const userRef = db.doc(`merchants/${userID}`);
+    const userSnap = await userRef.get();
+    const userData = userSnap.data()!;
+
+    const stripeConnectID = userData.connectID;
+
+    if (!stripeConnectID) {
+      throw new functions.https.HttpsError(
+        'not-found',
+        'Stripe Connect ID not found'
+      );
+    }
+
     const balance = await stripe.balance.retrieve({
       stripeAccount: stripeConnectID,
     });

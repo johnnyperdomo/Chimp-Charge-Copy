@@ -26,6 +26,8 @@ export const createMerchant = functions.firestore
       return merchantRef.update({
         customerID: customer.id,
       });
+
+      //TODO: send welcome email!
     } catch (error) {
       throw Error(error);
     }

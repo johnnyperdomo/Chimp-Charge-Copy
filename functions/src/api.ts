@@ -354,8 +354,8 @@ app.post(
     const tokenId = req.headers.authorization!.split('Bearer ')[1];
 
     try {
-      await authenticate(tokenId);
-      const response = await onCreateBillingPortalSession();
+      const authenticated = await authenticate(tokenId);
+      const response = await onCreateBillingPortalSession(authenticated.uid);
 
       res.send(response);
     } catch (err) {
