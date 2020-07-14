@@ -8,7 +8,7 @@ import { MerchantService } from '../merchants.service';
 
 @Injectable()
 export class MerchantEffects {
-  @Effect({ dispatch: false }) //LATER: dispatch to true
+  @Effect({ dispatch: false }) // FIX: dispatch to true... can this cause a bug?
   setMerchantInfo = this.actions$.pipe(
     ofType(MerchantActions.SET_MERCHANT_INFO_START),
     switchMap((merchant: MerchantActions.SetMerchantInfoStart) => {
@@ -21,7 +21,7 @@ export class MerchantEffects {
           .set(parsedMerchant, { merge: true })
       ).pipe(
         catchError((errorRes) => {
-          //LATER: handle error messages better like authService => 'Firestore Error'
+          //FIX: handle error messages better like authService => 'Firestore Error'
           return of(
             new MerchantActions.SetMerchantInfoFail('Error: Please try again.')
           );
@@ -49,7 +49,7 @@ export class MerchantEffects {
           return new MerchantActions.GetMerchantInfoSuccess(retrievedMerchant);
         }),
         catchError((errorRes) => {
-          //LATER: handle error messages better like authService => 'Firestore Error'
+          //FIX: handle error messages better like authService => 'Firestore Error'
           //https://firebase.google.com/docs/reference/js/firebase.firestore#firestoreerrorcode
           return of(
             new MerchantActions.GetMerchantInfoFail('Error: Please try again.')

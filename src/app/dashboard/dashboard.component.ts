@@ -117,6 +117,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 }
 
-//BUG: on app reload, on payments page, array of firestore data is called multiple times, not supposed to happen. looks like 3 times to me. Fix this
+//FIX: on app reload, on payments page, array of firestore data is called multiple times, not supposed to happen. looks like 3 times to me. Fix this
 
-//BUG: when i log out user, and then i log into another user account. the previous user's firestore info is not immediately removed. Make sure all objects are emptied from client side on logout. so that this doesn't happen.
+//FIX: when i log out user, and then i log into another user account. the previous user's firestore info is not immediately removed. Make sure all objects are emptied from client side on logout. so that this doesn't happen.

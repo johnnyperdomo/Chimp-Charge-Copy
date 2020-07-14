@@ -21,7 +21,6 @@ import {
 import { deauthorizeStripeAccountWebhook } from './auth.connect';
 import { stripeEventType } from '../shared/extensions';
 
-//TODO:
 export async function handleStripeConnectWebhooks(event: Stripe.Event) {
   if (!event.account) {
     return;

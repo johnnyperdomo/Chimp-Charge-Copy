@@ -81,7 +81,7 @@ export class SecurityComponent implements OnInit, OnDestroy {
 
       const updatedUser = this.getUpdatedUser(currentUser, newTokenResult);
 
-      //LATER: error: redo this function(this.store.dispatch), or fix: when changing email and dispatching action, page is redirected, not the intended response
+      //FIX: error: redo this function(this.store.dispatch), or fix: when changing email and dispatching action, page is redirected, not the intended response
       //LATER: add text: you must "update in stripe also {insert link}""
       this.store.dispatch(
         new AuthActions.AuthenticateSuccess({

@@ -5,9 +5,6 @@ import { Stripe } from 'stripe';
 
 const db = admin.firestore();
 
-//TODO: add function, when new payment intent webhook is succeeded, add transaction to sub-collection of firestore.paymentlink.transactions { transaction: Stripe.Transaction(successful ones) } to see how many transactions with this payment link. match payment intent with product id => think about saving only the trnxn id for this one, since collection is able to be read outside auth, unless....subcollection of trx can be locked.then (show full transaction detail)
-//TODO: ^ or just add aggregation to root level
-
 //cloud functions exports ====================================>
 
 export async function onCreatePaymentLink(data: any, userID: string) {
@@ -161,7 +158,6 @@ export async function onEditPaymentLink(data: any, userID: string) {
 
     return updatePaymentLinkDoc;
   } catch (err) {
-    console.error(err); //TODO: add console.log errors to all throw error methods to log it in the console
     throw new functions.https.HttpsError('unknown', err);
   }
 }

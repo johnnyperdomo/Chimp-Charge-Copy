@@ -9,9 +9,3 @@ export class Merchant {
     public membership: any = null //{}
   ) {}
 }
-
-//LATER: add businessName = null //make optional, user can add it later in accounts page, if businessname is null, show merchant name in checkout, else show business name
-
-//TODO: things to add to model in firebase:
-//TODO: add payment status
-//TODO: membership type: yearly, monthly

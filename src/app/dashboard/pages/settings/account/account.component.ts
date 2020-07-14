@@ -80,7 +80,7 @@ export class AccountComponent implements OnInit, OnDestroy {
           businessName,
         });
 
-      //LATER: reconfigure function, cuz this tries to get data from server again, instead of just getting it locally; there's lag on client side
+      //FIX: reconfigure function, cuz this tries to get data from server again, instead of just getting it locally; there's lag on client side
       this.merchantService.getMerchantInfo(this.merchant.merchantUID);
     } catch (err) {
       console.log(err);

@@ -32,7 +32,7 @@ export class ChimpApiService {
         throw Error(err.error.message);
       }
 
-      //LATER: make sure error messages work for other functions
+      //FIX: make sure error messages work for other functions: sometimes it shows as 'Error.Error.Error.Error: message', should not be the case
       throw Error(err);
     }
   }

@@ -20,8 +20,7 @@ export class AppComponent implements OnInit {
   }
 }
 
-//TODO: make all 'lists' text wrapper for long texts
-//TODO: maybe create unix epoch to human redable format using 'moment'. for firebase timestamp
+//LATER: make all 'lists' text wrapper for long texts, to make it response
 
 //LATER: fix firebase query reads; make sure app doesn't query on each component load, but does so one time, and can also from ngrx store to load this instead on the component. Maybee load a limited amount of most recent data once on initial app.comp.ts load, and then only fetch new data on pagination change, or on individual snapshot changes. i.e, limit => 10 of the most recent transactions.(don't want to get unnecesary needs user won't read)
 
@@ -35,6 +34,6 @@ export class AppComponent implements OnInit {
 
 //LATER: listen for angFire auth state changes, if auth state logs out, call logout ngrx action. right now, if auth state changes, logout may not be called sometimes. (to replicate: when logged into app on computer, delet user on firebase console => auth state changes, but client side logout is not detected )
 
-//LATER: for forms - user can either click button(best way) or they might click enter on the keyboard, make sure we test for that edge case.
+//FIX: for forms - user can either click button(best way) or they might click enter on the keyboard, make sure we test for that edge case.
 
-//LATER: all try catch blocks should return something in the try blow, or throw an erorr of some sort
+//FIX: all try catch blocks should return something in the try blow, or throw an erorr of some sort

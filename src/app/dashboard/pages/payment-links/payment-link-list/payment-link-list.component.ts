@@ -50,7 +50,6 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
         console.log('current merchant', this.currentMerchant.getValue());
       });
 
-    //LATER: sometimes this emits sub 3 times on reload: fix maybe? check other subs in outher lists
     this.currentMerchantSub = this.currentMerchant
       .pipe(
         filter((retrievedMerchant) => retrievedMerchant !== null),
@@ -139,7 +138,7 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
       }
     }
 
-    //TODO: add alert upon success
+    //LATER: add alert upon success
     //LATER: add modal to confirm deletion - ngbootstrap modal; js.confirm is ugly!!!
   }
 

@@ -14,7 +14,7 @@ import Stripe from 'stripe';
 //LATER: add success page url
 
 // LATER: add loading spinner before setting up form if getting data from firebase on editMode, for good ux
-//LATER: do a check to see if this payment link belongs to this user, if not, don't allow to view details (security rules allow non-users to 'read' payment links but this should only be used for checkout customers.)
+//FIX: do a check to see if this payment link belongs to this user, if not, don't allow to view details (security rules allow non-users to 'read' payment links but this should only be used for checkout customers.)
 
 @Component({
   selector: 'app-payment-link-edit',

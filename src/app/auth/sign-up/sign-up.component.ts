@@ -51,7 +51,6 @@ export class SignUpComponent implements OnInit, OnDestroy {
     });
   }
 
-  //LATER: remove business name/company name from signup form, add optional in accounts page - less friction(for new users): when you add onboarding instructions
   onSubmit(signupForm: NgForm) {
     if (!signupForm.valid) {
       return;
