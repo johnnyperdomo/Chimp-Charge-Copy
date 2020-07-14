@@ -15,7 +15,7 @@ export class Transaction {
   public productName: string;
   public isRefunded: boolean;
   public lastUpdated: Date;
-  //FUTURE-UPDATE: //isdisputed
+  //LATER: //isdisputed
 
   constructor(
     id: string,
@@ -67,7 +67,7 @@ export class Transaction {
 
   get amount() {
     //i.e. $350.00
-    //FUTURE-UPDATE: take into account refunded payments
+    //LATER: take into account refunded payments
 
     return MoneyFormatter.convertMinorUnitToStandard(this.paymentIntent.amount);
   }

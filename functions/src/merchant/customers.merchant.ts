@@ -11,7 +11,7 @@ export async function getOrCreateCustomerMerchant(
       email,
     });
 
-    //if customer doesn't exist, create a new one
+    // if customer doesn't exist, create a new one
     if (findCustomer.data.length === 0) {
       const createdCustomer = await stripe.customers.create(
         {
@@ -25,9 +25,24 @@ export async function getOrCreateCustomerMerchant(
       return createdCustomer;
     } else {
       const retrievedCustomer = findCustomer.data[0];
-      return retrievedCustomer;
+      const { chimp_charge_firebase_merchant_uid } = retrievedCustomer.metadata;
+
+      // if customer exists with the same metadata => return
+      if (
+        chimp_charge_firebase_merchant_uid &&
+        chimp_charge_firebase_merchant_uid === merchantUID
+      ) {
+        return retrievedCustomer;
+      }
+
+      // update customer in stripe
+      return await stripe.customers.update(retrievedCustomer.id, {
+        email,
+        name,
+        metadata: { chimp_charge_firebase_merchant_uid: merchantUID },
+      });
     }
   } catch (err) {
-    throw new Error('stripe: getOrCreateCustomer: ' + err);
+    throw Error(err);
   }
 }

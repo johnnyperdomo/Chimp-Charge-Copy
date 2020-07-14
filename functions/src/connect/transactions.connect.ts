@@ -108,7 +108,7 @@ export async function createFirestoreTransaction(
       connectID,
       eventID: idempotencyKey,
       isRefunded: false,
-      isDisputed: false, //lost dispute only//FUTURE-UPDATE
+      isDisputed: false, //lost dispute only//LATER
     };
 
     const transactionRef = db.collection('transactions').doc();
@@ -201,7 +201,7 @@ export async function createFirestoreTransactionFromInvoice(
       connectID,
       eventID: idempotencyKey,
       isRefunded: false,
-      isDisputed: false, //lost dispute only //FUTURE-UPDATE
+      isDisputed: false, //lost dispute only //LATER
     };
 
     const transactionRef = db.collection('transactions').doc();
@@ -229,7 +229,7 @@ export async function refundFirestoreTransaction(
   merchantUID: string
 ) {
   try {
-    //FUTURE-UPDATE: check to see if object is already refunded, so we don't trigger twice and mess with aggregation
+    //LATER: check to see if object is already refunded, so we don't trigger twice and mess with aggregation
     const findTransaction = await db
       .collection('transactions')
       .where(
@@ -240,7 +240,7 @@ export async function refundFirestoreTransaction(
       .get();
 
     if (findTransaction.docs.length === 0) {
-      //FUTURE-UPDATE: make sure all collection queries across the app have this error check
+      //LATER: make sure all collection queries across the app have this error check
       return;
     }
 

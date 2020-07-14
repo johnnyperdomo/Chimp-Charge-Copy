@@ -13,7 +13,7 @@ export class Customer {
   public activeSubscriptionsCount: number;
   public customer: CustomerFieldInterface;
   public lastUpdated: Date;
-  //FUTURE-UPDATE: active subs, isdeleted,transactions
+  //LATER: active subs, isdeleted,transactions
 
   constructor(
     id: string,
@@ -46,7 +46,7 @@ export class Customer {
   }
 
   get successfulAmount() {
-    //FUTURE-UPDATE: take into account refunded payments
+    //LATER: take into account refunded payments
 
     //calculated amount of all transactions => $937.54
     return MoneyFormatter.convertMinorUnitToStandard(

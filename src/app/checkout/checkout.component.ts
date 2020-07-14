@@ -19,7 +19,7 @@ import { HelperService } from '../shared/helper.service';
 
 declare var Stripe; // : stripe.StripeStatic;
 
-//FUTURE-UPDATE: add can deactivate child option, to save the user from accidently losing data.
+//LATER: add can deactivate child option, to save the user from accidently losing data.
 
 @Component({
   selector: 'app-checkout',

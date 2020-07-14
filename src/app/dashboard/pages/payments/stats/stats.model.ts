@@ -12,7 +12,7 @@ export class Stats {
   public customerCount: number;
   public subscriptions: SubscriptionsAggregationFieldInterface;
   public transactions: TransactionsAggregationInterface;
-  //FUTURE-UPDATE: paymentLinkCount
+  //LATER: paymentLinkCount
 
   constructor(
     merchantUID: string,
@@ -29,7 +29,7 @@ export class Stats {
   }
 
   get successfulAmount() {
-    //FUTURE-UPDATE: take into account refunded payments
+    //LATER: take into account refunded payments
     //calculated amount of all transactions => $937.54
     return MoneyFormatter.convertMinorUnitToStandard(
       this.transactions && this.transactions.successfulAmount

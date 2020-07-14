@@ -56,7 +56,7 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
         this.currentMerchant.next(payload);
       });
 
-    //FUTURE-UPDATE: listen to snapshot changes of payment links, and customers, if something changes there, retrigger sub function
+    //LATER: listen to snapshot changes of payment links, and customers, if something changes there, retrigger sub function
     this.currentMerchantSub = this.currentMerchant
       .pipe(
         filter((retrievedMerchant) => retrievedMerchant !== null),
@@ -168,7 +168,7 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
       )
     ) {
       this.isLoading = true;
-      //FUTURE-UPDATE: add loading spinner on button instead of card
+      //LATER: add loading spinner on button instead of card
       try {
         const response = await this.helperService.cancelSubscription(
           subscriptionID
@@ -180,7 +180,7 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
         this.isLoading = false;
         alert(err);
         console.log(err);
-        //FUTURE-UPDATE: present better error
+        //LATER: present better error
       }
     }
   }

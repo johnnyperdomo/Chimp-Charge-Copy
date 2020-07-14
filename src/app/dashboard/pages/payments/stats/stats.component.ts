@@ -53,7 +53,7 @@ export class StatsComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe((i) => {
-        //FUTURE-UPDATE: check to see if field item exists, if not, return 0
+        //LATER: check to see if field item exists, if not, return 0
         this.stats = new Stats(
           i.merchantUID,
           i.connectID,

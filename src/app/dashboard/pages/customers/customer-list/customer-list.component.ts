@@ -25,10 +25,10 @@ export class CustomerListComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    //FUTURE-UPDATE: add sorting abilities, and pagination
-    //FUTURE-UPDATE: //add loading spinner
-    //FUTURE-UPDATE// turn into ngrx reducer
-    //FUTURE-UPDATE: render content faster
+    //LATER: add sorting abilities, and pagination
+    //LATER: //add loading spinner
+    //LATER// turn into ngrx reducer
+    //LATER: render content faster
     this.merchantStoreSub = this.store
       .select('merchant')
       .pipe(map((merchantState) => merchantState.merchant))

@@ -12,8 +12,8 @@ export class BillingComponent implements OnInit {
   ngOnInit(): void {}
 
   async onCreateBillingPortalSession() {
-    //FUTURE-UPDATE: add loading spinner and disable button when clicked to prevent spamming.
-    //FUTURE-UPDATE: instead of having billing portal, just have all the billing info on this page.
+    //LATER: add loading spinner and disable button when clicked to prevent spamming.
+    //LATER: instead of having billing portal, just have all the billing info on this page.
     try {
       const portalSession: any = await this.helperService.createBillingPortalSession();
       const portalURL = portalSession.url;
@@ -29,4 +29,4 @@ export class BillingComponent implements OnInit {
   }
 }
 
-//FUTURE-UPDATE: if user every cancels, you can always send an email saying that they can always renew their sub before it expires if they change their mind, or add an in-app notification
+//LATER: if user every cancels, you can always send an email saying that they can always renew their sub before it expires if they change their mind, or add an in-app notification

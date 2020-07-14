@@ -46,5 +46,5 @@ export type transactionsType = {
   successfulCount: number; //this may also include refunded amounts, since they were originally successful
   successfulAmount: number; //stripe fees not included
 
-  //FUTURE-UPDATE: maybe add disputed amount/total, when handling disputed webhooks, for only lost disputes charge.dispute.closed(lost)
+  //LATER: maybe add disputed amount/total, when handling disputed webhooks, for only lost disputes charge.dispute.closed(lost)
 };

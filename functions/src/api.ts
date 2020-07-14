@@ -20,7 +20,7 @@ const app = express();
 const runtimeOpts: functions.RuntimeOptions = {
   memory: '1GB',
   timeoutSeconds: 180,
-}; //FUTURE-UPDATE: might need to raise this when creating 'large data sync' functionality in app, to handle data processing
+}; //LATER: might need to raise this when creating 'large data sync' functionality in app, to handle data processing
 
 //Helpers ==============================>
 app.use(cors({ origin: true })); //cors => any other url can access this api
@@ -366,4 +366,4 @@ app.post(
 
 export const chimpApi = functions.runWith(runtimeOpts).https.onRequest(app);
 
-//FUTURE-UPDATE: maybe clean up this code by separating these api functions in one big api folder
+//LATER: maybe clean up this code by separating these api functions in one big api folder

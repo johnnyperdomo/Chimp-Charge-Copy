@@ -19,8 +19,8 @@ export interface SubscriptionsAggregationFieldInterface {
 }
 
 export interface TransactionsAggregationInterface {
-  //FUTURE-UPDATE: refundedAmount: number;
-  //FUTURE-UPDATE: refundedCount: number;
+  //LATER: refundedAmount: number;
+  //LATER: refundedCount: number;
   successfulAmount: number;
   successfulCount: number;
 }

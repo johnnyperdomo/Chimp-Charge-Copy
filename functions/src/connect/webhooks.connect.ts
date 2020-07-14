@@ -58,7 +58,7 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
 
         return;
       case 'charge.refunded':
-        //FUTURE-UPDATE: handle failed refund webhooks; send email to merchant that refund failed
+        //LATER: handle failed refund webhooks; send email to merchant that refund failed
         const chargeRefunded = eventObject as Stripe.Charge;
 
         if (chargeRefunded.refunded === false) {
@@ -185,9 +185,9 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
         );
 
         return;
-      // FUTURE-UPDATE: case 'invoice.payment_failed':
-      //   //FUTURE-UPDATE: validate
-      //   //FUTURE-UPDATE: handle this failure
+      // LATER: case 'invoice.payment_failed':
+      //   //LATER: validate
+      //   //LATER: handle this failure
 
       //Subscriptions
       case 'customer.subscription.created':
@@ -233,7 +233,7 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
         );
 
         // TODO:sendgrid send sendgrid email, to customer on payment failure-> updated payment method, contact merchant for help
-        //FUTURE-UPDATE: handle this failure
+        //LATER: handle this failure
         return;
       case 'customer.subscription.deleted':
         const subscriptionDeleted = eventObject as Stripe.Subscription;
@@ -252,8 +252,8 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
         return;
 
       case 'account.application.deauthorized':
-        //FUTURE-UPDATE: Send email about deauthorized account,
-        //FUTURE-UPDATE send email about new authorized account as well
+        //LATER: Send email about deauthorized account,
+        //LATER send email about new authorized account as well
         await deauthorizeStripeAccountWebhook(connectID);
 
         return;
@@ -264,8 +264,8 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
     throw new Error(err);
   }
 }
-//FUTURE-UPDATE: charge.dispute.created(send email to merchant to check their stripe account)
-//FUTURE-UPDATE: charge.dispute.closed[lost](update firestore transaction)
+//LATER: charge.dispute.created(send email to merchant to check their stripe account)
+//LATER: charge.dispute.closed[lost](update firestore transaction)
 
 //ensures this webhook is associated with chimp charge
 
@@ -324,4 +324,4 @@ async function validateStripeWebhook(
   }
 }
 
-//FUTURE-UPDATE: maybe create email funnels, when user first signs up, depending on webhook actions: i.e. step by step guide using sendbox email template
+//LATER: maybe create email funnels, when user first signs up, depending on webhook actions: i.e. step by step guide using sendbox email template

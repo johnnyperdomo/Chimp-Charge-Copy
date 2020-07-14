@@ -216,7 +216,7 @@ export async function cancelFirestoreSubscription(
       .where('subscription.subscriptionID', '==', stripeSubscription.id)
       .get();
 
-    //FUTURE-UPDATE: make sure collection queries are not returned empty
+    //LATER: make sure collection queries are not returned empty
 
     if (
       findSubscription.docs[0].exists &&

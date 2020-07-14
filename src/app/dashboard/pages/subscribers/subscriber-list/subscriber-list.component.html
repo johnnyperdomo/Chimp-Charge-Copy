@@ -7,8 +7,8 @@
     <table class="table table-sm table-nowrap card-table">
       <thead>
         <tr>
-          <!-- FUTURE-UPDATE: add sort order, filters in table header for payment data-->
-          <!-- FUTURE-UPDATE: add pagination to not show all results in 1 page, order by pages -->
+          <!-- LATER: add sort order, filters in table header for payment data-->
+          <!-- LATER: add pagination to not show all results in 1 page, order by pages -->
           <th>
             <h5 class="text-muted mb-0">
               Name
@@ -32,7 +32,7 @@
         </tr>
       </thead>
       <tbody class="list">
-        <!-- FUTURE-UPDATE: Make table rows fully tappable, or just allow txn id to be a tappable link, then leads to more in-depth information about the payment -->
+        <!-- LATER: Make table rows fully tappable, or just allow txn id to be a tappable link, then leads to more in-depth information about the payment -->
         <tr *ngFor="let subscriberEl of subscribers">
           <td>
             <h5 class="mb-0">{{ subscriberEl.customer.name }}</h5>

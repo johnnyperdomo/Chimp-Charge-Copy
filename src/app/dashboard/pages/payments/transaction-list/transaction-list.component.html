@@ -7,8 +7,8 @@
     <table class="table table-sm table-nowrap card-table">
       <thead>
         <tr>
-          <!-- FUTURE-UPDATE: add sort order, filters in table header for payment data-->
-          <!-- FUTURE-UPDATE: add pagination to not show all results in 1 page, order by pages -->
+          <!-- LATER: add sort order, filters in table header for payment data-->
+          <!-- LATER: add pagination to not show all results in 1 page, order by pages -->
           <th>
             <h5 class="text-muted mb-0">
               Customer
@@ -44,7 +44,7 @@
         </tr>
       </thead>
       <tbody class="list">
-        <!-- FUTURE-UPDATE: Make table rows fully tappable, or just allow txn id to be a tappable link, then leads to more in-depth information about the payment -->
+        <!-- LATER: Make table rows fully tappable, or just allow txn id to be a tappable link, then leads to more in-depth information about the payment -->
         <tr *ngFor="let transactionEl of transactions">
           <td>
             <h5 class="mb-0">{{ transactionEl.customer.name }}</h5>
@@ -68,7 +68,7 @@
                   'badge-soft-warning': transactionEl.status === 'Refunded'
                 }"
               >
-                <!-- FUTURE-UPDATE: disputed is red 'danger' -->
+                <!-- LATER: disputed is red 'danger' -->
                 <b>{{ transactionEl.status }}</b>
               </span>
             </h4>
@@ -85,7 +85,7 @@
           </td>
 
           <!-- //TODO: use a simple js alert -->
-          <!-- FUTURE-UPDATE: add refund confirmation modal, if available for refund, "sure you want to refund?", if not available for refund => "sorry refund not available" -->
+          <!-- LATER: add refund confirmation modal, if available for refund, "sure you want to refund?", if not available for refund => "sorry refund not available" -->
 
           <td class="text-right">
             <button

@@ -32,7 +32,7 @@ export class ChimpApiService {
         throw Error(err.error.message);
       }
 
-      //FUTURE-UPDATE: make sure error messages work for other functions
+      //LATER: make sure error messages work for other functions
       throw Error(err);
     }
   }

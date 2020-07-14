@@ -1,11 +1,11 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { getOrCreateCustomerMerchant } from './merchant/customers.merchant';
+import { getOrCreateCustomerMerchant } from '../merchant/customers.merchant';
 
 const auth = admin.auth();
 
-//when new merchant is created
-export const createMerchant = functions.firestore
+// create a new stripe customer when a new merchant document is created
+export const createStripeCustomerMerchant = functions.firestore
   .document('merchants/{merchantUID}')
   .onCreate(async (snapshot, context) => {
     const data = snapshot.data();

@@ -14,7 +14,7 @@ export class BalanceComponent implements OnInit {
   constructor(private helperService: HelperService) {}
 
   ngOnInit(): void {
-    //FUTURE-UPDATE: add loading spinner
+    //LATER: add loading spinner
     this.getBalance();
   }
 

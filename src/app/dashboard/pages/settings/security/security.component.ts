@@ -81,8 +81,8 @@ export class SecurityComponent implements OnInit, OnDestroy {
 
       const updatedUser = this.getUpdatedUser(currentUser, newTokenResult);
 
-      //FUTURE-UPDATE: error: redo this function(this.store.dispatch), or fix: when changing email and dispatching action, page is redirected, not the intended response
-      //FUTURE-UPDATE: add text: you must "update in stripe also {insert link}""
+      //LATER: error: redo this function(this.store.dispatch), or fix: when changing email and dispatching action, page is redirected, not the intended response
+      //LATER: add text: you must "update in stripe also {insert link}""
       this.store.dispatch(
         new AuthActions.AuthenticateSuccess({
           user: updatedUser,
@@ -93,7 +93,7 @@ export class SecurityComponent implements OnInit, OnDestroy {
       this.isChangeEmailLoading = false;
       this.emailForm.controls['confirmCurrentPassword'].reset();
 
-      //FUTURE-UPDATE: trigger success alert
+      //LATER: trigger success alert
     } catch (err) {
       console.log(err);
       this.changeEmailError = err;
@@ -140,7 +140,7 @@ export class SecurityComponent implements OnInit, OnDestroy {
       console.log('original 2,', currentUser);
       console.log('updated', updatedUser);
 
-      //FUTURE-UPDATE: trigger success alert
+      //LATER: trigger success alert
       this.isChangePasswordLoading = false;
       this.passwordForm.reset();
 

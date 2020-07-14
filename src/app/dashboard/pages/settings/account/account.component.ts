@@ -68,7 +68,7 @@ export class AccountComponent implements OnInit, OnDestroy {
     const firstName = accountForm.value.fName;
     const lastName = accountForm.value.lName;
     const businessName = accountForm.value.bizName;
-    //FUTURE-UPDATE: add text: you must "update bizName in stripe also {insert link}""
+    //LATER: add text: you must "update bizName in stripe also {insert link}""
 
     try {
       await this.db
@@ -80,15 +80,15 @@ export class AccountComponent implements OnInit, OnDestroy {
           businessName,
         });
 
-      //FUTURE-UPDATE: reconfigure function, cuz this tries to get data from server again, instead of just getting it locally; there's lag on client side
+      //LATER: reconfigure function, cuz this tries to get data from server again, instead of just getting it locally; there's lag on client side
       this.merchantService.getMerchantInfo(this.merchant.merchantUID);
     } catch (err) {
       console.log(err);
       alert(err + ' - Try Again.');
-      //FUTURE-UPDATE: present error
+      //LATER: present error
     }
 
-    //FUTURE-UPDATE: present alert on success
+    //LATER: present alert on success
   }
 
   ngOnDestroy() {

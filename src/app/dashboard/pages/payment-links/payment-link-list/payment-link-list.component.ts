@@ -36,11 +36,11 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    //FUTURE-UPDATE: add sorting abilities, and pagination
+    //LATER: add sorting abilities, and pagination
 
-    //FUTURE-UPDATE: //add loading spinner
-    //FUTURE-UPDATE// turn into ngrx reducer
-    //FUTURE-UPDATE: render content faster
+    //LATER: //add loading spinner
+    //LATER// turn into ngrx reducer
+    //LATER: render content faster
 
     this.merchantStoreSub = this.store
       .select('merchant')
@@ -50,7 +50,7 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
         console.log('current merchant', this.currentMerchant.getValue());
       });
 
-    //FUTURE-UPDATE: sometimes this emits sub 3 times on reload: fix maybe? check other subs in outher lists
+    //LATER: sometimes this emits sub 3 times on reload: fix maybe? check other subs in outher lists
     this.currentMerchantSub = this.currentMerchant
       .pipe(
         filter((retrievedMerchant) => retrievedMerchant !== null),
@@ -108,7 +108,7 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
     const payLink = this.linkService.copyPayLink(itemID);
     this.clipboard.copy(payLink);
 
-    //FUTURE-UPDATE: add alert upon success
+    //LATER: add alert upon success
   }
 
   onEditLinkAtRow(itemID: string) {
@@ -135,12 +135,12 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
         this.isLoading = false;
         alert(err + ' - Try Again');
         console.log(err);
-        //FUTURE-UPDATE: present error
+        //LATER: present error
       }
     }
 
     //TODO: add alert upon success
-    //FUTURE-UPDATE: add modal to confirm deletion - ngbootstrap modal; js.confirm is ugly!!!
+    //LATER: add modal to confirm deletion - ngbootstrap modal; js.confirm is ugly!!!
   }
 
   ngOnDestroy() {

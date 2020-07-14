@@ -86,7 +86,7 @@ export class PaymentListComponent implements OnInit, OnDestroy {
       )
     ) {
       this.isLoading = true;
-      //FUTURE-UPDATE: add loading spinner on button instead of card
+      //LATER: add loading spinner on button instead of card
       try {
         const response = await this.helperService.refundTransaction(
           paymentIntentID
@@ -98,7 +98,7 @@ export class PaymentListComponent implements OnInit, OnDestroy {
         this.isLoading = false;
         alert(err);
         console.log(err);
-        //FUTURE-UPDATE: present better error
+        //LATER: present better error
       }
     }
   }

@@ -1,4 +1,4 @@
-<!-- FUTURE-UPDATE: add more complex options, like edit email sends, billing cycles, how to
+<!-- LATER: add more complex options, like edit email sends, billing cycles, how to
 accept payment, upload images, check-boxes, add any info. check other apps for
 more information. Redirect url. -->
 
@@ -106,7 +106,7 @@ more information. Redirect url. -->
 
           <!-- Amount -->
 
-          <!-- //FUTURE-UPDATE: better input mask: add some ,000, while typing -->
+          <!-- //LATER: better input mask: add some ,000, while typing -->
 
           <div class="form-group">
             <label for="amount">Amount</label>
@@ -158,7 +158,7 @@ more information. Redirect url. -->
 
           <!-- Recurring options -->
           <div *ngIf="linkType === 'recurring'">
-            <!-- FUTURE-UPDATE: add custom billing interval ; add setup fee option-->
+            <!-- LATER: add custom billing interval ; add setup fee option-->
             <div class="form-group">
               <label for="billingInterval">Billing interval</label>
               <select
@@ -173,7 +173,7 @@ more information. Redirect url. -->
                 <option value="day">Daily</option>
                 <option value="week">Weekly</option>
                 <option value="month">Monthly</option>
-                <!-- FUTURE-UPDATE: add support for quarterly,annually. they require more setup -->
+                <!-- LATER: add support for quarterly,annually. they require more setup -->
                 <!-- <option value="quarterly">Every 3 Months</option>
                 <option value="semiannually">Every 6 Months</option> -->
                 <option value="year">Yearly</option>
@@ -184,7 +184,7 @@ more information. Redirect url. -->
             </div>
           </div>
 
-          <!-- FUTURE-UPDATE: change text based on state, 'save changes' or 'create one-time
+          <!-- LATER: change text based on state, 'save changes' or 'create one-time
           payment' or 'create recurring payment' -->
 
           <div class="help-block-invalid form-group text-center" *ngIf="error">
@@ -192,7 +192,7 @@ more information. Redirect url. -->
           </div>
 
           <div class="row justify-content-center">
-            <!-- FUTURE-UPDATE: maybe add deactivate child, if user goes back or clicks cancel, to prevent accidental deletion -->
+            <!-- LATER: maybe add deactivate child, if user goes back or clicks cancel, to prevent accidental deletion -->
             <!-- Cancel Button -->
             <div class="col-8 col-sm-6 col-md-4">
               <button
@@ -212,8 +212,8 @@ more information. Redirect url. -->
                 <div class="spinner-border text-primary" role="status"></div>
               </div>
 
-              <!-- FUTURE-UPDATE: don't let user spam create button -->
-              <!-- FUTURE-UPDATE: change text depending on editmode or not -->
+              <!-- LATER: don't let user spam create button -->
+              <!-- LATER: change text depending on editmode or not -->
               <button
                 class="btn btn-lg btn-block btn-primary mb-3"
                 [disabled]="!paymentLinkEditForm.valid"

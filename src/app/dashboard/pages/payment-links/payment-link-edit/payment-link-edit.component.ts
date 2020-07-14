@@ -10,11 +10,11 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import * as accounting from 'src/app/shared/accounting';
 import Stripe from 'stripe';
 
-//FUTURE-UPDATE: add can deactivate child option, to save the user from accidently losing data.
-//FUTURE-UPDATE: add success page url
+//LATER: add can deactivate child option, to save the user from accidently losing data.
+//LATER: add success page url
 
-// FUTURE-UPDATE: add loading spinner before setting up form if getting data from firebase on editMode, for good ux
-//FUTURE-UPDATE: do a check to see if this payment link belongs to this user, if not, don't allow to view details (security rules allow non-users to 'read' payment links but this should only be used for checkout customers.)
+// LATER: add loading spinner before setting up form if getting data from firebase on editMode, for good ux
+//LATER: do a check to see if this payment link belongs to this user, if not, don't allow to view details (security rules allow non-users to 'read' payment links but this should only be used for checkout customers.)
 
 @Component({
   selector: 'app-payment-link-edit',
@@ -205,7 +205,7 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
           });
         }
       } catch (err) {
-        //FUTURE-UPDATE: handle this error better: "couldn't load content" try again
+        //LATER: handle this error better: "couldn't load content" try again
         alert(err + ' - Try again.');
         this.router.navigate(['/payment-links/new']);
         console.log(err);

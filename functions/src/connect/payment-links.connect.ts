@@ -429,15 +429,15 @@ async function createPrice(
   productID: string,
   recurringInterval?: string
 ) {
-  //FUTURE-UPDATE: might have to change unit_amount calculation if in different currencies
+  //LATER: might have to change unit_amount calculation if in different currencies
 
-  //FUTURE-UPDATE: make function better, this is ugly code
+  //LATER: make function better, this is ugly code
   try {
     if (recurringInterval) {
       const price = await stripe.prices.create(
         {
           unit_amount: amount,
-          currency: 'usd', //FUTURE-UPDATE: add dynamic currencies?
+          currency: 'usd', //LATER: add dynamic currencies?
           product: productID,
           recurring: {
             interval: getStripeIntervalFromString(recurringInterval),
@@ -451,7 +451,7 @@ async function createPrice(
       const price = await stripe.prices.create(
         {
           unit_amount: amount,
-          currency: 'usd', //FUTURE-UPDATE: add dynamic currencies?
+          currency: 'usd', //LATER: add dynamic currencies?
           product: productID,
           metadata: { chimp_charge_firebase_merchant_uid: merchantUID },
         },
