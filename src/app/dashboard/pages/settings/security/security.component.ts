@@ -15,6 +15,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import * as firebase from 'firebase/app';
 import * as AuthActions from '../../../../auth/store/auth.actions';
 import { User } from 'src/app/auth/user.model';
+import { HelperService } from 'src/app/shared/helper.service';
 
 @Component({
   selector: 'app-security',
@@ -39,7 +40,8 @@ export class SecurityComponent implements OnInit, OnDestroy {
     private _cdr: ChangeDetectorRef,
     private store: Store<fromApp.AppState>,
     private auth: AngularFireAuth,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private helperService: HelperService
   ) {}
 
   ngOnInit(): void {
@@ -90,12 +92,17 @@ export class SecurityComponent implements OnInit, OnDestroy {
         })
       );
 
+      await this.helperService.updateStripeCustomerEmailMerchant(
+        updatedUser.email
+      );
+
       this.isChangeEmailLoading = false;
       this.emailForm.controls['confirmCurrentPassword'].reset();
 
       //LATER: trigger success alert
     } catch (err) {
       console.log(err);
+      //FIX: sometimes when changing email i get this bug 'cannot read property 'reset' of undefined'
       this.changeEmailError = err;
       this.isChangeEmailLoading = false;
 

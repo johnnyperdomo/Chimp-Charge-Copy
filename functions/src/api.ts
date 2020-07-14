@@ -15,6 +15,10 @@ import { handleStripeConnectWebhooks } from './connect/webhooks.connect';
 import { onRefundTransaction } from './connect/transactions.connect';
 import { getStripeBalance, getStripePayouts } from './connect/payouts.connect';
 import { onCreateBillingPortalSession } from './merchant/portal.merchant';
+import {
+  updateStripeCustomerEmailMerchant,
+  updateStripeCustomerNameMerchant,
+} from './merchant/customers.merchant';
 
 const app = express();
 const runtimeOpts: functions.RuntimeOptions = {
@@ -356,6 +360,57 @@ app.post(
     try {
       const authenticated = await authenticate(tokenId);
       const response = await onCreateBillingPortalSession(authenticated.uid);
+
+      res.send(response);
+    } catch (err) {
+      res.status(400).send(err);
+    }
+  }
+);
+
+//Customer
+app.post(
+  '/merchant/updateStripeCustomerEmail',
+  async (req: express.Request, res: express.Response) => {
+    if (!req.headers.authorization) {
+      res
+        .status(403)
+        .json({ error: 'You must be logged in to make this request.' });
+    }
+
+    const tokenId = req.headers.authorization!.split('Bearer ')[1];
+
+    try {
+      const authenticated = await authenticate(tokenId);
+      const response = await updateStripeCustomerEmailMerchant(
+        req.body,
+        authenticated.uid
+      );
+
+      res.send(response);
+    } catch (err) {
+      res.status(400).send(err);
+    }
+  }
+);
+
+app.post(
+  '/merchant/updateStripeCustomerName',
+  async (req: express.Request, res: express.Response) => {
+    if (!req.headers.authorization) {
+      res
+        .status(403)
+        .json({ error: 'You must be logged in to make this request.' });
+    }
+
+    const tokenId = req.headers.authorization!.split('Bearer ')[1];
+
+    try {
+      const authenticated = await authenticate(tokenId);
+      const response = await updateStripeCustomerNameMerchant(
+        req.body,
+        authenticated.uid
+      );
 
       res.send(response);
     } catch (err) {

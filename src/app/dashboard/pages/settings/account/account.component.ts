@@ -13,6 +13,7 @@ import { map, filter } from 'rxjs/operators';
 import { MerchantService } from 'src/app/merchants/merchants.service';
 import { Merchant } from 'src/app/merchants/merchant.model';
 import { AngularFirestore } from '@angular/fire/firestore';
+import { HelperService } from 'src/app/shared/helper.service';
 
 @Component({
   selector: 'app-account',
@@ -34,7 +35,8 @@ export class AccountComponent implements OnInit, OnDestroy {
     private _cdr: ChangeDetectorRef,
     private store: Store<fromApp.AppState>,
     private merchantService: MerchantService,
-    private db: AngularFirestore
+    private db: AngularFirestore,
+    private helperService: HelperService
   ) {}
 
   ngOnInit(): void {
@@ -59,6 +61,7 @@ export class AccountComponent implements OnInit, OnDestroy {
   }
 
   async onSubmit(accountForm: NgForm) {
+    // LATER: add loading spinner
     console.log(accountForm);
 
     if (!accountForm.valid) {
@@ -79,6 +82,11 @@ export class AccountComponent implements OnInit, OnDestroy {
           lastName,
           businessName,
         });
+
+      await this.helperService.updateStripeCustomerNameMerchant(
+        `${firstName} ${lastName}`,
+        businessName
+      );
 
       //FIX: reconfigure function, cuz this tries to get data from server again, instead of just getting it locally; there's lag on client side
       this.merchantService.getMerchantInfo(this.merchant.merchantUID);

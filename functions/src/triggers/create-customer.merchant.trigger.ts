@@ -13,12 +13,14 @@ export const createStripeCustomerMerchant = functions.firestore
 
     try {
       const merchantUID = data.merchantUID;
+      const businessName = data.businessName;
       const email = (await auth.getUser(merchantUID)).email!;
       const name = `${data.firstName} ${data.lastName}`;
 
       const customer = await getOrCreateCustomerMerchant(
         email,
         name,
+        businessName,
         merchantUID,
         context.eventId
       );

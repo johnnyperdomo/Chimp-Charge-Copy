@@ -36,4 +36,4 @@ export class AppComponent implements OnInit {
 
 //FIX: for forms - user can either click button(best way) or they might click enter on the keyboard, make sure we test for that edge case.
 
-//FIX: all try catch blocks should return something in the try blow, or throw an erorr of some sort
+//FIX: most try catch blocks should return something in the try block, or throw an error of some sort, only if necessary like if a cloud function or something, or expecting a value. i.e. most buttons won't need one

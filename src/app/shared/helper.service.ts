@@ -263,6 +263,35 @@ export class HelperService {
       throw Error(err.message);
     }
   }
+
+  //Customer ============>
+  async updateStripeCustomerEmailMerchant(email: string) {
+    const body = { email };
+
+    try {
+      const response = await this.chimpApi.post(
+        '/merchant/updateStripeCustomerEmail',
+        body
+      );
+      return response;
+    } catch (err) {
+      throw Error(err.message);
+    }
+  }
+
+  async updateStripeCustomerNameMerchant(name: string, businessName: string) {
+    const body = { name, businessName };
+
+    try {
+      const response = await this.chimpApi.post(
+        '/merchant/updateStripeCustomerName',
+        body
+      );
+      return response;
+    } catch (err) {
+      throw Error(err.message);
+    }
+  }
 }
 
 //FIX: some of these error messages may not work. fix .err, .err.message etc...
