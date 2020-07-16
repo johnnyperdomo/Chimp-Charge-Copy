@@ -2,6 +2,8 @@
   *ngIf="isLoggedIn && !isCheckoutSession && !isStripeOAuthConnecting"
 ></app-header>
 
+<app-paywall></app-paywall>
+
 <div
   *ngIf="
     isStripeConnectAuthorized == false &&

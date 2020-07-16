@@ -53,6 +53,7 @@ import { ConnectRedirectComponent } from './dashboard/connect-redirect/connect-r
 import { PayoutsListComponent } from './dashboard/pages/settings/payouts/payout-list/payout-list.component';
 import { BalanceComponent } from './dashboard/pages/settings/payouts/balance/balance.component';
 import { StatsComponent } from './dashboard/pages/payments/stats/stats.component';
+import { PaywallComponent } from './dashboard/paywall/paywall.component';
 
 firebase.initializeApp(environment.firebase);
 
@@ -86,6 +87,7 @@ firebase.initializeApp(environment.firebase);
     PayoutsListComponent,
     BalanceComponent,
     StatsComponent,
+    PaywallComponent,
   ],
   imports: [
     BrowserModule,

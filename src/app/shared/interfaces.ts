@@ -1,3 +1,5 @@
+import Stripe from 'stripe';
+
 export interface CustomerFieldInterface {
   created: number; //unix
   customerID: string;
@@ -37,4 +39,11 @@ export interface PaymentLinkFieldInterface {
   description: string | null;
   amount: number;
   billingInterval: string | null;
+}
+
+export interface MembershipFieldInterface {
+  subscriptionID: string;
+  subscriptionItemID: string;
+  status: Stripe.Subscription.Status;
+  interval: string; //month or year
 }

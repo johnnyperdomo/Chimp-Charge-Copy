@@ -1,0 +1,12 @@
+.special-border {
+  // only show left border on normal screen sizes
+  @media (min-width: 577px) {
+    border-left: 1px solid #e3ebf6 !important;
+  }
+
+  // only show top border on small screen sizes
+  @media (max-width: 576px) {
+    border-top: 1px solid #e3ebf6 !important;
+    padding-top: 16px;
+  }
+}

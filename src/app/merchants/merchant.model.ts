@@ -1,3 +1,5 @@
+import { MembershipFieldInterface } from '../shared/interfaces';
+
 export class Merchant {
   constructor(
     public firstName: string,
@@ -6,6 +8,6 @@ export class Merchant {
     public merchantUID: string,
     public connectID: string = null, //stripe connect account id
     public customerID: string = null, //stripe customer id
-    public membership: any = null //{}
+    public membership: MembershipFieldInterface = null //{}
   ) {}
 }

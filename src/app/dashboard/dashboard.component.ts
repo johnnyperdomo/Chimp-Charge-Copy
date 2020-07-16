@@ -76,6 +76,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }
       });
 
+    // FIX: this merchant sub is fired 3 times, on app load. which causes all other merchant subs to be fired 3 times where this ngstore is subscribed to.
     this.merchantDocSubscription = this.currentUser
       .pipe(
         filter((user) => user !== null),
@@ -83,8 +84,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
           return this.db.doc<Merchant>(`merchants/${user.id}`).valueChanges();
         })
       )
-      .subscribe((data) => {
-        this.merchantService.getMerchantInfo(data.merchantUID);
+      .subscribe((merchant) => {
+        // TODO: listen to merchant sub in paywall component
+        this.merchantService.getMerchantInfo(merchant.merchantUID);
       });
   }
 
@@ -120,3 +122,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 //FIX: on app reload, on payments page, array of firestore data is called multiple times, not supposed to happen. looks like 3 times to me. Fix this
 
 //FIX: when i log out user, and then i log into another user account. the previous user's firestore info is not immediately removed. Make sure all objects are emptied from client side on logout. so that this doesn't happen. Maybe clear objects on ng destroy?
+
+//FIX: when user logouts, ngrx merchant data seems to still be intact and listening to firestore documents. this should not be the case. everything should be reset back to 0, like if no one had ever logged in.
+
+// LATER: make bootstrap containers container-fluid when needed, to have the objects resize with the screen, and not only on breakpoints
