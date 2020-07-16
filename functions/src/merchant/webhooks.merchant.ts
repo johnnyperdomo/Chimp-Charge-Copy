@@ -1,5 +1,9 @@
 import Stripe from 'stripe';
-import { addSubscriptionOnFirestoreMembership } from './subscriptions.merchant';
+import {
+  addSubscriptionOnFirestoreMembership,
+  updateSubscriptionOnFirestoreMembership,
+  cancelSubscriptionOnFirestoreMembership,
+} from './subscriptions.merchant';
 
 export async function handleStripeMerchantWebhooks(event: Stripe.Event) {
   const eventObject = event.data.object;
@@ -11,17 +15,22 @@ export async function handleStripeMerchantWebhooks(event: Stripe.Event) {
 
         await addSubscriptionOnFirestoreMembership(subscriptionCreated);
 
-        return;
+        // TODO: email
 
+        return;
       case 'customer.subscription.updated':
-        //  const subscriptionUpdated = eventObject as Stripe.Subscription;
-        return;
+        const subscriptionUpdated = eventObject as Stripe.Subscription;
 
+        // TODO: email, if new active, or new trialing
+        await updateSubscriptionOnFirestoreMembership(subscriptionUpdated);
+        return;
       case 'customer.subscription.deleted':
-        //   const subscriptionDeleted = eventObject as Stripe.Subscription;
+        const subscriptionDeleted = eventObject as Stripe.Subscription;
+
+        await cancelSubscriptionOnFirestoreMembership(subscriptionDeleted);
+        // TODO: email
 
         return;
-
       default:
         return;
     }
