@@ -260,7 +260,7 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
         return;
     }
   } catch (err) {
-    throw new Error(err);
+    throw Error(err);
   }
 }
 //LATER: charge.dispute.created(send email to merchant to check their stripe account)

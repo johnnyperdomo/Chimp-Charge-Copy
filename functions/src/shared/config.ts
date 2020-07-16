@@ -9,6 +9,9 @@ export const stripe = new Stripe.Stripe(functions.config().stripe.secret, {
 });
 
 export const stripeClientID = functions.config().stripe.clientid;
-export const stripeWebhookSecret = functions.config().stripe.webhooksecret;
+export const stripeWebhookConnectSecret = functions.config().stripe
+  .webhookconnectsecret;
+export const stripeWebhookMerchantSecret = functions.config().stripe
+  .webhookmerchantsecret;
 
 //TODO: Sendgrid ====================>

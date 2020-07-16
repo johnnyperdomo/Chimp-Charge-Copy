@@ -4,7 +4,12 @@ import * as cors from 'cors';
 import * as paymentLinks from './connect/payment-links.connect';
 import * as connectAuth from './connect/auth.connect';
 import * as admin from 'firebase-admin';
-import { stripeClientID, stripe, stripeWebhookSecret } from './shared/config';
+import {
+  stripeClientID,
+  stripe,
+  stripeWebhookConnectSecret,
+  stripeWebhookMerchantSecret,
+} from './shared/config';
 import * as qs from 'querystring';
 import { createPaymentIntent } from './connect/onetime-payments.connect';
 import {
@@ -19,6 +24,7 @@ import {
   updateStripeCustomerEmailMerchant,
   updateStripeCustomerNameMerchant,
 } from './merchant/customers.merchant';
+import { handleStripeMerchantWebhooks } from './merchant/webhooks.merchant';
 
 const app = express();
 const runtimeOpts: functions.RuntimeOptions = {
@@ -258,7 +264,8 @@ app.post(
   }
 );
 
-//Webhooks ==================>
+// Webhooks ==================>
+// Connect ==================+>
 app.post('/connect/stripeWebhooks', async (req: any, res: express.Response) => {
   if (!req.headers['stripe-signature']) {
     return;
@@ -267,11 +274,10 @@ app.post('/connect/stripeWebhooks', async (req: any, res: express.Response) => {
   const signature = req.headers['stripe-signature'];
   let event;
   try {
-    //  const subscription = await createSubscription(req.body);
     event = stripe.webhooks.constructEvent(
       req['rawBody'],
       signature,
-      stripeWebhookSecret
+      stripeWebhookConnectSecret
     );
 
     res.send({ received: true });
@@ -290,6 +296,41 @@ app.post('/connect/stripeWebhooks', async (req: any, res: express.Response) => {
     throw new functions.https.HttpsError('unknown', err);
   }
 });
+
+// Merchant ================>
+app.post(
+  '/merchant/stripeWebhooks',
+  async (req: any, res: express.Response) => {
+    if (!req.headers['stripe-signature']) {
+      return;
+    }
+
+    const signature = req.headers['stripe-signature'];
+    let event;
+    try {
+      event = stripe.webhooks.constructEvent(
+        req['rawBody'],
+        signature,
+        stripeWebhookMerchantSecret
+      );
+
+      res.send({ received: true });
+    } catch (err) {
+      res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    if (!event) {
+      return;
+    }
+
+    try {
+      await handleStripeMerchantWebhooks(event);
+      return;
+    } catch (err) {
+      throw new functions.https.HttpsError('unknown', err);
+    }
+  }
+);
 
 //Pubsub ==================>
 //used to awaken cloud function every minute from chron scheduler => eliminate cold start time

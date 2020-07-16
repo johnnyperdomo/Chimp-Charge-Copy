@@ -1,3 +1,5 @@
+import Stripe from 'stripe';
+
 //Customers =========>
 export type customerFieldType = {
   name: string | null;
@@ -26,6 +28,13 @@ export type planFieldType = {
   productID: string;
   created: number; //unix
 };
+
+export interface MembershipFieldType {
+  subscriptionID: string;
+  subscriptionItemID: string;
+  status: Stripe.Subscription.Status;
+  interval: string; //month or year
+}
 
 //Webhooks ==============>
 export type stripeEventType =
