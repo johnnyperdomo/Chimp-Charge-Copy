@@ -5,6 +5,13 @@
         Manage your subscription, billing, and payment settings.
       </p>
       <div class="col-6 col-md-4 mt-4">
+        <div
+          *ngIf="isBillingPortalLoading"
+          class="row justify-content-center mb-3"
+        >
+          <div class="spinner-border text-primary" role="status"></div>
+        </div>
+
         <button
           class="btn btn-block btn-lg btn-primary"
           (click)="onCreateBillingPortalSession()"
