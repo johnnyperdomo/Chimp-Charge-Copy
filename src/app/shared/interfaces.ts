@@ -46,5 +46,4 @@ export interface MembershipFieldInterface {
   subscriptionItemID: string;
   status: Stripe.Subscription.Status;
   interval: string; //month or year
-  latestInvoiceID: string;
 }
