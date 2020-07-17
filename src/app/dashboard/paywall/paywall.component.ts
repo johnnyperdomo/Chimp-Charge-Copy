@@ -27,6 +27,11 @@ export class PaywallComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    $('#signupModal,#expiredModal,#cancelledModal').modal({
+      show: false,
+      backdrop: 'static',
+    });
+
     this.merchantSub = this.store
       .select('merchant')
       .pipe(
@@ -52,23 +57,32 @@ export class PaywallComponent implements OnInit, OnDestroy {
       membership.status === 'incomplete_expired'
     ) {
       // signup modal
-      this.hideModals();
+
+      // don't close if same modal is already open
+      if (!$('#signupModal').is(':visible')) {
+        this.hideAllModals();
+      }
 
       this.showSignupModal();
-      console.log('signup');
     } else if (
       membership.status === 'past_due' ||
       membership.status === 'unpaid'
     ) {
       // expired modal
-      this.hideModals();
 
-      console.log('expired');
+      // don't close if same modal is already open
+      if (!$('#expiredModal').is(':visible')) {
+        this.hideAllModals();
+      }
+
       this.showExpiredModal();
     } else if (membership.status === 'canceled') {
       // cancelled modal
-      console.log('cancelled');
-      this.hideModals();
+
+      // don't close if same modal is already open
+      if (!$('#cancelledModal').is(':visible')) {
+        this.hideAllModals();
+      }
 
       this.showCancelledModal();
     } else if (
@@ -76,33 +90,8 @@ export class PaywallComponent implements OnInit, OnDestroy {
       membership.status === 'trialing'
     ) {
       // no modal => success
-      console.log('none');
-      this.hideModals();
+      this.hideAllModals();
     }
-  }
-
-  // jquery functions to open modals in html
-
-  //TODO: check if multiple shows on a modal already opened causes issues
-  //TODO: outside click should be disabled
-  showSignupModal(): void {
-    $('#signupModal').modal({ backdrop: 'static', keyboard: false });
-    $('#signupModal').modal('show');
-  }
-
-  showExpiredModal(): void {
-    $('#expiredModal').modal({ backdrop: 'static', keyboard: false });
-    $('#expiredModal').modal('show');
-  }
-
-  showCancelledModal(): void {
-    $('#cancelledModal').modal({ backdrop: 'static', keyboard: false });
-    $('#cancelledModal').modal('show');
-  }
-
-  //TODO: hide all modals
-  hideModals(): void {
-    $('.modal').modal('hide');
   }
 
   async onCreateBillingPortalSession() {
@@ -121,6 +110,52 @@ export class PaywallComponent implements OnInit, OnDestroy {
         'Problem connecting to stripe, please try again. Error: ' + err.error
       );
     }
+  }
+
+  // jquery
+
+  //TODO: check if multiple shows on a modal already opened causes issues
+  showSignupModal(): void {
+    // $('#signupModal').modal({ backdrop: 'static', keyboard: false });
+    $('#signupModal').modal('show');
+  }
+
+  showExpiredModal(): void {
+    // $('#expiredModal').modal({
+    //   backdrop: 'static',
+    //   keyboard: false,
+    //   show: true,
+    // });
+    $('#expiredModal').modal('show');
+  }
+
+  showCancelledModal(): void {
+    //  $('#cancelledModal').modal({ backdrop: 'static', keyboard: false });
+    $('#cancelledModal').modal('show');
+  }
+
+  hideSignupModal(): void {
+    //  $('.modal').modal({ backdrop: 'static', keyboard: false });
+    //  $('.modal').modal('hide');
+    $('#signupModal').modal('hide');
+  }
+
+  //TODO: hide all modals
+  hideExpiredModal(): void {
+    //  $('.modal').modal({ backdrop: 'static', keyboard: false });
+    //  $('.modal').modal('hide');
+    $('#expiredModal').modal('hide');
+  }
+
+  hideCancelledModal(): void {
+    //  $('.modal').modal({ backdrop: 'static', keyboard: false });
+    //  $('.modal').modal('hide');
+    $('#cancelledModal').modal('hide');
+  }
+
+  hideAllModals(): void {
+    //  $('.modal').modal({ backdrop: 'static', keyboard: false });
+    $('.modal').modal('hide');
   }
 
   ngOnDestroy() {
