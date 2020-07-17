@@ -34,6 +34,7 @@ export interface MembershipFieldType {
   subscriptionItemID: string;
   status: Stripe.Subscription.Status;
   interval: string; //month or year
+  latestInvoiceID: string;
 }
 
 //Webhooks ==============>

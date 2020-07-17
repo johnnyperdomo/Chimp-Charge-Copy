@@ -37,6 +37,7 @@ export async function addSubscriptionOnFirestoreMembership(
       subscriptionItemID: subscription.items.data[0].id,
       status: subscription.status,
       interval: subscription.items.data[0].plan.interval,
+      latestInvoiceID: subscription.latest_invoice as string,
     };
 
     return merchantRef.update({
@@ -69,6 +70,7 @@ export async function updateSubscriptionOnFirestoreMembership(
       subscriptionItemID: subscription.items.data[0].id,
       status: subscription.status,
       interval: subscription.items.data[0].plan.interval,
+      latestInvoiceID: subscription.latest_invoice as string,
     };
 
     return merchantRef.update({
@@ -112,6 +114,7 @@ export async function cancelSubscriptionOnFirestoreMembership(
       subscriptionItemID: subscription.items.data[0].id,
       status: subscription.status,
       interval: subscription.items.data[0].plan.interval,
+      latestInvoiceID: subscription.latest_invoice as string,
     };
 
     return merchantRef.update({
