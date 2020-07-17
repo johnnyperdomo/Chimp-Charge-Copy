@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 import * as fromApp from 'src/app/shared/app-store/app.reducer';
 import { MembershipFieldInterface } from 'src/app/shared/interfaces';
 import { Merchant } from 'src/app/merchants/merchant.model';
+import { HelperService } from 'src/app/shared/helper.service';
 
 // This lets me use jquery
 declare var $: any;
@@ -18,7 +19,12 @@ export class PaywallComponent implements OnInit, OnDestroy {
   merchantSub: Subscription;
   currentMerchant: Merchant = null;
 
-  constructor(private store: Store<fromApp.AppState>) {}
+  isBillingPortalLoading = false;
+
+  constructor(
+    private store: Store<fromApp.AppState>,
+    private helperService: HelperService
+  ) {}
 
   ngOnInit(): void {
     this.merchantSub = this.store
@@ -77,7 +83,8 @@ export class PaywallComponent implements OnInit, OnDestroy {
 
   // jquery functions to open modals in html
 
-  //TODO: check if multpiple shows on a modal already opened causes issues
+  //TODO: check if multiple shows on a modal already opened causes issues
+  //TODO: outside click should be disabled
   showSignupModal(): void {
     $('#signupModal').modal({ backdrop: 'static', keyboard: false });
     $('#signupModal').modal('show');
@@ -96,6 +103,24 @@ export class PaywallComponent implements OnInit, OnDestroy {
   //TODO: hide all modals
   hideModals(): void {
     $('.modal').modal('hide');
+  }
+
+  async onCreateBillingPortalSession() {
+    try {
+      this.isBillingPortalLoading = true;
+      const portalSession: any = await this.helperService.createBillingPortalSession();
+      const portalURL = portalSession.url;
+
+      window.open(portalURL);
+
+      this.isBillingPortalLoading = false;
+      return portalSession;
+    } catch (err) {
+      this.isBillingPortalLoading = false;
+      alert(
+        'Problem connecting to stripe, please try again. Error: ' + err.error
+      );
+    }
   }
 
   ngOnDestroy() {

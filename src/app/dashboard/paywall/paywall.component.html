@@ -60,7 +60,18 @@
           <div class="row">
             <!-- Update Card Column -->
             <div class="col-sm-6 align-self-center pl-0">
-              <button class="btn btn-block btn-primary mb-3" type="submit">
+              <div
+                *ngIf="isBillingPortalLoading"
+                class="row justify-content-center mb-3"
+              >
+                <div class="spinner-border text-primary" role="status"></div>
+              </div>
+
+              <button
+                class="btn btn-block btn-primary mb-3"
+                (click)="onCreateBillingPortalSession()"
+                type="submit"
+              >
                 Update Card
               </button>
 
