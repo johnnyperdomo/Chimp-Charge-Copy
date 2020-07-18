@@ -123,6 +123,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
 //FIX: when i log out user, and then i log into another user account. the previous user's firestore info is not immediately removed. Make sure all objects are emptied from client side on logout. so that this doesn't happen. Maybe clear objects on ng destroy?
 
-//FIX: when user logouts, ngrx merchant data seems to still be intact and listening to firestore documents. this should not be the case. everything should be reset back to 0, like if no one had ever logged in.
+//FIX: when user logouts, ngrx merchant data seems to still be intact and listening to firestore documents, so if new user logs in, it listens to the previous users merchant data. this should not be the case. everything should be reset back to 0, like if no one had ever logged in.
 
 // LATER: make bootstrap containers container-fluid when needed, to have the objects resize with the screen, and not only on breakpoints

@@ -25,6 +25,7 @@ import {
   updateStripeCustomerNameMerchant,
 } from './merchant/customers.merchant';
 import { handleStripeMerchantWebhooks } from './merchant/webhooks.merchant';
+import { reactivateSubscription } from './merchant/subscriptions.merchant';
 
 const app = express();
 const runtimeOpts: functions.RuntimeOptions = {
@@ -449,6 +450,34 @@ app.post(
     try {
       const authenticated = await authenticate(tokenId);
       const response = await updateStripeCustomerNameMerchant(
+        req.body,
+        authenticated.uid
+      );
+
+      res.send(response);
+    } catch (err) {
+      res.status(400).send(err);
+    }
+  }
+);
+
+//Subscriptions ============>
+
+// when user reactivates subscription from cancelled state
+app.post(
+  '/merchant/reactivateSubscription',
+  async (req: express.Request, res: express.Response) => {
+    if (!req.headers.authorization) {
+      res
+        .status(403)
+        .json({ error: 'You must be logged in to make this request.' });
+    }
+
+    const tokenId = req.headers.authorization!.split('Bearer ')[1];
+
+    try {
+      const authenticated = await authenticate(tokenId);
+      const response = await reactivateSubscription(
         req.body,
         authenticated.uid
       );

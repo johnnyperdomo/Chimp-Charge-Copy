@@ -14,16 +14,56 @@
         <div class="container-fluid">
           <div class="row">
             <!-- Card Column -->
-            <div class="col-sm-6">
-              left column
+            <div class="col-sm-7 pl-0">
+              <h4 class="text-center">Add a debit/credit card</h4>
+
+              <div>
+                <div class="form-control mt-3">
+                  <div #signupCardElement class="mt-1">
+                    <!-- A Stripe Element will be inserted here. -->
+                  </div>
+                </div>
+
+                <div class="help-block-invalid" *ngIf="cardErrors != null">
+                  {{ cardErrors }}
+                </div>
+
+                <div
+                  class="help-block-invalid form-group text-center"
+                  *ngIf="paymentResponseError"
+                >
+                  {{ paymentResponseError }}
+                </div>
+
+                <div
+                  *ngIf="isPaymentResponseLoading"
+                  class="row justify-content-center my-3"
+                >
+                  <div class="spinner-border text-primary" role="status"></div>
+                </div>
+
+                <!-- TODO: Button -->
+
+                <button
+                  class="btn btn-block btn-primary my-3"
+                  type="button"
+                  (click)="onCreateTrialSubscription()"
+                  [disabled]="
+                    isCardPaymentComplete == false ||
+                    isPaymentResponseLoading == true
+                  "
+                >
+                  Get started
+                </button>
+              </div>
             </div>
 
             <!-- Card Reason Column -->
-            <div class="col-sm-6 special-border pr-0">
+            <div class="col-sm-5 special-border pr-0">
               <h4 class="text-center">Why do you need my card?</h4>
               <p class="small text-secondary">
-                Your credit/debit card helps us verify you and your business to
-                help prevent financial crimes.
+                Your credit/debit card helps us to verify if you and your
+                business are legitimate.
               </p>
               <p class="small text-secondary">
                 You will not be charged if you cancel before your trial expires
@@ -58,31 +98,52 @@
       <div class="modal-body">
         <div class="container-fluid">
           <div class="row">
-            <!-- Update Card Column -->
-            <div class="col-sm-6 align-self-center pl-0">
-              <div
-                *ngIf="isBillingPortalLoading"
-                class="row justify-content-center mb-3"
-              >
-                <div class="spinner-border text-primary" role="status"></div>
+            <!-- Card Column -->
+            <div class="col-sm-7 pl-0">
+              <h4 class="text-center">Add a debit/credit card</h4>
+
+              <div>
+                <div class="form-control mt-3">
+                  <div #expiredCardElement class="mt-1">
+                    <!-- A Stripe Element will be inserted here. -->
+                  </div>
+                </div>
+
+                <div class="help-block-invalid" *ngIf="cardErrors != null">
+                  {{ cardErrors }}
+                </div>
+
+                <div
+                  class="help-block-invalid form-group text-center"
+                  *ngIf="paymentResponseError"
+                >
+                  {{ paymentResponseError }}
+                </div>
+
+                <div
+                  *ngIf="isPaymentResponseLoading"
+                  class="row justify-content-center my-3"
+                >
+                  <div class="spinner-border text-primary" role="status"></div>
+                </div>
+
+                <!-- TODO: Button -->
+
+                <button
+                  class="btn btn-block btn-primary my-3"
+                  type="button"
+                  [disabled]="
+                    isCardPaymentComplete == false ||
+                    isPaymentResponseLoading == true
+                  "
+                >
+                  Update card
+                </button>
               </div>
-
-              <button
-                class="btn btn-block btn-primary mb-3"
-                (click)="onCreateBillingPortalSession()"
-                type="submit"
-              >
-                Update Card
-              </button>
-
-              <!-- TODO: add loading spinner  on button update card-->
-              <p class="small text-center text-muted">
-                You will be redirected to a secure billing portal.
-              </p>
             </div>
 
             <!-- Card Reason Column -->
-            <div class="col-sm-6 special-border pr-0">
+            <div class="col-sm-5 special-border pr-0">
               <h3 class="text-center">Update your credit card</h3>
               <p class="small text-secondary">
                 Unfortunately, there seems to be a problem with your card and we
@@ -121,12 +182,51 @@
         <div class="container-fluid">
           <div class="row">
             <!-- Card Column -->
-            <div class="col-sm-6">
-              left column
+            <div class="col-sm-7 pl-0">
+              <h4 class="text-center">Add a debit/credit card</h4>
+
+              <div>
+                <div class="form-control mt-3">
+                  <div #cancelledCardElement class="mt-1">
+                    <!-- A Stripe Element will be inserted here. -->
+                  </div>
+                </div>
+
+                <div class="help-block-invalid" *ngIf="cardErrors != null">
+                  {{ cardErrors }}
+                </div>
+
+                <div
+                  class="help-block-invalid form-group text-center"
+                  *ngIf="paymentResponseError"
+                >
+                  {{ paymentResponseError }}
+                </div>
+
+                <div
+                  *ngIf="isPaymentResponseLoading"
+                  class="row justify-content-center my-3"
+                >
+                  <div class="spinner-border text-primary" role="status"></div>
+                </div>
+
+                <!-- TODO: Button -->
+                <button
+                  class="btn btn-block btn-primary my-3"
+                  type="button"
+                  (click)="onReactivateSubscription()"
+                  [disabled]="
+                    isCardPaymentComplete == false ||
+                    isPaymentResponseLoading == true
+                  "
+                >
+                  Reactivate
+                </button>
+              </div>
             </div>
 
             <!-- Card Reason Column -->
-            <div class="col-sm-6 special-border pr-0">
+            <div class="col-sm-5 special-border pr-0">
               <h4 class="text-center">Reactivate your subscription</h4>
               <p class="small text-secondary">
                 Looks like your subscription was cancelled.

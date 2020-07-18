@@ -1,4 +1,10 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
+} from '@angular/core';
 import { Subscription } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
@@ -6,9 +12,13 @@ import * as fromApp from 'src/app/shared/app-store/app.reducer';
 import { MembershipFieldInterface } from 'src/app/shared/interfaces';
 import { Merchant } from 'src/app/merchants/merchant.model';
 import { HelperService } from 'src/app/shared/helper.service';
+import { environment } from 'src/environments/environment';
+import { v4 as uuidv4 } from 'uuid';
+import * as firebase from 'firebase/app';
 
 // This lets me use jquery
 declare var $: any;
+declare var Stripe; // : stripe.StripeStatic;
 
 @Component({
   selector: 'app-paywall',
@@ -16,10 +26,29 @@ declare var $: any;
   styleUrls: ['./paywall.component.scss'],
 })
 export class PaywallComponent implements OnInit, OnDestroy {
-  merchantSub: Subscription;
-  currentMerchant: Merchant = null;
+  @ViewChild('signupCardElement', { static: true })
+  signupCardElement: ElementRef;
+  @ViewChild('expiredCardElement', { static: true })
+  expiredCardElement: ElementRef;
+  @ViewChild('cancelledCardElement', { static: true })
+  cancelledCardElement: ElementRef;
 
-  isBillingPortalLoading = false;
+  merchantSub: Subscription;
+  currentMerchant: Merchant;
+  currentUser: firebase.User; //from auth
+
+  isBillingPortalLoading: boolean = false;
+
+  chargeIdempotencyKey = uuidv4(); //used to prevent duplicate charges;
+  newCustomerIdempotencyKey = uuidv4(); //rare that customer is not already created
+
+  card;
+  cardErrors;
+  stripe;
+
+  isCardPaymentComplete: boolean = false; //successful card input
+  isPaymentResponseLoading: boolean = false;
+  paymentResponseError: string;
 
   constructor(
     private store: Store<fromApp.AppState>,
@@ -27,10 +56,13 @@ export class PaywallComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    // to disable the closing of modal on outside click with jquery
     $('#signupModal,#expiredModal,#cancelledModal').modal({
       show: false,
       backdrop: 'static',
     });
+
+    this.initStripeElements();
 
     this.merchantSub = this.store
       .select('merchant')
@@ -44,6 +76,7 @@ export class PaywallComponent implements OnInit, OnDestroy {
         if (merchant) {
           this.currentMerchant = merchant;
           console.log(merchant);
+          this.currentUser = firebase.auth().currentUser;
 
           this.determinePaywallType(merchant.membership);
         }
@@ -51,11 +84,7 @@ export class PaywallComponent implements OnInit, OnDestroy {
   }
 
   determinePaywallType(membership: MembershipFieldInterface) {
-    if (
-      !membership ||
-      membership.status === 'incomplete' ||
-      membership.status === 'incomplete_expired'
-    ) {
+    if (!membership) {
       // signup modal
 
       // don't close if same modal is already open
@@ -94,71 +123,172 @@ export class PaywallComponent implements OnInit, OnDestroy {
     }
   }
 
-  async onCreateBillingPortalSession() {
+  initStripeElements() {
+    this.stripe = Stripe(environment.stripePublishableKey);
+    const elements = this.stripe.elements();
+
+    this.card = elements.create('card');
+
+    this.card.addEventListener('change', (event) => {
+      const error = event.error;
+      this.cardErrors = error && error.message;
+      this.isCardPaymentComplete = event.complete ? true : false;
+    });
+  }
+
+  // TODO:
+  // async onCreateBillingPortalSession() {
+  //   try {
+  //     this.isBillingPortalLoading = true;
+  //     const portalSession: any = await this.helperService.createBillingPortalSession();
+  //     const portalURL = portalSession.url;
+
+  //     window.open(portalURL);
+
+  //     this.isBillingPortalLoading = false;
+  //     return portalSession;
+  //   } catch (err) {
+  //     this.isBillingPortalLoading = false;
+  //     alert(
+  //       'Problem connecting to stripe, please try again. Error: ' + err.error
+  //     );
+  //   }
+  // }
+
+  async onUpdateCard() {
+    //TODO: update the card, and then manually attempt to pay the invoice
+  }
+
+  async onCreateTrialSubscription() {
     try {
-      this.isBillingPortalLoading = true;
-      const portalSession: any = await this.helperService.createBillingPortalSession();
-      const portalURL = portalSession.url;
+      //TODO
+    } catch (error) {
+      this.paymentResponseError = error.message;
+      this.isPaymentResponseLoading = false;
 
-      window.open(portalURL);
+      this.generateNewIdempotenceKeys();
 
-      this.isBillingPortalLoading = false;
-      return portalSession;
-    } catch (err) {
-      this.isBillingPortalLoading = false;
-      alert(
-        'Problem connecting to stripe, please try again. Error: ' + err.error
-      );
+      setTimeout(() => {
+        this.paymentResponseError = null;
+      }, 5000);
     }
   }
 
-  // jquery
+  async onReactivateSubscription() {
+    this.isPaymentResponseLoading = true;
 
-  //TODO: check if multiple shows on a modal already opened causes issues
+    try {
+      if (!this.currentMerchant || !this.currentUser) {
+        throw Error('Credentials not complete. Please try reloading page.');
+      }
+
+      const paymentMethod = await this.stripe.createPaymentMethod({
+        type: 'card',
+        card: this.card,
+        billing_details: {
+          name: `${this.currentMerchant.firstName} ${this.currentMerchant.lastName}`,
+          email: this.currentUser.email,
+        },
+      });
+
+      const subscription: any = await this.helperService.reactivateMerchantSubscription(
+        paymentMethod.paymentMethod.id,
+        this.chargeIdempotencyKey
+      );
+
+      console.log(subscription);
+
+      if (subscription.error) {
+        throw Error(subscription.error);
+      }
+
+      const latest_invoice = subscription.latest_invoice;
+
+      if (latest_invoice.payment_intent) {
+        const { client_secret, status } = latest_invoice.payment_intent;
+
+        if (status === 'requires_action') {
+          const confirmSubscription = await this.stripe.confirmCardPayment(
+            client_secret,
+            {
+              setup_future_usage: 'off_session', //save card for future off_session payments
+              receipt_email: this.currentUser.email,
+            }
+          );
+
+          console.log(confirmSubscription);
+
+          if (confirmSubscription.error) {
+            throw Error(confirmSubscription.error.message);
+          }
+
+          console.log('latest, incoice, ', latest_invoice);
+
+          this.isPaymentResponseLoading = false;
+          return; //paymentIntent
+        }
+      }
+
+      this.isPaymentResponseLoading = true;
+      return; //payment_intent
+    } catch (error) {
+      console.log(error.message);
+
+      this.paymentResponseError = error.message;
+      this.isPaymentResponseLoading = false;
+
+      this.generateNewIdempotenceKeys();
+
+      setTimeout(() => {
+        this.paymentResponseError = null;
+      }, 5000);
+    }
+  }
+
+  generateNewIdempotenceKeys() {
+    //on error; they are passed to stripe but transaction. not completed
+    this.chargeIdempotencyKey = uuidv4();
+    this.newCustomerIdempotencyKey = uuidv4();
+  }
+
+  // jquery
   showSignupModal(): void {
-    // $('#signupModal').modal({ backdrop: 'static', keyboard: false });
+    this.card.mount(this.signupCardElement.nativeElement);
     $('#signupModal').modal('show');
   }
 
   showExpiredModal(): void {
-    // $('#expiredModal').modal({
-    //   backdrop: 'static',
-    //   keyboard: false,
-    //   show: true,
-    // });
+    this.card.mount(this.expiredCardElement.nativeElement);
     $('#expiredModal').modal('show');
   }
 
   showCancelledModal(): void {
-    //  $('#cancelledModal').modal({ backdrop: 'static', keyboard: false });
+    this.card.mount(this.cancelledCardElement.nativeElement);
     $('#cancelledModal').modal('show');
   }
 
-  hideSignupModal(): void {
-    //  $('.modal').modal({ backdrop: 'static', keyboard: false });
-    //  $('.modal').modal('hide');
-    $('#signupModal').modal('hide');
-  }
-
-  //TODO: hide all modals
-  hideExpiredModal(): void {
-    //  $('.modal').modal({ backdrop: 'static', keyboard: false });
-    //  $('.modal').modal('hide');
-    $('#expiredModal').modal('hide');
-  }
-
-  hideCancelledModal(): void {
-    //  $('.modal').modal({ backdrop: 'static', keyboard: false });
-    //  $('.modal').modal('hide');
-    $('#cancelledModal').modal('hide');
-  }
-
   hideAllModals(): void {
-    //  $('.modal').modal({ backdrop: 'static', keyboard: false });
+    // set back to initial state
+    this.card.unmount();
+    this.cardErrors = null;
+    this.isCardPaymentComplete = false;
+    this.paymentResponseError = null;
+    this.isPaymentResponseLoading = false;
+
     $('.modal').modal('hide');
   }
 
   ngOnDestroy() {
-    this.currentMerchant = null;
+    if (this.currentMerchant) {
+      this.currentMerchant = null;
+    }
+
+    if (this.merchantSub) {
+      this.merchantSub.unsubscribe();
+    }
+
+    if (this.currentUser) {
+      this.currentUser = null;
+    }
   }
 }

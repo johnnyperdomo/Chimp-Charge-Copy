@@ -115,3 +115,20 @@ export async function updateStripeCustomerNameMerchant(
     throw Error();
   }
 }
+
+export async function updateCustomerDefaultPaymentMethodMerchant(
+  customerID: string,
+  paymentMethodID: string
+) {
+  try {
+    const updatedCustomer = await stripe.customers.update(customerID, {
+      invoice_settings: {
+        default_payment_method: paymentMethodID,
+      },
+    });
+
+    return updatedCustomer;
+  } catch (error) {
+    throw Error('stripe: updateCustomerDefaultPaymentMethodMerchant: ' + error);
+  }
+}

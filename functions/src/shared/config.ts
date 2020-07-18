@@ -14,4 +14,7 @@ export const stripeWebhookConnectSecret = functions.config().stripe
 export const stripeWebhookMerchantSecret = functions.config().stripe
   .webhookmerchantsecret;
 
+//Stripe merchant
+export const monthlyProPriceID = functions.config().stripe.monthlypropriceid;
+
 //TODO: Sendgrid ====================>

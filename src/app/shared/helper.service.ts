@@ -292,6 +292,21 @@ export class HelperService {
       throw Error(err.message);
     }
   }
+
+  // Subscriptions ==============>
+
+  async reactivateMerchantSubscription(
+    paymentMethodID: string,
+    chargeIdempotencyKey: string
+  ) {
+    const body = { paymentMethodID, chargeIdempotencyKey };
+
+    try {
+      return await this.chimpApi.post('/merchant/reactivateSubscription', body);
+    } catch (error) {
+      throw Error(error.message);
+    }
+  }
 }
 
 //FIX: some of these error messages may not work. fix .err, .err.message etc...

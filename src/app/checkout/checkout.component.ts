@@ -130,7 +130,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         catchError((err) => {
           this.checkoutFormRenderingError = err;
           this.isCheckoutFormLoading = false;
-          this.generateNewIdempotenceKey();
+          this.generateNewIdempotenceKeys();
 
           return empty();
         })
@@ -169,7 +169,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     });
   }
 
-  generateNewIdempotenceKey() {
+  generateNewIdempotenceKeys() {
     //on error; they are passed to stripe but transaction. not completed
     this.chargeIdempotencyKey = uuidv4();
     this.newCustomerIdempotencyKey = uuidv4();
@@ -226,7 +226,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       this.paymentResponseError = err.message;
       this.isPaymentResponseLoading = false;
 
-      this.generateNewIdempotenceKey();
+      this.generateNewIdempotenceKeys();
 
       setTimeout(() => {
         this.paymentResponseError = null;
