@@ -80,12 +80,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.merchantDocSubscription = this.currentUser
       .pipe(
         filter((user) => user !== null),
+        filter((merchant) => merchant !== null),
         mergeMap((user) => {
           return this.db.doc<Merchant>(`merchants/${user.id}`).valueChanges();
         })
       )
       .subscribe((merchant) => {
-        // TODO: listen to merchant sub in paywall component
         this.merchantService.getMerchantInfo(merchant.merchantUID);
       });
   }
@@ -118,6 +118,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
   }
 }
+
+// TODO: // FIX : ERROR TypeError: Cannot read property 'merchantUID' of undefined(on user signup)
 
 //FIX: on app reload, on payments page, array of firestore data is called multiple times, not supposed to happen. looks like 3 times to me. Fix this
 
