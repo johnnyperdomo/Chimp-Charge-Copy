@@ -136,29 +136,6 @@ export class PaywallComponent implements OnInit, OnDestroy {
     });
   }
 
-  // TODO:
-  // async onCreateBillingPortalSession() {
-  //   try {
-  //     this.isBillingPortalLoading = true;
-  //     const portalSession: any = await this.helperService.createBillingPortalSession();
-  //     const portalURL = portalSession.url;
-
-  //     window.open(portalURL);
-
-  //     this.isBillingPortalLoading = false;
-  //     return portalSession;
-  //   } catch (err) {
-  //     this.isBillingPortalLoading = false;
-  //     alert(
-  //       'Problem connecting to stripe, please try again. Error: ' + err.error
-  //     );
-  //   }
-  // }
-
-  async onUpdateCard() {
-    //TODO: update the card, and then manually attempt to pay the invoice
-  }
-
   async onCreateTrialSubscription() {
     this.isPaymentResponseLoading = true;
     this.generateNewIdempotenceKeys();
@@ -176,10 +153,47 @@ export class PaywallComponent implements OnInit, OnDestroy {
         this.newCustomerIdempotencyKey
       );
 
-      return await this.processStripeSubscription(subscription);
-
-      //  return await this.processStripeSubscription(subscription);
+      return await this.processStripeSubscription(
+        subscription,
+        paymentMethod.paymentMethod.id
+      );
     } catch (error) {
+      this.paymentResponseError = error.message;
+      this.isPaymentResponseLoading = false;
+
+      this.generateNewIdempotenceKeys();
+
+      setTimeout(() => {
+        this.paymentResponseError = null;
+      }, 5000);
+    }
+  }
+
+  //update card and attempt to pay latest invoice
+  async onUpdateCard() {
+    this.isPaymentResponseLoading = true;
+    this.generateNewIdempotenceKeys();
+
+    try {
+      if (!this.currentMerchant || !this.currentUser) {
+        throw Error('Credentials not complete. Please try reloading page.');
+      }
+
+      const paymentMethod = await this.createPaymentMethod();
+
+      const subscription: any = await this.helperService.retrieveLatestPaymentIntent(
+        paymentMethod.paymentMethod.id,
+        this.chargeIdempotencyKey,
+        this.newCustomerIdempotencyKey
+      );
+
+      return await this.processStripeSubscription(
+        subscription,
+        paymentMethod.paymentMethod.id
+      );
+    } catch (error) {
+      console.log(error.message);
+
       this.paymentResponseError = error.message;
       this.isPaymentResponseLoading = false;
 
@@ -208,10 +222,11 @@ export class PaywallComponent implements OnInit, OnDestroy {
         this.newCustomerIdempotencyKey
       );
 
-      return await this.processStripeSubscription(subscription);
+      return await this.processStripeSubscription(
+        subscription,
+        paymentMethod.paymentMethod.id
+      );
     } catch (error) {
-      console.log(error.message);
-
       this.paymentResponseError = error.message;
       this.isPaymentResponseLoading = false;
 
@@ -238,10 +253,8 @@ export class PaywallComponent implements OnInit, OnDestroy {
     }
   }
 
-  async processStripeSubscription(subscription: any) {
+  async processStripeSubscription(subscription: any, paymentMethodID: string) {
     try {
-      console.log(subscription);
-
       if (subscription.error) {
         throw Error(subscription.error);
       }
@@ -251,30 +264,28 @@ export class PaywallComponent implements OnInit, OnDestroy {
       if (latest_invoice.payment_intent) {
         const { client_secret, status } = latest_invoice.payment_intent;
 
-        if (status === 'requires_action') {
+        if (
+          status === 'requires_action' ||
+          status === 'requires_payment_method'
+        ) {
           const confirmSubscription = await this.stripe.confirmCardPayment(
             client_secret,
             {
+              payment_method: paymentMethodID,
               setup_future_usage: 'off_session', //save card for future off_session payments
               receipt_email: this.currentUser.email,
             }
           );
 
-          console.log(confirmSubscription);
-
           if (confirmSubscription.error) {
             throw Error(confirmSubscription.error.message);
           }
-
-          console.log('latest, invoice, ', latest_invoice);
-
-          this.isPaymentResponseLoading = false;
-          return; //paymentIntent
         }
+      } else {
+        throw Error('unknown error, try again.');
       }
 
-      this.isPaymentResponseLoading = true;
-      return; //payment_intent
+      return;
     } catch (error) {
       throw Error(error);
     }

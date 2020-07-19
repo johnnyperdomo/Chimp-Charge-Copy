@@ -87,6 +87,74 @@ export async function startTrialSubscription(data: any, userID: string) {
   }
 }
 
+//when user updates card on paywall, retrieve latest payment intent of subscription to attempt to pay the latest invoice.
+export async function retrieveLatestPaymentIntent(data: any, userID: string) {
+  const paymentMethodID: string = data.paymentMethodID;
+  // const chargeIdempotencyKey: string = data.chargeIdempotencyKey;
+  const newCustomerIdempotencyKey: string = data.newCustomerIdempotencyKey;
+
+  try {
+    const merchantRef = db.doc(`merchants/${userID}`);
+    const merchantSnap = await merchantRef.get();
+    const merchantData = merchantSnap.data()!;
+
+    let stripeCustomerID = merchantData.customerID;
+
+    const subscriptionID =
+      merchantData.membership && merchantData.membership.subscriptionID;
+
+    if (!subscriptionID) {
+      throw Error('Subscription ID not found');
+    }
+
+    //if stripeCustomerID doesn't exist, get or create from stripe
+    if (!stripeCustomerID) {
+      const businessName = merchantData.businessName;
+      const email = (await auth.getUser(userID)).email!;
+      const name = `${merchantData.firstName} ${merchantData.lastName}`;
+
+      const stripeCustomer = await getOrCreateCustomerMerchant(
+        email,
+        name,
+        businessName,
+        userID,
+        newCustomerIdempotencyKey
+      );
+
+      stripeCustomerID = stripeCustomer.id; //reassign variable
+
+      await merchantRef.update({
+        customerID: stripeCustomer.id,
+      });
+    }
+
+    const customer = (await stripe.customers.retrieve(
+      stripeCustomerID
+    )) as Stripe.Customer;
+
+    await stripe.paymentMethods.attach(paymentMethodID, {
+      customer: customer.id,
+    });
+
+    await updateCustomerDefaultPaymentMethodMerchant(
+      customer.id,
+      paymentMethodID
+    );
+
+    //get subscription in stripe from id
+    const retrievedSubscription = await stripe.subscriptions.retrieve(
+      subscriptionID,
+      {
+        expand: ['latest_invoice.payment_intent'],
+      }
+    );
+
+    return retrievedSubscription;
+  } catch (error) {
+    throw new functions.https.HttpsError('unknown', error);
+  }
+}
+
 // if user reactivates from the cancelled state
 export async function reactivateSubscription(data: any, userID: string) {
   const paymentMethodID: string = data.paymentMethodID;

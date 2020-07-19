@@ -132,6 +132,7 @@
                 <button
                   class="btn btn-block btn-primary my-3"
                   type="button"
+                  (click)="onUpdateCard()"
                   [disabled]="
                     isCardPaymentComplete == false ||
                     isPaymentResponseLoading == true

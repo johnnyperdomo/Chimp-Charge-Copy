@@ -313,6 +313,27 @@ export class HelperService {
     }
   }
 
+  async retrieveLatestPaymentIntent(
+    paymentMethodID: string,
+    chargeIdempotencyKey: string,
+    newCustomerIdempotencyKey: string
+  ) {
+    const body = {
+      paymentMethodID,
+      chargeIdempotencyKey,
+      newCustomerIdempotencyKey,
+    };
+
+    try {
+      return await this.chimpApi.post(
+        '/merchant/retrieveLatestPaymentIntent',
+        body
+      );
+    } catch (error) {
+      throw Error(error.message);
+    }
+  }
+
   async reactivateMerchantSubscription(
     paymentMethodID: string,
     chargeIdempotencyKey: string,
