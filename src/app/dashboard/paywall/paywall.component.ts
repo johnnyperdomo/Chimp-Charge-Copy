@@ -160,8 +160,25 @@ export class PaywallComponent implements OnInit, OnDestroy {
   }
 
   async onCreateTrialSubscription() {
+    this.isPaymentResponseLoading = true;
+    this.generateNewIdempotenceKeys();
+
     try {
-      //TODO
+      if (!this.currentMerchant || !this.currentUser) {
+        throw Error('Credentials not complete. Please try reloading page.');
+      }
+
+      const paymentMethod = await this.createPaymentMethod();
+
+      const subscription: any = await this.helperService.startMerchantTrialSubscription(
+        paymentMethod.paymentMethod.id,
+        this.chargeIdempotencyKey,
+        this.newCustomerIdempotencyKey
+      );
+
+      return await this.processStripeSubscription(subscription);
+
+      //  return await this.processStripeSubscription(subscription);
     } catch (error) {
       this.paymentResponseError = error.message;
       this.isPaymentResponseLoading = false;
@@ -176,13 +193,39 @@ export class PaywallComponent implements OnInit, OnDestroy {
 
   async onReactivateSubscription() {
     this.isPaymentResponseLoading = true;
+    this.generateNewIdempotenceKeys();
 
     try {
       if (!this.currentMerchant || !this.currentUser) {
         throw Error('Credentials not complete. Please try reloading page.');
       }
 
-      const paymentMethod = await this.stripe.createPaymentMethod({
+      const paymentMethod = await this.createPaymentMethod();
+
+      const subscription: any = await this.helperService.reactivateMerchantSubscription(
+        paymentMethod.paymentMethod.id,
+        this.chargeIdempotencyKey,
+        this.newCustomerIdempotencyKey
+      );
+
+      return await this.processStripeSubscription(subscription);
+    } catch (error) {
+      console.log(error.message);
+
+      this.paymentResponseError = error.message;
+      this.isPaymentResponseLoading = false;
+
+      this.generateNewIdempotenceKeys();
+
+      setTimeout(() => {
+        this.paymentResponseError = null;
+      }, 5000);
+    }
+  }
+
+  async createPaymentMethod() {
+    try {
+      return await this.stripe.createPaymentMethod({
         type: 'card',
         card: this.card,
         billing_details: {
@@ -190,12 +233,13 @@ export class PaywallComponent implements OnInit, OnDestroy {
           email: this.currentUser.email,
         },
       });
+    } catch (error) {
+      throw Error(error);
+    }
+  }
 
-      const subscription: any = await this.helperService.reactivateMerchantSubscription(
-        paymentMethod.paymentMethod.id,
-        this.chargeIdempotencyKey
-      );
-
+  async processStripeSubscription(subscription: any) {
+    try {
       console.log(subscription);
 
       if (subscription.error) {
@@ -222,7 +266,7 @@ export class PaywallComponent implements OnInit, OnDestroy {
             throw Error(confirmSubscription.error.message);
           }
 
-          console.log('latest, incoice, ', latest_invoice);
+          console.log('latest, invoice, ', latest_invoice);
 
           this.isPaymentResponseLoading = false;
           return; //paymentIntent
@@ -232,16 +276,7 @@ export class PaywallComponent implements OnInit, OnDestroy {
       this.isPaymentResponseLoading = true;
       return; //payment_intent
     } catch (error) {
-      console.log(error.message);
-
-      this.paymentResponseError = error.message;
-      this.isPaymentResponseLoading = false;
-
-      this.generateNewIdempotenceKeys();
-
-      setTimeout(() => {
-        this.paymentResponseError = null;
-      }, 5000);
+      throw Error(error);
     }
   }
 

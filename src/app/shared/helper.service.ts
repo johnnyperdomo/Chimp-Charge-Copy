@@ -295,11 +295,34 @@ export class HelperService {
 
   // Subscriptions ==============>
 
+  async startMerchantTrialSubscription(
+    paymentMethodID: string,
+    chargeIdempotencyKey: string,
+    newCustomerIdempotencyKey: string
+  ) {
+    const body = {
+      paymentMethodID,
+      chargeIdempotencyKey,
+      newCustomerIdempotencyKey,
+    };
+
+    try {
+      return await this.chimpApi.post('/merchant/startTrialSubscription', body);
+    } catch (error) {
+      throw Error(error.message);
+    }
+  }
+
   async reactivateMerchantSubscription(
     paymentMethodID: string,
-    chargeIdempotencyKey: string
+    chargeIdempotencyKey: string,
+    newCustomerIdempotencyKey: string
   ) {
-    const body = { paymentMethodID, chargeIdempotencyKey };
+    const body = {
+      paymentMethodID,
+      chargeIdempotencyKey,
+      newCustomerIdempotencyKey,
+    };
 
     try {
       return await this.chimpApi.post('/merchant/reactivateSubscription', body);

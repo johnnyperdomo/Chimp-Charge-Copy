@@ -3,26 +3,121 @@ import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { MembershipFieldType } from '../shared/extensions';
 import { stripe, monthlyProPriceID } from '../shared/config';
-import { updateCustomerDefaultPaymentMethodMerchant } from './customers.merchant';
+import {
+  updateCustomerDefaultPaymentMethodMerchant,
+  getOrCreateCustomerMerchant,
+} from './customers.merchant';
 
 const db = admin.firestore();
+const auth = admin.auth();
 
-//Stripe
+//Stripe ==============>
+
+// 7 day free trial subscription
+// LATER: would i need a setupintent to handle sca on trial signups?
+export async function startTrialSubscription(data: any, userID: string) {
+  const paymentMethodID: string = data.paymentMethodID;
+  const chargeIdempotencyKey: string = data.chargeIdempotencyKey;
+  const newCustomerIdempotencyKey: string = data.newCustomerIdempotencyKey;
+
+  try {
+    const merchantRef = db.doc(`merchants/${userID}`);
+    const merchantSnap = await merchantRef.get();
+    const merchantData = merchantSnap.data()!;
+
+    let stripeCustomerID = merchantData.customerID;
+
+    //if stripeCustomerID doesn't exist, get or create from stripe
+    if (!stripeCustomerID) {
+      const businessName = merchantData.businessName;
+      const email = (await auth.getUser(userID)).email!;
+      const name = `${merchantData.firstName} ${merchantData.lastName}`;
+
+      const stripeCustomer = await getOrCreateCustomerMerchant(
+        email,
+        name,
+        businessName,
+        userID,
+        newCustomerIdempotencyKey
+      );
+
+      stripeCustomerID = stripeCustomer.id; //reassign variable
+
+      await merchantRef.update({
+        customerID: stripeCustomer.id,
+      });
+    }
+
+    const customer = (await stripe.customers.retrieve(
+      stripeCustomerID
+    )) as Stripe.Customer;
+
+    await stripe.paymentMethods.attach(paymentMethodID, {
+      customer: customer.id,
+    });
+
+    await updateCustomerDefaultPaymentMethodMerchant(
+      customer.id,
+      paymentMethodID
+    );
+
+    //create subscription in stripe
+    const subscription = await stripe.subscriptions.create(
+      {
+        customer: customer.id,
+        items: [{ price: monthlyProPriceID }],
+        trial_period_days: 7, //7 day free trial
+        expand: ['latest_invoice.payment_intent'],
+      },
+      { idempotencyKey: chargeIdempotencyKey }
+    );
+
+    // only add successful subscription
+    if (
+      subscription.status === 'active' ||
+      subscription.status === 'trialing'
+    ) {
+      await addSubscriptionOnFirestoreMembership(subscription);
+    }
+
+    // override previous membership details with new subscription details in firestore doc
+    return subscription;
+  } catch (error) {
+    throw new functions.https.HttpsError('unknown', error);
+  }
+}
 
 // if user reactivates from the cancelled state
 export async function reactivateSubscription(data: any, userID: string) {
   const paymentMethodID: string = data.paymentMethodID;
   const chargeIdempotencyKey: string = data.chargeIdempotencyKey;
+  const newCustomerIdempotencyKey: string = data.newCustomerIdempotencyKey;
 
   try {
-    const userRef = db.doc(`merchants/${userID}`);
-    const userSnap = await userRef.get();
-    const userData = userSnap.data()!;
+    const merchantRef = db.doc(`merchants/${userID}`);
+    const merchantSnap = await merchantRef.get();
+    const merchantData = merchantSnap.data()!;
 
-    const stripeCustomerID = userData.customerID;
+    let stripeCustomerID = merchantData.customerID;
 
     if (!stripeCustomerID) {
-      throw Error("can't find your stripe customerID");
+      const businessName = merchantData.businessName;
+      const email = (await auth.getUser(userID)).email!;
+      const name = `${merchantData.firstName} ${merchantData.lastName}`;
+
+      const stripeCustomer = await getOrCreateCustomerMerchant(
+        email,
+        name,
+        businessName,
+        userID,
+        newCustomerIdempotencyKey
+      );
+
+      stripeCustomerID = stripeCustomer.id; //reassign variable
+
+      await merchantRef.update({
+        customerID: stripeCustomer.id,
+      });
     }
 
     const customer = (await stripe.customers.retrieve(
@@ -86,7 +181,6 @@ export async function addSubscriptionOnFirestoreMembership(
 
     // check if subID has already been written to doc
     if (currentSubID === subscription.id) {
-      functions.logger.log('sub id already written, exit out');
       return;
     }
 
