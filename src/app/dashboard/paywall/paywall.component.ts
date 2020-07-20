@@ -147,16 +147,43 @@ export class PaywallComponent implements OnInit, OnDestroy {
 
       const paymentMethod = await this.createPaymentMethod();
 
-      const subscription: any = await this.helperService.startMerchantTrialSubscription(
+      // create setup intent
+      const setupIntent: any = await this.helperService.createSetupIntentForTrial(
         paymentMethod.paymentMethod.id,
-        this.chargeIdempotencyKey,
         this.newCustomerIdempotencyKey
       );
 
-      return await this.processStripeSubscription(
-        subscription,
-        paymentMethod.paymentMethod.id
-      );
+      if (setupIntent.error) {
+        throw Error(setupIntent.error);
+      }
+
+      if (setupIntent.client_secret) {
+        // confirm setup intent
+        const confirmSetupIntent = await this.stripe.confirmCardSetup(
+          setupIntent.client_secret,
+          {
+            payment_method: paymentMethod.paymentMethod.id,
+          }
+        );
+
+        if (confirmSetupIntent.error) {
+          throw Error(confirmSetupIntent.error.message);
+        }
+
+        // create subscription
+        const subscription: any = await this.helperService.startMerchantTrialSubscription(
+          paymentMethod.paymentMethod.id,
+          this.chargeIdempotencyKey
+        );
+
+        if (subscription.error) {
+          throw Error(confirmSetupIntent.error.message);
+        }
+
+        return subscription;
+      } else {
+        throw Error('unknown error, try again.');
+      }
     } catch (error) {
       this.paymentResponseError = error.message;
       this.isPaymentResponseLoading = false;
@@ -183,7 +210,6 @@ export class PaywallComponent implements OnInit, OnDestroy {
 
       const subscription: any = await this.helperService.retrieveLatestPaymentIntent(
         paymentMethod.paymentMethod.id,
-        this.chargeIdempotencyKey,
         this.newCustomerIdempotencyKey
       );
 

@@ -29,6 +29,7 @@ import {
   reactivateSubscription,
   startTrialSubscription,
   retrieveLatestPaymentIntent,
+  createSetupIntentForTrial,
 } from './merchant/subscriptions.merchant';
 
 const app = express();
@@ -507,6 +508,31 @@ app.post(
     try {
       const authenticated = await authenticate(tokenId);
       const response = await retrieveLatestPaymentIntent(
+        req.body,
+        authenticated.uid
+      );
+
+      res.send(response);
+    } catch (err) {
+      res.status(400).send(err);
+    }
+  }
+);
+
+app.post(
+  '/merchant/createSetupIntentForTrial',
+  async (req: express.Request, res: express.Response) => {
+    if (!req.headers.authorization) {
+      res
+        .status(403)
+        .json({ error: 'You must be logged in to make this request.' });
+    }
+
+    const tokenId = req.headers.authorization!.split('Bearer ')[1];
+
+    try {
+      const authenticated = await authenticate(tokenId);
+      const response = await createSetupIntentForTrial(
         req.body,
         authenticated.uid
       );

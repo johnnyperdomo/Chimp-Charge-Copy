@@ -297,13 +297,11 @@ export class HelperService {
 
   async startMerchantTrialSubscription(
     paymentMethodID: string,
-    chargeIdempotencyKey: string,
-    newCustomerIdempotencyKey: string
+    chargeIdempotencyKey: string
   ) {
     const body = {
       paymentMethodID,
       chargeIdempotencyKey,
-      newCustomerIdempotencyKey,
     };
 
     try {
@@ -313,14 +311,31 @@ export class HelperService {
     }
   }
 
-  async retrieveLatestPaymentIntent(
+  async createSetupIntentForTrial(
     paymentMethodID: string,
-    chargeIdempotencyKey: string,
     newCustomerIdempotencyKey: string
   ) {
     const body = {
       paymentMethodID,
-      chargeIdempotencyKey,
+      newCustomerIdempotencyKey,
+    };
+
+    try {
+      return await this.chimpApi.post(
+        '/merchant/createSetupIntentForTrial',
+        body
+      );
+    } catch (error) {
+      throw Error(error.message);
+    }
+  }
+
+  async retrieveLatestPaymentIntent(
+    paymentMethodID: string,
+    newCustomerIdempotencyKey: string
+  ) {
+    const body = {
+      paymentMethodID,
       newCustomerIdempotencyKey,
     };
 

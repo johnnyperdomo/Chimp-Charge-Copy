@@ -18,43 +18,22 @@ const auth = admin.auth();
 export async function startTrialSubscription(data: any, userID: string) {
   const paymentMethodID: string = data.paymentMethodID;
   const chargeIdempotencyKey: string = data.chargeIdempotencyKey;
-  const newCustomerIdempotencyKey: string = data.newCustomerIdempotencyKey;
 
   try {
     const merchantRef = db.doc(`merchants/${userID}`);
     const merchantSnap = await merchantRef.get();
     const merchantData = merchantSnap.data()!;
 
-    let stripeCustomerID = merchantData.customerID;
+    const stripeCustomerID = merchantData.customerID;
 
-    //if stripeCustomerID doesn't exist, get or create from stripe
+    // 'setup intent for trial' function already gets or creates a customer
     if (!stripeCustomerID) {
-      const businessName = merchantData.businessName;
-      const email = (await auth.getUser(userID)).email!;
-      const name = `${merchantData.firstName} ${merchantData.lastName}`;
-
-      const stripeCustomer = await getOrCreateCustomerMerchant(
-        email,
-        name,
-        businessName,
-        userID,
-        newCustomerIdempotencyKey
-      );
-
-      stripeCustomerID = stripeCustomer.id; //reassign variable
-
-      await merchantRef.update({
-        customerID: stripeCustomer.id,
-      });
+      throw Error('Could not find stripe customer ID');
     }
 
     const customer = (await stripe.customers.retrieve(
       stripeCustomerID
     )) as Stripe.Customer;
-
-    await stripe.paymentMethods.attach(paymentMethodID, {
-      customer: customer.id,
-    });
 
     await updateCustomerDefaultPaymentMethodMerchant(
       customer.id,
@@ -87,10 +66,53 @@ export async function startTrialSubscription(data: any, userID: string) {
   }
 }
 
+// to handle sca, then create subscription
+export async function createSetupIntentForTrial(data: any, userID: string) {
+  const paymentMethodID: string = data.paymentMethodID;
+  const newCustomerIdempotencyKey: string = data.newCustomerIdempotencyKey;
+
+  try {
+    const merchantRef = db.doc(`merchants/${userID}`);
+    const merchantSnap = await merchantRef.get();
+    const merchantData = merchantSnap.data()!;
+
+    let stripeCustomerID = merchantData.customerID;
+
+    //if stripeCustomerID doesn't exist, get or create from stripe
+    if (!stripeCustomerID) {
+      const businessName = merchantData.businessName;
+      const email = (await auth.getUser(userID)).email!;
+      const name = `${merchantData.firstName} ${merchantData.lastName}`;
+
+      const stripeCustomer = await getOrCreateCustomerMerchant(
+        email,
+        name,
+        businessName,
+        userID,
+        newCustomerIdempotencyKey
+      );
+
+      stripeCustomerID = stripeCustomer.id; //reassign variable
+
+      await merchantRef.update({
+        customerID: stripeCustomer.id,
+      });
+    }
+
+    const setupIntent = await stripe.setupIntents.create({
+      payment_method: paymentMethodID,
+      customer: stripeCustomerID,
+    });
+
+    return setupIntent;
+  } catch (error) {
+    throw new functions.https.HttpsError('unknown', error);
+  }
+}
+
 //when user updates card on paywall, retrieve latest payment intent of subscription to attempt to pay the latest invoice.
 export async function retrieveLatestPaymentIntent(data: any, userID: string) {
   const paymentMethodID: string = data.paymentMethodID;
-  // const chargeIdempotencyKey: string = data.chargeIdempotencyKey;
   const newCustomerIdempotencyKey: string = data.newCustomerIdempotencyKey;
 
   try {

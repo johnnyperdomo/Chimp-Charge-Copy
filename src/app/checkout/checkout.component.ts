@@ -287,6 +287,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     }
   }
 
+  // LATER: if in the future, a subscription can have a trial period for payment links, create a setup intent to handle sca
   async createRecurringCharge(
     cardHolderName: string,
     email: string,

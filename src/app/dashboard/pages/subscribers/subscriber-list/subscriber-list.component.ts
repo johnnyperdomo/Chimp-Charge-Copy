@@ -81,7 +81,14 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
             //get customer that belongs from this subscription
             const customerObs = this.db
               .collection<Customer>('customers', (ref) =>
-                ref.where('customer.customerID', '==', sub.customerID).limit(1)
+                ref
+                  .where(
+                    'merchantUID',
+                    '==',
+                    this.currentMerchant.value.merchantUID
+                  )
+                  .where('customer.customerID', '==', sub.customerID)
+                  .limit(1)
               )
               .get()
               .pipe(map((doc) => doc.docs[0].data()));
@@ -90,6 +97,11 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
             const paymentLinkObs = this.db
               .collection<PaymentLink>('payment-links', (ref) =>
                 ref
+                  .where(
+                    'merchantUID',
+                    '==',
+                    this.currentMerchant.value.merchantUID
+                  )
                   .where('product.id', '==', sub.plan.productID)
                   .where('product.id', '==', sub.plan.productID)
                   .limit(1)
