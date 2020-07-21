@@ -11,12 +11,39 @@
     !isCheckoutSession &&
     !isStripeOAuthConnecting
   "
-  class="container mt-3 text-center"
+  class="container mt-3"
 >
-  <div class="alert alert-warning" role="alert">
+  <div class="alert alert-warning text-center" role="alert">
     To start accepting payments:
     <a class="alert-link" [routerLink]="" (click)="openStripeOAuthFlow()">
       <b>Click here to set up your stripe account.</b>
     </a>
+  </div>
+
+  <div class="alert alert-light" role="alert">
+    <h2 class="alert-heading">What is Stripe?</h2>
+    <p>
+      Stripe is one of the world's leaders in payment processing. They handle
+      some of the world's biggest internet companies like Amazon, Google, Uber,
+      and Shopify.
+    </p>
+
+    <p>
+      <b>Chimp Charge partners with Stripe</b> to make sure your payments are
+      secure and reliable, without having to set up your own infrastructure.
+      <a class="alert-link" href="https://stripe.com/customers" target="_blank">
+        Learn more about Stripe here.
+      </a>
+    </p>
+
+    <div class="row justify-content-center">
+      <button
+        type="button"
+        class="btn btn-warning my-3"
+        (click)="openStripeOAuthFlow()"
+      >
+        Setup Stripe Account
+      </button>
+    </div>
   </div>
 </div>
