@@ -21,6 +21,8 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
 
   isLoading: boolean = false;
 
+  dataDidLoad: boolean = false; //to see whether firebase data already loaded
+
   merchantStoreSub: Subscription;
   currentMerchantSub: Subscription;
   currentMerchant = new BehaviorSubject<Merchant>(null);
@@ -91,6 +93,8 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
           );
         });
         console.log(this.paymentLinks);
+
+        this.dataDidLoad = true;
       });
   }
 

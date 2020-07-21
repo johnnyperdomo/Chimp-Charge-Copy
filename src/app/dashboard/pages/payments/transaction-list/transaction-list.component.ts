@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
 import { Transaction } from '../transaction.model';
 import { Subscription, BehaviorSubject, empty } from 'rxjs';
 import { Merchant } from 'src/app/merchants/merchant.model';
@@ -7,6 +7,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { Store } from '@ngrx/store';
 import * as fromApp from 'src/app/shared/app-store/app.reducer';
 import { HelperService } from 'src/app/shared/helper.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-transaction-list',
@@ -20,12 +21,16 @@ export class PaymentListComponent implements OnInit, OnDestroy {
 
   isLoading: boolean = false;
 
+  dataDidLoad: boolean = false; //to see whether firebase data already loaded
+
   transactions: Transaction[] = [];
 
   constructor(
     private db: AngularFirestore,
     private store: Store<fromApp.AppState>,
-    private helperService: HelperService
+    private helperService: HelperService,
+    private zone: NgZone,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -76,6 +81,8 @@ export class PaymentListComponent implements OnInit, OnDestroy {
             i.lastUpdated
           );
         });
+
+        this.dataDidLoad = true;
       });
   }
 
@@ -101,6 +108,12 @@ export class PaymentListComponent implements OnInit, OnDestroy {
         //LATER: present better error
       }
     }
+  }
+
+  onCreatePaymentLink() {
+    this.zone.run(() => {
+      this.router.navigate(['/payment-links/new']);
+    });
   }
 
   ngOnDestroy() {

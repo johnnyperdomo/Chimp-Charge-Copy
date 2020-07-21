@@ -53,6 +53,8 @@ export async function handleStripeMerchantWebhooks(event: Stripe.Event) {
         // TODO: email
 
         return;
+
+      // LATER: send transactional emails based on successful or past due payments, using the 'invoice' webhooks
       default:
         return;
     }

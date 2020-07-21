@@ -19,6 +19,8 @@ export class CustomerListComponent implements OnInit, OnDestroy {
 
   customers: Customer[] = [];
 
+  dataDidLoad: boolean = false; //to see whether firebase data already loaded
+
   constructor(
     private db: AngularFirestore,
     private store: Store<fromApp.AppState>
@@ -75,7 +77,7 @@ export class CustomerListComponent implements OnInit, OnDestroy {
           );
         });
 
-        console.log(this.customers);
+        this.dataDidLoad = true;
       });
   }
 

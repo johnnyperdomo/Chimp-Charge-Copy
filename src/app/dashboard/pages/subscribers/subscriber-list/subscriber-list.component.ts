@@ -38,6 +38,8 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
 
   subscribers: Subscriber[] = [];
 
+  dataDidLoad: boolean = false; //to see whether firebase data already loaded
+
   //measure data mapping sequence
   subscriberSequenceArray: any[][] = [];
   expectedSubscribersCount: number;
@@ -75,6 +77,10 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
             .valueChanges({ idField: 'id' });
         }),
         mergeMap((subscriptions) => {
+          if (subscriptions.length === 0) {
+            this.dataDidLoad = true;
+          }
+
           return subscriptions.map((sub) => {
             this.expectedSubscribersCount = subscriptions.length; //to calculate mapping sequence position
 
@@ -129,7 +135,6 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
       )
       .subscribe((data) => {
         const flattenedArr: any[] = Array.prototype.concat.apply([], data); //[[0]sub{}, [1]customer{}, [2] link{} ]
-
         this.subscriberSequenceArray.push(flattenedArr);
 
         //wait until observable sequence mapping finishes;
@@ -169,6 +174,7 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
           });
           this.expectedSubscribersCount = 0;
           this.subscriberSequenceArray = [];
+          this.dataDidLoad = true;
         }
       });
   }

@@ -7,6 +7,6 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PayoutsComponent implements OnInit {
   constructor() {}
-
+  // TODO: add connect btn
   ngOnInit(): void {}
 }

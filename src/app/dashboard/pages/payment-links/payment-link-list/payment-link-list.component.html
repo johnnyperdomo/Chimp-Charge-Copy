@@ -104,4 +104,15 @@
       </tbody>
     </table>
   </div>
+
+  <!-- Empty List Text -->
+  <div
+    [hidden]="
+      (dataDidLoad === true && paymentLinks.length !== 0) ||
+      dataDidLoad === false
+    "
+    class="row justify-content-center my-6"
+  >
+    <h2 class="text-muted">No Payment Links</h2>
+  </div>
 </div>

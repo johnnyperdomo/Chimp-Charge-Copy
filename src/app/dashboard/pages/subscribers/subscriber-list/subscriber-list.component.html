@@ -80,4 +80,16 @@
       </tbody>
     </table>
   </div>
+
+  <!-- Empty List Text -->
+  <!-- // LATER: don't show text at all if data loading -->
+  <div
+    [hidden]="
+      (dataDidLoad === true && subscribers.length !== 0) ||
+      dataDidLoad === false
+    "
+    class="row justify-content-center my-6"
+  >
+    <h2 class="text-muted">No Subscribers</h2>
+  </div>
 </div>
