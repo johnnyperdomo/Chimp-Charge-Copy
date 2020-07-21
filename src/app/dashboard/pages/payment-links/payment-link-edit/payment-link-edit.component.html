@@ -6,224 +6,256 @@ more information. Redirect url. -->
   <div class="container-fluid">
     <div class="row justify-content-center">
       <div class="col-12 col-lg-10 col-xl-8">
-        <!-- header -->
-        <div class="header">
-          <div class="header-body">
-            <div class="row align-items-end">
-              <div class="col">
-                <h1 *ngIf="editMode; else createMode" class="header-title">
-                  Edit Payment Link
-                </h1>
+        <div>
+          <!-- Stripe Connect Button -->
+          <div
+            [hidden]="isStripeConnectAuthorized === true"
+            class="row justify-content-center my-4"
+          >
+            <div class="col-12">
+              <p class="text-muted text-center">
+                To create a payment link, activate your Stripe account.
+              </p>
 
-                <ng-template #createMode>
-                  <h1 class="header-title">Create new payment link</h1>
-                </ng-template>
-              </div>
-            </div>
-            <div class="row mt-2 mb-4">
-              <div class="col-12">
-                <p *ngIf="!editMode" class="text-muted my-auto">
-                  Create a one-time or recurring payment link that you can share
-                  with your customers.
-                </p>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-12">
-                <ul class="nav nav-tabs header-tabs mb-0">
-                  <li>
-                    <button
-                      type="button"
-                      class="btn mr-3"
-                      [disabled]="editMode && linkType === 'recurring'"
-                      [ngClass]="{
-                        'btn-secondary': linkType === 'one_time',
-                        'btn-outline-secondary': linkType === 'recurring'
-                      }"
-                      (click)="onOneTimeMode()"
-                    >
-                      One-time
-                    </button>
-                  </li>
-                  <li>
-                    <button
-                      type="button"
-                      class="btn"
-                      [disabled]="editMode && linkType === 'one_time'"
-                      [ngClass]="{
-                        'btn-secondary': linkType === 'recurring',
-                        'btn-outline-secondary': linkType === 'one_time'
-                      }"
-                      (click)="onRecurringMode()"
-                    >
-                      Recurring
-                    </button>
-                  </li>
-                </ul>
+              <div class="row justify-content-center">
+                <button
+                  type="button"
+                  class="btn btn-warning"
+                  (click)="openStripeOAuthFlow()"
+                >
+                  Setup Stripe Account
+                </button>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Form -->
-        <form
-          *ngIf="paymentLinkEditForm"
-          [formGroup]="paymentLinkEditForm"
-          (ngSubmit)="onSubmit()"
-        >
-          <!-- Name -->
+        <!-- Payment Form -->
+        <!-- header -->
+        <div [hidden]="isStripeConnectAuthorized === false">
+          <div class="header">
+            <div class="header-body">
+              <div class="row align-items-end">
+                <div class="col">
+                  <h1 *ngIf="editMode; else createMode" class="header-title">
+                    Edit Payment Link
+                  </h1>
 
-          <div class="form-group">
-            <label for="linkName">Name of your product or service</label>
-            <input
-              type="text"
-              id="linkName"
-              class="form-control"
-              placeholder="i.e. Marketing Services"
-              formControlName="linkName"
-            />
-
-            <span
-              class="help-block-invalid"
-              *ngIf="
-                !paymentLinkEditForm.get('linkName').valid &&
-                paymentLinkEditForm.get('linkName').touched
-              "
-            >
-              Please enter a valid link name.</span
-            >
-          </div>
-
-          <div class="form-group">
-            <label for="description">Description</label>
-            <textarea
-              id="description"
-              class="form-control"
-              placeholder="A brief description of your product or service (optional)"
-              formControlName="description"
-            ></textarea>
-          </div>
-
-          <!-- Amount -->
-
-          <!-- //LATER: better input mask: add some ,000, while typing -->
-
-          <div class="form-group">
-            <label for="amount">Amount</label>
-
-            <div class="input-group input-group-merge">
-              <input
-                type="number"
-                [attr.disabled]="editMode ? '' : null"
-                id="amount"
-                class="form-control form-control-prepended"
-                [ngClass]="{
-                  'is-invalid':
-                    !paymentLinkEditForm.get('amount').valid &&
-                    paymentLinkEditForm.get('amount').touched
-                }"
-                placeholder="10.00"
-                formControlName="amount"
-                number
-              />
-              <div class="input-group-prepend">
-                <div
-                  class="input-group-text"
-                  [ngClass]="{
-                    'input-disabled': editMode
-                  }"
-                >
-                  <span class="fe fe-dollar-sign white"></span>
+                  <ng-template #createMode>
+                    <h1 class="header-title">Create new payment link</h1>
+                  </ng-template>
+                </div>
+              </div>
+              <div class="row mt-2 mb-4">
+                <div class="col-12">
+                  <p *ngIf="!editMode" class="text-muted my-auto">
+                    Create a one-time or recurring payment link that you can
+                    share with your customers.
+                  </p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12">
+                  <ul class="nav nav-tabs header-tabs mb-0">
+                    <li>
+                      <button
+                        type="button"
+                        class="btn mr-3"
+                        [disabled]="editMode && linkType === 'recurring'"
+                        [ngClass]="{
+                          'btn-secondary': linkType === 'one_time',
+                          'btn-outline-secondary': linkType === 'recurring'
+                        }"
+                        (click)="onOneTimeMode()"
+                      >
+                        One-time
+                      </button>
+                    </li>
+                    <li>
+                      <button
+                        type="button"
+                        class="btn"
+                        [disabled]="editMode && linkType === 'one_time'"
+                        [ngClass]="{
+                          'btn-secondary': linkType === 'recurring',
+                          'btn-outline-secondary': linkType === 'one_time'
+                        }"
+                        (click)="onRecurringMode()"
+                      >
+                        Recurring
+                      </button>
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>
-            <small *ngIf="editMode" class="form-text text-muted mt-2">
-              Once you create a payment link, you can't change it's price or
-              billing frequency
-            </small>
-
-            <!-- error messages -->
-
-            <!-- Out of price range -->
-            <span
-              class="help-block-invalid"
-              *ngIf="
-                paymentLinkEditForm.get('amount').hasError('PriceOutOfRange') &&
-                paymentLinkEditForm.get('amount').touched
-              "
-            >
-              Enter a valid amount between $0.50 - $999,999.99</span
-            >
           </div>
 
-          <!-- Recurring options -->
-          <div *ngIf="linkType === 'recurring'">
-            <!-- LATER: add custom billing interval ; add setup fee option-->
+          <!-- Form -->
+          <form
+            *ngIf="paymentLinkEditForm"
+            [formGroup]="paymentLinkEditForm"
+            (ngSubmit)="onSubmit()"
+          >
+            <!-- Name -->
+
             <div class="form-group">
-              <label for="billingInterval">Billing interval</label>
-              <select
-                name="billingInterval"
-                id="billingInterval"
-                class="custom-select"
-                formControlName="billingInterval"
-                [attr.disabled]="
-                  editMode && linkType === 'recurring' ? '' : null
+              <label for="linkName">Name of your product or service</label>
+              <input
+                type="text"
+                id="linkName"
+                class="form-control"
+                placeholder="i.e. Marketing Services"
+                formControlName="linkName"
+              />
+
+              <span
+                class="help-block-invalid"
+                *ngIf="
+                  !paymentLinkEditForm.get('linkName').valid &&
+                  paymentLinkEditForm.get('linkName').touched
                 "
               >
-                <option value="day">Daily</option>
-                <option value="week">Weekly</option>
-                <option value="month">Monthly</option>
-                <!-- LATER: add support for quarterly,annually. they require more setup -->
-                <!-- <option value="quarterly">Every 3 Months</option>
-                <option value="semiannually">Every 6 Months</option> -->
-                <option value="year">Yearly</option>
-              </select>
-              <small class="form-text text-muted mt-2">
-                How often your customers get charged automatically
-              </small>
+                Please enter a valid link name.</span
+              >
             </div>
-          </div>
 
-          <!-- LATER: change text based on state, 'save changes' or 'create one-time
+            <div class="form-group">
+              <label for="description">Description</label>
+              <textarea
+                id="description"
+                class="form-control"
+                placeholder="A brief description of your product or service (optional)"
+                formControlName="description"
+              ></textarea>
+            </div>
+
+            <!-- Amount -->
+
+            <!-- //LATER: better input mask: add some ,000, while typing -->
+
+            <div class="form-group">
+              <label for="amount">Amount</label>
+
+              <div class="input-group input-group-merge">
+                <input
+                  type="number"
+                  [attr.disabled]="editMode ? '' : null"
+                  id="amount"
+                  class="form-control form-control-prepended"
+                  [ngClass]="{
+                    'is-invalid':
+                      !paymentLinkEditForm.get('amount').valid &&
+                      paymentLinkEditForm.get('amount').touched
+                  }"
+                  placeholder="10.00"
+                  formControlName="amount"
+                  number
+                />
+                <div class="input-group-prepend">
+                  <div
+                    class="input-group-text"
+                    [ngClass]="{
+                      'input-disabled': editMode
+                    }"
+                  >
+                    <span class="fe fe-dollar-sign white"></span>
+                  </div>
+                </div>
+              </div>
+              <small *ngIf="editMode" class="form-text text-muted mt-2">
+                Once you create a payment link, you can't change it's price or
+                billing frequency
+              </small>
+
+              <!-- error messages -->
+
+              <!-- Out of price range -->
+              <span
+                class="help-block-invalid"
+                *ngIf="
+                  paymentLinkEditForm
+                    .get('amount')
+                    .hasError('PriceOutOfRange') &&
+                  paymentLinkEditForm.get('amount').touched
+                "
+              >
+                Enter a valid amount between $0.50 - $999,999.99</span
+              >
+            </div>
+
+            <!-- Recurring options -->
+            <div *ngIf="linkType === 'recurring'">
+              <!-- LATER: add custom billing interval ; add setup fee option-->
+              <div class="form-group">
+                <label for="billingInterval">Billing interval</label>
+                <select
+                  name="billingInterval"
+                  id="billingInterval"
+                  class="custom-select"
+                  formControlName="billingInterval"
+                  [attr.disabled]="
+                    editMode && linkType === 'recurring' ? '' : null
+                  "
+                >
+                  <option value="day">Daily</option>
+                  <option value="week">Weekly</option>
+                  <option value="month">Monthly</option>
+                  <!-- LATER: add support for quarterly,annually. they require more setup -->
+                  <!-- <option value="quarterly">Every 3 Months</option>
+                <option value="semiannually">Every 6 Months</option> -->
+                  <option value="year">Yearly</option>
+                </select>
+                <small class="form-text text-muted mt-2">
+                  How often your customers get charged automatically
+                </small>
+              </div>
+            </div>
+
+            <!-- LATER: change text based on state, 'save changes' or 'create one-time
           payment' or 'create recurring payment' -->
 
-          <div class="help-block-invalid form-group text-center" *ngIf="error">
-            {{ error }}
-          </div>
-
-          <div class="row justify-content-center">
-            <!-- LATER: maybe add deactivate child, if user goes back or clicks cancel, to prevent accidental deletion -->
-            <!-- Cancel Button -->
-            <div class="col-8 col-sm-6 col-md-4">
-              <button
-                type="button"
-                class="btn btn-lg btn-block btn-white mb-3"
-                (click)="onCancelEditMode()"
-              >
-                Cancel
-              </button>
+            <div
+              class="help-block-invalid form-group text-center"
+              *ngIf="error"
+            >
+              {{ error }}
             </div>
 
-            <!-- Submit -->
-            <div class="col-8 col-sm-6 col-md-4">
-              <!-- Loading Spinner -->
-
-              <div *ngIf="isLoading" class="row justify-content-center mb-3">
-                <div class="spinner-border text-primary" role="status"></div>
+            <div class="row justify-content-center">
+              <!-- LATER: maybe add deactivate child, if user goes back or clicks cancel, to prevent accidental deletion -->
+              <!-- Cancel Button -->
+              <div class="col-8 col-sm-6 col-md-4">
+                <button
+                  type="button"
+                  class="btn btn-lg btn-block btn-white mb-3"
+                  (click)="onCancelEditMode()"
+                >
+                  Cancel
+                </button>
               </div>
 
-              <!-- FIX: don't let user spam create button -->
-              <!-- LATER: change text depending on editmode or not -->
-              <button
-                class="btn btn-lg btn-block btn-primary mb-3"
-                [disabled]="!paymentLinkEditForm.valid"
-                type="submit"
-              >
-                Save Payment Link
-              </button>
+              <!-- Submit -->
+              <div class="col-8 col-sm-6 col-md-4">
+                <!-- Loading Spinner -->
+
+                <div *ngIf="isLoading" class="row justify-content-center mb-3">
+                  <div class="spinner-border text-primary" role="status"></div>
+                </div>
+
+                <!-- FIX: don't let user spam create button -->
+                <!-- LATER: change text depending on editmode or not -->
+                <button
+                  class="btn btn-lg btn-block btn-primary mb-3"
+                  [disabled]="!paymentLinkEditForm.valid"
+                  type="submit"
+                >
+                  Save Payment Link
+                </button>
+              </div>
             </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   </div>

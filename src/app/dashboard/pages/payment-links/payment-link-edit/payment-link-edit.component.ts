@@ -9,12 +9,15 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/firestore';
 import * as accounting from 'src/app/shared/accounting';
 import Stripe from 'stripe';
+import { Store } from '@ngrx/store';
+import * as fromApp from 'src/app/shared/app-store/app.reducer';
+import { map, filter } from 'rxjs/operators';
 
 //LATER: add can deactivate child option, to save the user from accidently losing data.
 //LATER: add success page url
 
 // LATER: add loading spinner before setting up form if getting data from firebase on editMode, for good ux
-//FIX: do a check to see if this payment link belongs to this user, if not, don't allow to view details (security rules allow non-users to 'read' payment links but this should only be used for checkout customers.)
+//FIX //LATER: do a check to see if this payment link belongs to this user, if not, don't allow to view details (security rules allow non-users to 'read' payment links but this should only be used for checkout customers.)
 
 @Component({
   selector: 'app-payment-link-edit',
@@ -33,10 +36,14 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   error: string;
 
+  merchantSub: Subscription;
+
   linkID: string;
   editMode: boolean = false;
 
   linkType: Stripe.Price.Type = 'one_time';
+
+  isStripeConnectAuthorized: boolean = false;
 
   constructor(
     private helperService: HelperService,
@@ -44,10 +51,21 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
     private _cdr: ChangeDetectorRef,
     private router: Router,
     private route: ActivatedRoute,
-    private db: AngularFirestore
+    private db: AngularFirestore,
+    private store: Store<fromApp.AppState>
   ) {}
 
   ngOnInit(): void {
+    this.merchantSub = this.store
+      .select('merchant')
+      .pipe(
+        map((merchantState) => merchantState.merchant),
+        filter((merchant) => merchant !== null)
+      )
+      .subscribe((merchant) => {
+        this.isStripeConnectAuthorized = !merchant.connectID ? false : true;
+      });
+
     this.routeSub = this.route.params.subscribe((params: Params) => {
       this.linkID = params['id'];
       this.editMode = params['id'] != null;
@@ -213,6 +231,12 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
     }
   }
 
+  openStripeOAuthFlow() {
+    const currentURL = location.origin;
+    const redirectURL = currentURL + '/connect-redirect';
+    window.open(redirectURL, '_blank');
+  }
+
   generateNewIdempotenceKeys() {
     //on error; they are passed to stripe but transaction. not completed
     this.productIdempotencyKey = uuidv4();
@@ -226,6 +250,10 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
 
     if (this.routeSub) {
       this.routeSub.unsubscribe();
+    }
+
+    if (this.merchantSub) {
+      this.merchantSub.unsubscribe();
     }
   }
 }
