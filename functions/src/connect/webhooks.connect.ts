@@ -29,6 +29,7 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
   const connectID = event.account;
   const eventID = event.id;
   const eventObject = event.data.object;
+  const previousAttributes = event.data.previous_attributes as any;
 
   try {
     switch (event.type) {
@@ -231,8 +232,22 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
           subscriptionUpdatedMerchantUID
         );
 
+        //if subscription has recentlly become past_due, send email
+        if (
+          previousAttributes &&
+          previousAttributes.status === 'active' &&
+          subscriptionUpdated.status === 'past_due'
+        ) {
+          // TODO: send late payment email
+          functions.logger.log(
+            'a new late payment is detected: previous: ' +
+              previousAttributes.status +
+              'recent: ' +
+              subscriptionUpdated.status
+          );
+        }
+
         // TODO:sendgrid send sendgrid email, to customer on payment failure-> updated payment method, contact merchant for help
-        //LATER: handle this failure
         return;
       case 'customer.subscription.deleted':
         const subscriptionDeleted = eventObject as Stripe.Subscription;
