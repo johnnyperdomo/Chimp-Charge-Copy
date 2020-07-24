@@ -2,7 +2,7 @@ import Stripe from 'stripe';
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { MembershipFieldType } from '../shared/extensions';
-import { stripe, monthlyProPriceID } from '../shared/config';
+import { stripe, monthly_pro_price_id } from '../shared/stripe-config';
 import {
   updateCustomerDefaultPaymentMethodMerchant,
   getOrCreateCustomerMerchant,
@@ -14,7 +14,6 @@ const auth = admin.auth();
 //Stripe ==============>
 
 // 7 day free trial subscription
-// LATER: would i need a setupintent to handle sca on trial signups?
 export async function startTrialSubscription(data: any, userID: string) {
   const paymentMethodID: string = data.paymentMethodID;
   const chargeIdempotencyKey: string = data.chargeIdempotencyKey;
@@ -44,7 +43,7 @@ export async function startTrialSubscription(data: any, userID: string) {
     const subscription = await stripe.subscriptions.create(
       {
         customer: customer.id,
-        items: [{ price: monthlyProPriceID }],
+        items: [{ price: monthly_pro_price_id }],
         trial_period_days: 7, //7 day free trial
         expand: ['latest_invoice.payment_intent'],
       },
@@ -227,7 +226,7 @@ export async function reactivateSubscription(data: any, userID: string) {
     const subscription = await stripe.subscriptions.create(
       {
         customer: customer.id,
-        items: [{ price: monthlyProPriceID }],
+        items: [{ price: monthly_pro_price_id }],
         expand: ['latest_invoice.payment_intent'],
       },
       { idempotencyKey: chargeIdempotencyKey }

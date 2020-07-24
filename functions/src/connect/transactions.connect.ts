@@ -1,6 +1,6 @@
 import * as admin from 'firebase-admin';
 import Stripe from 'stripe';
-import { stripe } from '../shared/config';
+import { stripe } from '../shared/stripe-config';
 const db = admin.firestore();
 import {
   paymentIntentFieldType,

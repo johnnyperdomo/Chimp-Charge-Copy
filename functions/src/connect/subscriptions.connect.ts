@@ -3,7 +3,7 @@
 import Stripe from 'stripe';
 import * as functions from 'firebase-functions';
 import * as customers from './customers.connect';
-import { stripe } from '../shared/config';
+import { stripe } from '../shared/stripe-config';
 import * as admin from 'firebase-admin';
 import { subscriptionFieldType, planFieldType } from '../shared/extensions';
 

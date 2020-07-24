@@ -13,6 +13,8 @@ export class MerchantEffects {
     ofType(MerchantActions.SET_MERCHANT_INFO_START),
     switchMap((merchant: MerchantActions.SetMerchantInfoStart) => {
       const parsedMerchant = JSON.parse(JSON.stringify(merchant.payload));
+
+      //FIX: permissions error, maybe get from angfire
       return from(
         firebaseApp
           .firestore()

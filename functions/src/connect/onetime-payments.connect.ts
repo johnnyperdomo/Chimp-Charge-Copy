@@ -1,4 +1,4 @@
-import { stripe } from '../shared/config';
+import { stripe } from '../shared/stripe-config';
 import Stripe from 'stripe';
 import { getOrCreateCustomer } from './customers.connect';
 import * as functions from 'firebase-functions';

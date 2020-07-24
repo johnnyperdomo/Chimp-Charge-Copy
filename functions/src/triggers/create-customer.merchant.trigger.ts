@@ -1,10 +1,13 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 import { getOrCreateCustomerMerchant } from '../merchant/customers.merchant';
+import { sgSendWelcomeEmail } from '../merchant/emails.merchant';
+import { welcomeEmailType } from '../shared/extensions';
 
 const auth = admin.auth();
 
 // create a new stripe customer when a new merchant document is created
+//TODO: rename this function
 export const createStripeCustomerMerchant = functions.firestore
   .document('merchants/{merchantUID}')
   .onCreate(async (snapshot, context) => {
@@ -25,9 +28,18 @@ export const createStripeCustomerMerchant = functions.firestore
         context.eventId
       );
 
-      return merchantRef.update({
+      await merchantRef.update({
         customerID: customer.id,
       });
+
+      functions.logger.log('send email triggered from merchants/ should send');
+
+      const emailData: welcomeEmailType = {
+        firstName: data.firstName,
+        email,
+      };
+
+      return await sgSendWelcomeEmail(emailData);
 
       //TODO: send welcome email!
     } catch (error) {

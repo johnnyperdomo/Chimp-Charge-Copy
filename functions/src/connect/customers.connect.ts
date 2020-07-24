@@ -1,5 +1,5 @@
 import Stripe from 'stripe';
-import { stripe } from '../shared/config';
+import { stripe } from '../shared/stripe-config';
 import * as admin from 'firebase-admin';
 import { customerFieldType } from '../shared/extensions';
 

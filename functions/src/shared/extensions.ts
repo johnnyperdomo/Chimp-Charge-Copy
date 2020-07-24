@@ -57,3 +57,10 @@ export type transactionsType = {
 
   //LATER: maybe add disputed amount/total, when handling disputed webhooks, for only lost disputes charge.dispute.closed(lost)
 };
+
+/////// Sendgrid Emails //////
+
+export type welcomeEmailType = {
+  firstName: string;
+  email: string;
+};

@@ -5,11 +5,11 @@ import * as paymentLinks from './connect/payment-links.connect';
 import * as connectAuth from './connect/auth.connect';
 import * as admin from 'firebase-admin';
 import {
-  stripeClientID,
+  stripe_client_id,
   stripe,
-  stripeWebhookConnectSecret,
-  stripeWebhookMerchantSecret,
-} from './shared/config';
+  stripe_webhook_connect_secret,
+  stripe_webhook_merchant_secret,
+} from './shared/stripe-config';
 import * as qs from 'querystring';
 import { createPaymentIntent } from './connect/onetime-payments.connect';
 import {
@@ -81,7 +81,7 @@ app.get(
 
       const base = 'https://connect.stripe.com/oauth/authorize?';
       const queryParams = {
-        client_id: stripeClientID,
+        client_id: stripe_client_id,
         response_type: 'code',
         scope: 'read_write',
       };
@@ -283,7 +283,7 @@ app.post('/connect/stripeWebhooks', async (req: any, res: express.Response) => {
     event = stripe.webhooks.constructEvent(
       req['rawBody'],
       signature,
-      stripeWebhookConnectSecret
+      stripe_webhook_connect_secret
     );
 
     res.send({ received: true });
@@ -317,7 +317,7 @@ app.post(
       event = stripe.webhooks.constructEvent(
         req['rawBody'],
         signature,
-        stripeWebhookMerchantSecret
+        stripe_webhook_merchant_secret
       );
 
       res.send({ received: true });

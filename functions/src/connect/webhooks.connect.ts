@@ -12,7 +12,7 @@ import {
   createFirestoreTransactionFromInvoice,
   refundFirestoreTransaction,
 } from './transactions.connect';
-import { stripe } from '../shared/config';
+import { stripe } from '../shared/stripe-config';
 import {
   createFirestoreSubscription,
   updateFirestoreSubscription,
