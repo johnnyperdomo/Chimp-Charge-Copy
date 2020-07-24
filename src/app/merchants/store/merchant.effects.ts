@@ -2,25 +2,22 @@ import { Injectable } from '@angular/core';
 import { from, of } from 'rxjs';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import * as MerchantActions from '../store/merchant.actions';
-import { switchMap, catchError, map } from 'rxjs/operators';
-import * as firebaseApp from 'firebase/app';
+import { switchMap, catchError, map, mergeMap } from 'rxjs/operators';
 import { MerchantService } from '../merchants.service';
+import { AngularFirestore } from '@angular/fire/firestore';
 
 @Injectable()
 export class MerchantEffects {
   @Effect({ dispatch: false }) // FIX: dispatch to true... can this cause a bug?
   setMerchantInfo = this.actions$.pipe(
     ofType(MerchantActions.SET_MERCHANT_INFO_START),
-    switchMap((merchant: MerchantActions.SetMerchantInfoStart) => {
+    mergeMap((merchant: MerchantActions.SetMerchantInfoStart) => {
       const parsedMerchant = JSON.parse(JSON.stringify(merchant.payload));
-
-      //FIX: permissions error, maybe get from angfire
       return from(
-        firebaseApp
-          .firestore()
+        this.db
           .collection('merchants')
           .doc(merchant.payload.merchantUID)
-          .set(parsedMerchant, { merge: true })
+          .set(parsedMerchant)
       ).pipe(
         catchError((errorRes) => {
           //FIX: handle error messages better like authService => 'Firestore Error'
@@ -37,11 +34,7 @@ export class MerchantEffects {
     ofType(MerchantActions.GET_MERCHANT_INFO_START),
     switchMap((userId: MerchantActions.GetMerchantInfoStart) => {
       return from(
-        firebaseApp
-          .firestore()
-          .collection('merchants')
-          .doc(userId.payload)
-          .get()
+        this.db.collection('merchants').doc(userId.payload).get()
       ).pipe(
         map((merchantData) => {
           const retrievedMerchant = this.merchantService.parseFirestoreMerchantData(
@@ -63,6 +56,7 @@ export class MerchantEffects {
 
   constructor(
     private actions$: Actions,
-    private merchantService: MerchantService
+    private merchantService: MerchantService,
+    private db: AngularFirestore
   ) {}
 }

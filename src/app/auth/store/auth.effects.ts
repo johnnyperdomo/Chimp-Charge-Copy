@@ -44,20 +44,25 @@ export class AuthEffects {
           );
         }),
         tap((resData) => {
-          const newMerchant = new Merchant(
-            userFirstName,
-            userLastName,
-            userBusinessName,
-            resData.payload.user.id
-          );
-          this.merchantService.setMerchantInfo(newMerchant);
+          firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+              const newMerchant = new Merchant(
+                userFirstName,
+                userLastName,
+                userBusinessName,
+                resData.payload.user.id
+              );
+
+              this.merchantService.setMerchantInfo(newMerchant);
+            }
+          });
         }),
         tap(() => {
-          const user = firebase.auth().currentUser;
-
-          if (user) {
-            user.sendEmailVerification();
-          }
+          firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+              user.sendEmailVerification();
+            }
+          });
         }),
         catchError((errorRes) => {
           return this.authService.handleError(errorRes);
