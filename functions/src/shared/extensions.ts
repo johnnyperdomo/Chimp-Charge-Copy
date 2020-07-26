@@ -60,7 +60,202 @@ export type transactionsType = {
 
 /////// Sendgrid Emails //////
 
+// account emails =========>
 export type welcomeEmailType = {
   firstName: string;
   email: string;
+};
+
+export type trialStartEmailType = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  membershipStatus: Stripe.Subscription.Status;
+  membershipPrice: number;
+  membershipBillingInterval: Stripe.Price.Recurring.Interval;
+  trialStartDate: number; //unix
+  trialEndDate: number; //unix
+};
+
+export type subscriptionStartEmailType = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  membershipStatus: Stripe.Subscription.Status;
+  membershipPrice: number;
+  membershipBillingInterval: Stripe.Price.Recurring.Interval;
+  subscriptionStartDate: number; //unix
+};
+
+export type subscriptionCancelEmailType = {
+  email: string;
+};
+
+// Connect Emails //
+
+// customer connect emails ====>
+export type paymentNewConnectCustomerEmailType = {
+  merchantBusinessName: string;
+  merchantEmail: string;
+  customerFirstName: string;
+  customerLastName: string;
+  customerEmail: string;
+  productName: string;
+  productDescription: string | null;
+  transactionID: string;
+  transactionAmount: number; //TODO: money formatter
+  transactionDate: number; //unix //TODO: moment js
+};
+
+export type paymentRefundConnectCustomerEmailType = {
+  merchantBusinessName: string;
+  merchantEmail: string;
+  customerFirstName: string;
+  customerLastName: string;
+  customerEmail: string;
+  productName: string;
+  productDescription: string | null;
+  transactionID: string;
+  transactionAmount: number;
+  transactionDate: number; //unix
+};
+
+export type subscriptionPaymentNewConnectCustomerEmailType = {
+  merchantBusinessName: string;
+  merchantEmail: string;
+  customerFirstName: string;
+  customerLastName: string;
+  customerEmail: string;
+  productName: string;
+  productDescription: string | null;
+  invoiceID: string;
+  invoiceNumber: string; //a string value
+  customerSubscriptionBillingInterval: Stripe.Price.Recurring.Interval;
+  transactionAmount: number;
+  transactionDate: number; //unix
+};
+
+export type subscriptionStartConnectCustomerEmailType = {
+  merchantBusinessName: string;
+  merchantEmail: string;
+  customerFirstName: string;
+  customerLastName: string;
+  customerEmail: string;
+  productName: string;
+  productDescription: string | null;
+  customerSubscriptionBillingInterval: Stripe.Price.Recurring.Interval;
+  customerSubscriptionAmount: number;
+  customerSubscriptionStartDate: number; //unix
+};
+
+export type subscriptionCancelConnectCustomerEmailType = {
+  merchantBusinessName: string;
+  merchantEmail: string;
+  customerFirstName: string;
+  customerLastName: string;
+  customerEmail: string;
+  productName: string;
+  productDescription: string | null;
+  customerSubscriptionBillingInterval: Stripe.Price.Recurring.Interval;
+  customerSubscriptionAmount: number;
+  customerSubscriptionCancelledDate: number; //unix
+};
+
+export type subscriptionPastDueConnectCustomerEmailType = {
+  merchantBusinessName: string;
+  merchantEmail: string;
+  customerFirstName: string;
+  customerLastName: string;
+  customerEmail: string;
+  productName: string;
+  productDescription: string | null;
+  invoiceID: string;
+  invoiceNumber: string; //a string value
+  customerSubscriptionBillingInterval: Stripe.Price.Recurring.Interval;
+  transactionAmount: number;
+  transactionDate: number; //unix
+};
+
+// merchant connect emails ====>
+
+export type paymentNewConnectMerchantEmailType = {
+  firstName: string; //merchant
+  email: string;
+  productName: string;
+  productDescription: string | null;
+  customerFirstName: string;
+  customerLastName: string;
+  customerEmail: string;
+  transactionID: string;
+  transactionAmount: number;
+  transactionDate: number; //unix
+};
+
+export type paymentRefundConnectMerchantEmailType = {
+  firstName: string; //merchant
+  email: string;
+  productName: string;
+  productDescription: string | null;
+  customerFirstName: string;
+  customerLastName: string;
+  customerEmail: string;
+  transactionID: string;
+  transactionAmount: number;
+  transactionDate: number; //unix
+};
+
+export type subscriptionPaymentNewConnectMerchantEmailType = {
+  firstName: string; //merchant
+  email: string;
+  productName: string;
+  productDescription: string | null;
+  customerFirstName: string;
+  customerLastName: string;
+  customerEmail: string;
+  invoiceID: string;
+  invoiceNumber: string; //a string value
+  customerSubscriptionBillingInterval: Stripe.Price.Recurring.Interval;
+  transactionAmount: number;
+  transactionDate: number; //unix
+};
+
+export type subscriptionStartConnectMerchantEmailType = {
+  firstName: string; //merchant
+  email: string;
+  productName: string;
+  productDescription: string | null;
+  customerFirstName: string;
+  customerLastName: string;
+  customerEmail: string;
+  customerSubscriptionBillingInterval: Stripe.Price.Recurring.Interval;
+  customerSubscriptionAmount: number;
+  customerSubscriptionStartDate: number; //unix
+};
+
+export type subscriptionCancelConnectMerchantEmailType = {
+  firstName: string; //merchant
+  email: string;
+  productName: string;
+  productDescription: string | null;
+  customerFirstName: string;
+  customerLastName: string;
+  customerEmail: string;
+  customerSubscriptionBillingInterval: Stripe.Price.Recurring.Interval;
+  customerSubscriptionAmount: number;
+  customerSubscriptionCancelledDate: number; //unix
+};
+
+export type subscriptionPastDueConnectMerchantEmailType = {
+  firstName: string; //merchant
+  email: string;
+  productName: string;
+  productDescription: string | null;
+  customerFirstName: string;
+  customerLastName: string;
+  customerEmail: string;
+  invoiceID: string;
+  invoiceNumber: string; //a string value
+  customerSubscriptionBillingInterval: Stripe.Price.Recurring.Interval;
+  transactionAmount: number;
+  transactionDate: number; //unix
 };

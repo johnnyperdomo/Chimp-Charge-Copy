@@ -7,6 +7,11 @@ import {
   updateCustomerDefaultPaymentMethodMerchant,
   getOrCreateCustomerMerchant,
 } from './customers.merchant';
+import {
+  sgTrialStartEmail,
+  sgSubscriptionStartEmail,
+  sgSubscriptionCancelEmail,
+} from './emails.merchant';
 
 const db = admin.firestore();
 const auth = admin.auth();
@@ -262,8 +267,10 @@ export async function addSubscriptionOnFirestoreMembership(
       return;
     }
 
-    const currentMembership: MembershipFieldType | null = findMerchantByCustomerID.docs[0].data()
-      .membership;
+    const merchantData = findMerchantByCustomerID.docs[0].data();
+
+    const currentMembership: MembershipFieldType | null =
+      merchantData.membership;
 
     // get the sub id of doc if it exists
     const currentSubID = currentMembership && currentMembership.subscriptionID;
@@ -282,9 +289,25 @@ export async function addSubscriptionOnFirestoreMembership(
       interval: subscription.items.data[0].plan.interval,
     };
 
-    return merchantRef.update({
+    await merchantRef.update({
       membership: membershipField,
     });
+
+    //Send email ==========>
+
+    const email = (await auth.getUser(merchantData.merchantUID)).email!;
+    const fName = merchantData.firstName;
+    const lName = merchantData.lastName;
+
+    if (subscription.status === 'trialing') {
+      functions.logger.log('trial start email');
+      await sgTrialStartEmail(email, fName, lName, subscription);
+    } else if (subscription.status === 'active') {
+      functions.logger.log('sub start email');
+      await sgSubscriptionStartEmail(email, fName, lName, subscription);
+    }
+
+    return;
   } catch (error) {
     throw Error(error);
   }
@@ -292,7 +315,8 @@ export async function addSubscriptionOnFirestoreMembership(
 
 // on update subscription for merchant
 export async function updateSubscriptionOnFirestoreMembership(
-  subscription: Stripe.Subscription
+  subscription: Stripe.Subscription,
+  previousStatus?: Stripe.Subscription.Status
 ) {
   try {
     const findMerchantBySubscriptionID = await db
@@ -306,6 +330,8 @@ export async function updateSubscriptionOnFirestoreMembership(
       return;
     }
 
+    const merchantData = findMerchantBySubscriptionID.docs[0].data();
+
     const merchantRef = findMerchantBySubscriptionID.docs[0].ref;
 
     const membershipField: MembershipFieldType = {
@@ -315,9 +341,22 @@ export async function updateSubscriptionOnFirestoreMembership(
       interval: subscription.items.data[0].plan.interval,
     };
 
-    return merchantRef.update({
+    await merchantRef.update({
       membership: membershipField,
     });
+
+    // send email ===>
+    const email = (await auth.getUser(merchantData.merchantUID)).email!;
+    const fName = merchantData.firstName;
+    const lName = merchantData.lastName;
+
+    //subscription started after trial
+    if (previousStatus === 'trialing' && subscription.status === 'active') {
+      functions.logger.log('from trial to start sub email');
+      await sgSubscriptionStartEmail(email, fName, lName, subscription);
+    }
+
+    return;
   } catch (error) {
     throw Error(error);
   }
@@ -338,8 +377,10 @@ export async function cancelSubscriptionOnFirestoreMembership(
       return;
     }
 
-    const currentMembership: MembershipFieldType | null = findMerchantBySubscriptionID.docs[0].data()
-      .membership;
+    const merchantData = findMerchantBySubscriptionID.docs[0].data();
+
+    const currentMembership: MembershipFieldType | null =
+      merchantData.membership;
 
     // get the sub id of doc if it exists
     const currentStatus = currentMembership && currentMembership.status;
@@ -358,9 +399,16 @@ export async function cancelSubscriptionOnFirestoreMembership(
       interval: subscription.items.data[0].plan.interval,
     };
 
-    return merchantRef.update({
+    await merchantRef.update({
       membership: membershipField,
     });
+
+    //send email
+    const email = (await auth.getUser(merchantData.merchantUID)).email!;
+
+    await sgSubscriptionCancelEmail(email);
+
+    return;
   } catch (error) {
     throw Error(error);
   }

@@ -41,7 +41,10 @@ export async function handleStripeMerchantWebhooks(event: Stripe.Event) {
         ) {
           await addSubscriptionOnFirestoreMembership(subscriptionUpdated);
         } else {
-          await updateSubscriptionOnFirestoreMembership(subscriptionUpdated);
+          await updateSubscriptionOnFirestoreMembership(
+            subscriptionUpdated,
+            previousAttributes && previousAttributes.status
+          );
         }
         // TODO: email, if new active, or new trialing
 

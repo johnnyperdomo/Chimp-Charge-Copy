@@ -1,4 +1,4 @@
-import { createStripeCustomerMerchant } from './create-customer.merchant.trigger';
+import { merchantCreated } from './merchant-created.trigger';
 //import { sendWelcomeEmail } from './welcome-email.user.trigger';
 
-export { createStripeCustomerMerchant };
+export { merchantCreated };
