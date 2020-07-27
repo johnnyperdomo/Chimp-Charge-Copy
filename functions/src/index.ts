@@ -5,8 +5,7 @@ export { chimpApi } from './api';
 
 export { merchantCreated } from './triggers/triggers';
 
-//TODO: 'active when ready to deploy app to production'
-// export { warmApiRunner } from './task-runners';
+export { warmApiRunner } from './task-runners';
 
 //LATER: when retrieving items, auto pagination to get all list items - autoPagingToArray - https://github.com/stripe/stripe-node
 //LATER: add stricter static typing,, with return 'data: any'. Overall code in general

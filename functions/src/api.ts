@@ -34,8 +34,8 @@ import {
 
 const app = express();
 const runtimeOpts: functions.RuntimeOptions = {
-  memory: '1GB',
-  timeoutSeconds: 180,
+  memory: '512MB',
+  timeoutSeconds: 120,
 }; //LATER: might need to raise this when creating 'large data sync' functionality in app, to handle data processing
 
 //Helpers ==============================>
