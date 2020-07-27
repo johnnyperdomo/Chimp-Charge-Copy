@@ -1,13 +1,20 @@
-//import * as functions from 'firebase-functions';
-
 import Stripe from 'stripe';
 import * as functions from 'firebase-functions';
 import * as customers from './customers.connect';
 import { stripe } from '../shared/stripe-config';
 import * as admin from 'firebase-admin';
 import { subscriptionFieldType, planFieldType } from '../shared/extensions';
+import {
+  sgSubscriptionStartConnectMerchantEmail,
+  sgSubscriptionStartConnectCustomerEmail,
+  sgSubscriptionCancelConnectMerchantEmail,
+  sgSubscriptionCancelConnectCustomerEmail,
+  sgSubscriptionPastDueConnectMerchantEmail,
+  sgSubscriptionPastDueConnectCustomerEmail,
+} from './emails.connect';
 
 const db = admin.firestore();
+const auth = admin.auth();
 
 //Client Side =====================>
 export async function onCancelSubscription(data: any, userID: string) {
@@ -83,7 +90,6 @@ export async function createSubscription(data: any) {
         customer: customer.id,
         items: [{ price: priceID }],
         expand: ['latest_invoice.payment_intent'],
-
         metadata: {
           chimp_charge_firebase_merchant_uid: merchantUID,
           ...paymentLinkMetadata,
@@ -149,6 +155,22 @@ export async function createFirestoreSubscription(
       merchantUID
     );
 
+    const metadata = subscription.metadata;
+
+    const { chimp_charge_product_name } = metadata;
+
+    const retrieveCustomer = await stripe.customers.retrieve(
+      subscription.customer as string,
+      { stripeAccount: connectID }
+    );
+
+    await sendSubscriptionStartEmail(
+      merchantUID,
+      retrieveCustomer as Stripe.Customer,
+      chimp_charge_product_name,
+      subscription
+    );
+
     return;
   } catch (error) {
     throw Error(error);
@@ -159,7 +181,8 @@ export async function updateFirestoreSubscription(
   stripeSubscription: Stripe.Subscription,
   connectID: string,
   eventID: string,
-  merchantUID?: string
+  merchantUID?: string,
+  previousStatus?: Stripe.Subscription.Status
 ) {
   try {
     const findSubscription = await db
@@ -199,6 +222,36 @@ export async function updateFirestoreSubscription(
       status: stripeSubscription.status,
       lastUpdated: admin.firestore.Timestamp.now(),
     });
+
+    const metadata = stripeSubscription.metadata;
+    const { chimp_charge_product_name } = metadata;
+
+    //if subscription has recently become past_due, send email
+    if (
+      previousStatus === 'active' &&
+      stripeSubscription.status === 'past_due'
+    ) {
+      if (!merchantUID) {
+        return;
+      }
+
+      functions.logger.log('past due payment detected in subscription');
+
+      const latestInvoice = await stripe.invoices.retrieve(
+        stripeSubscription.latest_invoice as string,
+        { expand: ['customer'] },
+        { stripeAccount: connectID }
+      );
+
+      const customer = latestInvoice.customer as Stripe.Customer;
+
+      await sendSubscriptionPastDueEmail(
+        merchantUID,
+        customer,
+        chimp_charge_product_name,
+        latestInvoice
+      );
+    }
     return;
   } catch (error) {
     throw Error(error);
@@ -238,6 +291,21 @@ export async function cancelFirestoreSubscription(
       stripeSubscription,
       connectID,
       merchantUID
+    );
+
+    const metadata = stripeSubscription.metadata;
+    const { chimp_charge_product_name } = metadata;
+
+    const retrieveCustomer = await stripe.customers.retrieve(
+      stripeSubscription.customer as string,
+      { stripeAccount: connectID }
+    );
+
+    await sendSubscriptionCancelEmail(
+      merchantUID,
+      retrieveCustomer as Stripe.Customer,
+      chimp_charge_product_name,
+      stripeSubscription
     );
 
     return;
@@ -394,5 +462,130 @@ async function cancelStripeSubscription(
     return response;
   } catch (error) {
     throw error;
+  }
+}
+
+// emails
+
+async function sendSubscriptionStartEmail(
+  merchantUID: string,
+  customer: Stripe.Customer,
+  productName: string,
+  subscription: Stripe.Subscription
+) {
+  try {
+    const merchantRef = db.doc(`merchants/${merchantUID}`);
+    const merchantSnap = await merchantRef.get();
+    const merchantData = merchantSnap.data();
+
+    if (!merchantData) {
+      return;
+    }
+
+    const merchantBusinessName = merchantData.businessName;
+    const merchantEmail = (await auth.getUser(merchantUID)).email!;
+    const merchantFirstName = merchantData.firstName;
+
+    await sgSubscriptionStartConnectMerchantEmail(
+      merchantFirstName,
+      merchantEmail,
+      customer,
+      productName,
+      subscription
+    );
+
+    await sgSubscriptionStartConnectCustomerEmail(
+      merchantBusinessName,
+      merchantEmail,
+      customer,
+      productName,
+      subscription
+    );
+
+    return;
+  } catch (error) {
+    throw Error(error);
+  }
+}
+
+async function sendSubscriptionCancelEmail(
+  merchantUID: string,
+  customer: Stripe.Customer,
+  productName: string,
+  subscription: Stripe.Subscription
+) {
+  try {
+    const merchantRef = db.doc(`merchants/${merchantUID}`);
+    const merchantSnap = await merchantRef.get();
+    const merchantData = merchantSnap.data();
+
+    if (!merchantData) {
+      return;
+    }
+
+    const merchantBusinessName = merchantData.businessName;
+    const merchantEmail = (await auth.getUser(merchantUID)).email!;
+    const merchantFirstName = merchantData.firstName;
+
+    await sgSubscriptionCancelConnectMerchantEmail(
+      merchantFirstName,
+      merchantEmail,
+      customer,
+      productName,
+      subscription
+    );
+
+    await sgSubscriptionCancelConnectCustomerEmail(
+      merchantBusinessName,
+      merchantEmail,
+      customer,
+      productName,
+      subscription
+    );
+
+    return;
+  } catch (error) {
+    throw Error(error);
+  }
+}
+
+async function sendSubscriptionPastDueEmail(
+  merchantUID: string,
+  customer: Stripe.Customer,
+  productName: string,
+  invoice: Stripe.Invoice
+) {
+  try {
+    const merchantRef = db.doc(`merchants/${merchantUID}`);
+    const merchantSnap = await merchantRef.get();
+    const merchantData = merchantSnap.data();
+
+    if (!merchantData) {
+      return;
+    }
+
+    const merchantBusinessName = merchantData.businessName;
+    const merchantEmail = (await auth.getUser(merchantUID)).email!;
+    const merchantFirstName = merchantData.firstName;
+
+    await sgSubscriptionPastDueConnectMerchantEmail(
+      merchantFirstName,
+      merchantEmail,
+      customer,
+      productName,
+      invoice
+    );
+
+    await sgSubscriptionPastDueConnectCustomerEmail(
+      merchantBusinessName,
+      merchantEmail,
+      customer,
+      productName,
+      invoice
+    );
+
+    return;
+  } catch (error) {
+    throw Error(error);
   }
 }

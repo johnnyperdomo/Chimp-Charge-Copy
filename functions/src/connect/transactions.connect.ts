@@ -1,12 +1,22 @@
 import * as admin from 'firebase-admin';
 import Stripe from 'stripe';
 import { stripe } from '../shared/stripe-config';
-const db = admin.firestore();
 import {
   paymentIntentFieldType,
   customerFieldType,
 } from '../shared/extensions';
 import * as functions from 'firebase-functions';
+import {
+  sgPaymentNewConnectCustomerEmail,
+  sgPaymentNewConnectMerchantEmail,
+  sgSubscriptionPaymentNewConnectCustomerEmail,
+  sgSubscriptionPaymentNewConnectMerchantEmail,
+  sgPaymentRefundConnectCustomerEmail,
+  sgPaymentRefundConnectMerchantEmail,
+} from './emails.connect';
+
+const db = admin.firestore();
+const auth = admin.auth();
 
 //Client side ========================>
 
@@ -123,6 +133,13 @@ export async function createFirestoreTransaction(
       merchantUID
     );
 
+    await sendNewPaymentEmail(
+      merchantUID,
+      customerFromExpand,
+      chimp_charge_product_name,
+      paymentIntent
+    );
+
     return;
   } catch (err) {
     throw Error(err);
@@ -216,9 +233,16 @@ export async function createFirestoreTransactionFromInvoice(
       merchantUID
     );
 
+    await sendNewSubscriptionPaymentEmail(
+      merchantUID,
+      retrieveCustomer as Stripe.Customer,
+      chimp_charge_product_name,
+      invoice
+    );
+
     return;
   } catch (error) {
-    functions.logger.error(' invoice transaction error: ' + error);
+    functions.logger.error('invoice transaction error: ' + error);
     throw Error(error);
   }
 }
@@ -272,10 +296,29 @@ export async function refundFirestoreTransaction(
         merchantUID
       );
 
+      const chargeCustomer = await stripe.customers.retrieve(
+        charge.customer as string,
+        { stripeAccount: connectID }
+      );
+
+      const invoiceMetadata = retrieveInvoice.lines.data[0].metadata;
+
+      const productName = invoiceMetadata.chimp_charge_product_name;
+
+      await sendPaymentRefundEmail(
+        merchantUID,
+        chargeCustomer as Stripe.Customer,
+        productName,
+        charge
+      );
+
       return;
     }
 
-    const { chimp_charge_product_id } = charge.metadata;
+    const {
+      chimp_charge_product_id,
+      chimp_charge_product_name,
+    } = charge.metadata;
 
     await batchRefundTransaction(
       transactionRef,
@@ -284,6 +327,18 @@ export async function refundFirestoreTransaction(
       chimp_charge_product_id,
       connectID,
       merchantUID
+    );
+
+    const retrieveCustomer = await stripe.customers.retrieve(
+      charge.customer as string,
+      { stripeAccount: connectID }
+    );
+
+    await sendPaymentRefundEmail(
+      merchantUID,
+      retrieveCustomer as Stripe.Customer,
+      chimp_charge_product_name,
+      charge
     );
 
     return;
@@ -510,6 +565,131 @@ async function refundStripeTransaction(
       }
     );
     return response;
+  } catch (error) {
+    throw Error(error);
+  }
+}
+
+// Sendgrid emails
+
+async function sendNewPaymentEmail(
+  merchantUID: string,
+  customer: Stripe.Customer,
+  productName: string,
+  paymentIntent: Stripe.PaymentIntent
+) {
+  try {
+    const merchantRef = db.doc(`merchants/${merchantUID}`);
+    const merchantSnap = await merchantRef.get();
+    const merchantData = merchantSnap.data();
+
+    if (!merchantData) {
+      return;
+    }
+
+    const merchantBusinessName = merchantData.businessName;
+    const merchantEmail = (await auth.getUser(merchantUID)).email!;
+    const merchantFirstName = merchantData.firstName;
+
+    await sgPaymentNewConnectMerchantEmail(
+      merchantFirstName,
+      merchantEmail,
+      customer,
+      productName,
+      paymentIntent
+    );
+
+    await sgPaymentNewConnectCustomerEmail(
+      merchantBusinessName,
+      merchantEmail,
+      customer,
+      productName,
+      paymentIntent
+    );
+
+    return;
+  } catch (error) {
+    throw Error(error);
+  }
+}
+
+async function sendNewSubscriptionPaymentEmail(
+  merchantUID: string,
+  customer: Stripe.Customer,
+  productName: string,
+  invoice: Stripe.Invoice
+) {
+  try {
+    const merchantRef = db.doc(`merchants/${merchantUID}`);
+    const merchantSnap = await merchantRef.get();
+    const merchantData = merchantSnap.data();
+
+    if (!merchantData) {
+      return;
+    }
+
+    const merchantBusinessName = merchantData.businessName;
+    const merchantEmail = (await auth.getUser(merchantUID)).email!;
+    const merchantFirstName = merchantData.firstName;
+
+    await sgSubscriptionPaymentNewConnectMerchantEmail(
+      merchantFirstName,
+      merchantEmail,
+      customer,
+      productName,
+      invoice
+    );
+
+    await sgSubscriptionPaymentNewConnectCustomerEmail(
+      merchantBusinessName,
+      merchantEmail,
+      customer,
+      productName,
+      invoice
+    );
+
+    return;
+  } catch (error) {
+    throw Error(error);
+  }
+}
+
+async function sendPaymentRefundEmail(
+  merchantUID: string,
+  customer: Stripe.Customer,
+  productName: string,
+  charge: Stripe.Charge
+) {
+  try {
+    const merchantRef = db.doc(`merchants/${merchantUID}`);
+    const merchantSnap = await merchantRef.get();
+    const merchantData = merchantSnap.data();
+
+    if (!merchantData) {
+      return;
+    }
+
+    const merchantBusinessName = merchantData.businessName;
+    const merchantEmail = (await auth.getUser(merchantUID)).email!;
+    const merchantFirstName = merchantData.firstName;
+
+    await sgPaymentRefundConnectMerchantEmail(
+      merchantFirstName,
+      merchantEmail,
+      customer,
+      productName,
+      charge
+    );
+
+    await sgPaymentRefundConnectCustomerEmail(
+      merchantBusinessName,
+      merchantEmail,
+      customer,
+      productName,
+      charge
+    );
+
+    return;
   } catch (error) {
     throw Error(error);
   }

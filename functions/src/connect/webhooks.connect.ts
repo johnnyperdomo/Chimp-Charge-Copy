@@ -76,7 +76,6 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
           chargeRefundedMerchantUID
         );
 
-        //TODO: sendgrid
         return;
       //
       //Customer Events ===========================>
@@ -214,7 +213,6 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
           eventID
         );
 
-        //TODO: sendgrid
         return;
 
       case 'customer.subscription.updated':
@@ -229,25 +227,10 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
           subscriptionUpdated,
           connectID,
           eventID,
-          subscriptionUpdatedMerchantUID
+          subscriptionUpdatedMerchantUID,
+          previousAttributes && previousAttributes.status
         );
 
-        //if subscription has recentlly become past_due, send email
-        if (
-          previousAttributes &&
-          previousAttributes.status === 'active' &&
-          subscriptionUpdated.status === 'past_due'
-        ) {
-          // TODO: send late payment email
-          functions.logger.log(
-            'a new late payment is detected: previous: ' +
-              previousAttributes.status +
-              'recent: ' +
-              subscriptionUpdated.status
-          );
-        }
-
-        // TODO:sendgrid send sendgrid email, to customer on payment failure-> updated payment method, contact merchant for help
         return;
       case 'customer.subscription.deleted':
         const subscriptionDeleted = eventObject as Stripe.Subscription;
@@ -262,7 +245,6 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
           subscriptionDeletedMerchantUID
         );
 
-        //TODO: sendgrid
         return;
 
       case 'account.application.deauthorized':
@@ -282,7 +264,6 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
 //LATER: charge.dispute.closed[lost](update firestore transaction)
 
 //ensures this webhook is associated with chimp charge
-
 async function validateStripeWebhook(
   stripeEvent: Stripe.Event,
   eventType: stripeEventType,

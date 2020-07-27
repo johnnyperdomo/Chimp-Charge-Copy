@@ -27,8 +27,6 @@ export async function handleStripeMerchantWebhooks(event: Stripe.Event) {
 
         await addSubscriptionOnFirestoreMembership(subscriptionCreated);
 
-        // TODO: email
-
         return;
       case 'customer.subscription.updated':
         const subscriptionUpdated = eventObject as Stripe.Subscription;
@@ -46,15 +44,12 @@ export async function handleStripeMerchantWebhooks(event: Stripe.Event) {
             previousAttributes && previousAttributes.status
           );
         }
-        // TODO: email, if new active, or new trialing
 
         return;
       case 'customer.subscription.deleted':
         const subscriptionDeleted = eventObject as Stripe.Subscription;
 
         await cancelSubscriptionOnFirestoreMembership(subscriptionDeleted);
-        // TODO: email
-
         return;
 
       // LATER: send transactional emails based on successful or past due payments, using the 'invoice' webhooks

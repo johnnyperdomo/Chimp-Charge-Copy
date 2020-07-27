@@ -97,24 +97,20 @@ export type subscriptionCancelEmailType = {
 export type paymentNewConnectCustomerEmailType = {
   merchantBusinessName: string;
   merchantEmail: string;
-  customerFirstName: string;
-  customerLastName: string;
+  customerName: string;
   customerEmail: string;
   productName: string;
-  productDescription: string | null;
   transactionID: string;
-  transactionAmount: number; //TODO: money formatter
-  transactionDate: number; //unix //TODO: moment js
+  transactionAmount: number;
+  transactionDate: number; //unix
 };
 
 export type paymentRefundConnectCustomerEmailType = {
   merchantBusinessName: string;
   merchantEmail: string;
-  customerFirstName: string;
-  customerLastName: string;
+  customerName: string;
   customerEmail: string;
   productName: string;
-  productDescription: string | null;
   transactionID: string;
   transactionAmount: number;
   transactionDate: number; //unix
@@ -123,11 +119,9 @@ export type paymentRefundConnectCustomerEmailType = {
 export type subscriptionPaymentNewConnectCustomerEmailType = {
   merchantBusinessName: string;
   merchantEmail: string;
-  customerFirstName: string;
-  customerLastName: string;
+  customerName: string;
   customerEmail: string;
   productName: string;
-  productDescription: string | null;
   invoiceID: string;
   invoiceNumber: string; //a string value
   customerSubscriptionBillingInterval: Stripe.Price.Recurring.Interval;
@@ -138,11 +132,9 @@ export type subscriptionPaymentNewConnectCustomerEmailType = {
 export type subscriptionStartConnectCustomerEmailType = {
   merchantBusinessName: string;
   merchantEmail: string;
-  customerFirstName: string;
-  customerLastName: string;
+  customerName: string;
   customerEmail: string;
   productName: string;
-  productDescription: string | null;
   customerSubscriptionBillingInterval: Stripe.Price.Recurring.Interval;
   customerSubscriptionAmount: number;
   customerSubscriptionStartDate: number; //unix
@@ -151,11 +143,9 @@ export type subscriptionStartConnectCustomerEmailType = {
 export type subscriptionCancelConnectCustomerEmailType = {
   merchantBusinessName: string;
   merchantEmail: string;
-  customerFirstName: string;
-  customerLastName: string;
+  customerName: string;
   customerEmail: string;
   productName: string;
-  productDescription: string | null;
   customerSubscriptionBillingInterval: Stripe.Price.Recurring.Interval;
   customerSubscriptionAmount: number;
   customerSubscriptionCancelledDate: number; //unix
@@ -164,11 +154,9 @@ export type subscriptionCancelConnectCustomerEmailType = {
 export type subscriptionPastDueConnectCustomerEmailType = {
   merchantBusinessName: string;
   merchantEmail: string;
-  customerFirstName: string;
-  customerLastName: string;
+  customerName: string;
   customerEmail: string;
   productName: string;
-  productDescription: string | null;
   invoiceID: string;
   invoiceNumber: string; //a string value
   customerSubscriptionBillingInterval: Stripe.Price.Recurring.Interval;
@@ -182,9 +170,7 @@ export type paymentNewConnectMerchantEmailType = {
   firstName: string; //merchant
   email: string;
   productName: string;
-  productDescription: string | null;
-  customerFirstName: string;
-  customerLastName: string;
+  customerName: string;
   customerEmail: string;
   transactionID: string;
   transactionAmount: number;
@@ -195,9 +181,7 @@ export type paymentRefundConnectMerchantEmailType = {
   firstName: string; //merchant
   email: string;
   productName: string;
-  productDescription: string | null;
-  customerFirstName: string;
-  customerLastName: string;
+  customerName: string;
   customerEmail: string;
   transactionID: string;
   transactionAmount: number;
@@ -208,9 +192,7 @@ export type subscriptionPaymentNewConnectMerchantEmailType = {
   firstName: string; //merchant
   email: string;
   productName: string;
-  productDescription: string | null;
-  customerFirstName: string;
-  customerLastName: string;
+  customerName: string;
   customerEmail: string;
   invoiceID: string;
   invoiceNumber: string; //a string value
@@ -223,9 +205,7 @@ export type subscriptionStartConnectMerchantEmailType = {
   firstName: string; //merchant
   email: string;
   productName: string;
-  productDescription: string | null;
-  customerFirstName: string;
-  customerLastName: string;
+  customerName: string;
   customerEmail: string;
   customerSubscriptionBillingInterval: Stripe.Price.Recurring.Interval;
   customerSubscriptionAmount: number;
@@ -236,9 +216,7 @@ export type subscriptionCancelConnectMerchantEmailType = {
   firstName: string; //merchant
   email: string;
   productName: string;
-  productDescription: string | null;
-  customerFirstName: string;
-  customerLastName: string;
+  customerName: string;
   customerEmail: string;
   customerSubscriptionBillingInterval: Stripe.Price.Recurring.Interval;
   customerSubscriptionAmount: number;
@@ -249,9 +227,7 @@ export type subscriptionPastDueConnectMerchantEmailType = {
   firstName: string; //merchant
   email: string;
   productName: string;
-  productDescription: string | null;
-  customerFirstName: string;
-  customerLastName: string;
+  customerName: string;
   customerEmail: string;
   invoiceID: string;
   invoiceNumber: string; //a string value
