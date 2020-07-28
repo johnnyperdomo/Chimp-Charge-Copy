@@ -10,6 +10,7 @@
   },
   "projects": {
     "production": "chimp-charge",
-    "developer": "chimp-charge-developer"
+    "developer": "chimp-charge-developer",
+    "default": "chimp-charge"
   }
 }

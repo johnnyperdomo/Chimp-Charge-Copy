@@ -104,7 +104,6 @@ export class PaymentListComponent implements OnInit, OnDestroy {
       } catch (err) {
         this.isLoading = false;
         alert(err);
-        console.log(err);
         //LATER: present better error
       }
     }

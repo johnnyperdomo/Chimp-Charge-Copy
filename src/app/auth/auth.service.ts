@@ -77,9 +77,7 @@ export class AuthService {
   }
 
   removeUserLocally() {
-    this.storage.removeItem('user').subscribe((data) => {
-      console.log('successfully removed user from local Storage: ' + data);
-    });
+    this.storage.removeItem('user').subscribe((data) => {});
   }
 
   async fetchUserLocally() {
@@ -98,8 +96,6 @@ export class AuthService {
       _token: string;
       _expirationDate: string;
     } = JSON.parse(String(asyncFetch));
-
-    console.log('fetched async user: ' + user.email);
 
     return user;
   }

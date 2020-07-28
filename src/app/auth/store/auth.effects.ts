@@ -152,8 +152,6 @@ export class AuthEffects {
         currentLocalStorageUser._expirationDate
       );
 
-      console.log(loadedUser);
-
       if (loadedUser.isTokenValid) {
         this.authService.setAutoLogoutTimer(loadedUser.expiresInMilliseconds);
 

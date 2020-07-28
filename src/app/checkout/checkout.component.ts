@@ -176,10 +176,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   async onSubmit(checkoutForm: NgForm) {
-    console.log('on submit');
     this.isPaymentResponseLoading = true;
-
-    console.log('init');
 
     const cardHolderName = checkoutForm.value.cardHolderName;
 
@@ -198,7 +195,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           customerEmail,
           customerName
         );
-        console.log('charge');
 
         if (charge.status && charge.status === 'succeeded') {
           this.router.navigate(['success'], { relativeTo: this.route });
@@ -213,7 +209,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           customerEmail,
           customerName
         );
-        console.log('sub success, ', subscription);
 
         if (subscription.status && subscription.status === 'succeeded') {
           this.router.navigate(['success'], { relativeTo: this.route });
@@ -348,8 +343,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           if (confirmSubscription.error) {
             throw Error(confirmSubscription.error.message);
           }
-
-          console.log('latest, incoice, ', latest_invoice);
 
           return confirmSubscription.paymentIntent; //paymentIntent
         }

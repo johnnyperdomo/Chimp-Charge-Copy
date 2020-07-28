@@ -226,7 +226,6 @@ export class PaymentLinkEditComponent implements OnInit, OnDestroy {
         //LATER: handle this error better: "couldn't load content" try again
         alert(err + ' - Try again.');
         this.router.navigate(['/payment-links/new']);
-        console.log(err);
       }
     }
   }

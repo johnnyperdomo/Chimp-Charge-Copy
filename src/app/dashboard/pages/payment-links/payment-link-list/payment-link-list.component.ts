@@ -49,7 +49,6 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
       .pipe(map((merchantState) => merchantState.merchant))
       .subscribe((payload) => {
         this.currentMerchant.next(payload);
-        console.log('current merchant', this.currentMerchant.getValue());
       });
 
     this.currentMerchantSub = this.currentMerchant
@@ -92,22 +91,17 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
             i.lastUpdated
           );
         });
-        console.log(this.paymentLinks);
 
         this.dataDidLoad = true;
       });
   }
 
   onViewLinkAtRow(itemID: string) {
-    console.log('view link, ' + itemID);
-
     const payLink = this.linkService.copyPayLink(itemID);
     window.open(payLink); //TODO: make sure page loads on production
   }
 
   onCopyLinkAtRow(itemID: string) {
-    console.log('copied link, ' + itemID);
-
     const payLink = this.linkService.copyPayLink(itemID);
     this.clipboard.copy(payLink);
 
@@ -137,7 +131,6 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
       } catch (err) {
         this.isLoading = false;
         alert(err + ' - Try Again');
-        console.log(err);
         //LATER: present error
       }
     }

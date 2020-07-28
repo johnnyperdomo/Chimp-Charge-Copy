@@ -124,8 +124,6 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
       )
       .pipe(
         catchError((err) => {
-          console.log(err);
-
           alert(
             'Unknown error, please try reloading page. Error: Firebase - ' +
               err.code
@@ -197,7 +195,6 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
       } catch (err) {
         this.isLoading = false;
         alert(err);
-        console.log(err);
         //LATER: present better error
       }
     }

@@ -75,7 +75,6 @@ export class PaywallComponent implements OnInit, OnDestroy {
       .subscribe((merchant) => {
         if (merchant) {
           this.currentMerchant = merchant;
-          console.log(merchant);
           this.currentUser = firebase.auth().currentUser;
 
           this.determinePaywallType(merchant.membership);
@@ -218,8 +217,6 @@ export class PaywallComponent implements OnInit, OnDestroy {
         paymentMethod.paymentMethod.id
       );
     } catch (error) {
-      console.log(error.message);
-
       this.paymentResponseError = error.message;
       this.isPaymentResponseLoading = false;
 

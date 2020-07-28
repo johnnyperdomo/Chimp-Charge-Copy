@@ -19,8 +19,6 @@ export async function connectStandardIntegration(data: any, userID: string) {
 
     return stripeResponse;
   } catch (err) {
-    console.log(err);
-
     throw new functions.https.HttpsError('unknown', err);
   }
 }

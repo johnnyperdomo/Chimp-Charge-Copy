@@ -101,7 +101,6 @@ export class SecurityComponent implements OnInit, OnDestroy {
 
       //LATER: trigger success alert
     } catch (err) {
-      console.log(err);
       //FIX: sometimes when changing email i get this bug 'cannot read property 'reset' of undefined'
       this.changeEmailError = err;
       this.isChangeEmailLoading = false;
@@ -129,7 +128,6 @@ export class SecurityComponent implements OnInit, OnDestroy {
     this.isChangePasswordLoading = true;
     try {
       const currentUser = await this.auth.currentUser;
-      console.log('original', currentUser);
 
       await currentUser.reauthenticateWithCredential(credentials);
 
@@ -144,14 +142,10 @@ export class SecurityComponent implements OnInit, OnDestroy {
           redirect: false,
         })
       );
-      console.log('original 2,', currentUser);
-      console.log('updated', updatedUser);
 
       //LATER: trigger success alert
       this.isChangePasswordLoading = false;
       this.passwordForm.reset();
-
-      console.log('success');
     } catch (err) {
       this.changePasswordError = err;
       this.isChangePasswordLoading = false;

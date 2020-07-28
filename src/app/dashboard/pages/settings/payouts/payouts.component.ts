@@ -23,7 +23,6 @@ export class PayoutsComponent implements OnInit, OnDestroy {
           filter((merchant) => merchant !== null)
         )
         .subscribe((merchant) => {
-          console.log('merchants');
           this.isStripeConnectAuthorized = !merchant.connectID ? false : true;
         });
     });

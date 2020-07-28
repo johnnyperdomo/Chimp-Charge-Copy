@@ -62,7 +62,6 @@ export class AccountComponent implements OnInit, OnDestroy {
 
   async onSubmit(accountForm: NgForm) {
     // LATER: add loading spinner
-    console.log(accountForm);
 
     if (!accountForm.valid) {
       return;
@@ -91,7 +90,6 @@ export class AccountComponent implements OnInit, OnDestroy {
       //FIX: reconfigure function, cuz this tries to get data from server again, instead of just getting it locally; there's lag on client side
       this.merchantService.getMerchantInfo(this.merchant.merchantUID);
     } catch (err) {
-      console.log(err);
       alert(err + ' - Try Again.');
       //LATER: present error
     }
