@@ -127,6 +127,7 @@ export async function createFirestoreTransaction(
       transactionRef,
       transactionDocBody,
       expandedPaymentIntent.amount,
+      expandedPaymentIntent.currency,
       customerFromExpand.id,
       chimp_charge_product_id,
       connectID,
@@ -227,6 +228,7 @@ export async function createFirestoreTransactionFromInvoice(
       transactionRef,
       transactionDocBody,
       invoice.amount_paid,
+      invoice.currency,
       invoice.customer as string,
       chimp_charge_product_id,
       connectID,
@@ -290,6 +292,7 @@ export async function refundFirestoreTransaction(
       await batchRefundTransaction(
         transactionRef,
         charge.amount,
+        charge.currency,
         charge.customer as string,
         stripeProductID,
         connectID,
@@ -323,6 +326,7 @@ export async function refundFirestoreTransaction(
     await batchRefundTransaction(
       transactionRef,
       charge.amount,
+      charge.currency,
       charge.customer as string,
       chimp_charge_product_id,
       connectID,
@@ -388,6 +392,7 @@ async function batchCreateTransaction(
   >,
   transactionDocBody: any,
   transactionAmount: number,
+  transactionCurrency: string,
   stripeCustomerID: string,
   productID: string,
   connectID: string,
@@ -406,7 +411,13 @@ async function batchCreateTransaction(
 
     const paymentLinkRef = findPaymentLinkFromProduct.docs[0].ref;
     const customerRef = findCustomer.docs[0].ref;
-    const aggregationRef = db.collection('aggregations').doc(connectID);
+
+    // sub-collection, grouped by currency
+    const aggregationCurrenciesRef = db
+      .collection('aggregations')
+      .doc(connectID)
+      .collection('currencies')
+      .doc(transactionCurrency);
 
     const increment = admin.firestore.FieldValue.increment(1);
     const transactionAmountIncrement = admin.firestore.FieldValue.increment(
@@ -420,7 +431,7 @@ async function batchCreateTransaction(
 
     //aggregation map
     batch.set(
-      aggregationRef,
+      aggregationCurrenciesRef,
       {
         transactions: {
           successfulCount: increment,
@@ -472,6 +483,7 @@ async function batchRefundTransaction(
     FirebaseFirestore.DocumentData
   >,
   refundAmount: number,
+  refundCurrency: string,
   stripeCustomerID: string,
   productID: string,
   connectID: string,
@@ -490,7 +502,13 @@ async function batchRefundTransaction(
 
     const paymentLinkRef = findPaymentLinkFromProduct.docs[0].ref;
     const customerRef = findCustomer.docs[0].ref;
-    const aggregationRef = db.collection('aggregations').doc(connectID);
+
+    // sub-collection, grouped by currency
+    const aggregationCurrenciesRef = db
+      .collection('aggregations')
+      .doc(connectID)
+      .collection('currencies')
+      .doc(refundCurrency);
 
     const increment = admin.firestore.FieldValue.increment(1);
     const refundAmountIncrement = admin.firestore.FieldValue.increment(
@@ -507,7 +525,7 @@ async function batchRefundTransaction(
 
     //aggregation map
     batch.set(
-      aggregationRef,
+      aggregationCurrenciesRef,
       {
         transactions: {
           refundedCount: increment,

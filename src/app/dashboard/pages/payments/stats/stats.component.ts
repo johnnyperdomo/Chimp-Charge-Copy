@@ -2,10 +2,19 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Store } from '@ngrx/store';
 import * as fromApp from 'src/app/shared/app-store/app.reducer';
-import { Subscription, BehaviorSubject, empty } from 'rxjs';
+import {
+  Subscription,
+  BehaviorSubject,
+  empty,
+  forkJoin,
+  concat,
+  combineLatest,
+} from 'rxjs';
 import { Merchant } from 'src/app/merchants/merchant.model';
 import { map, filter, mergeMap, catchError, take } from 'rxjs/operators';
 import { Stats } from './stats.model';
+import { AggStats } from './agg-stats.model';
+import { CurrencyStats } from './currency-stats.model';
 @Component({
   selector: 'app-stats',
   templateUrl: './stats.component.html',
@@ -16,7 +25,8 @@ export class StatsComponent implements OnInit, OnDestroy {
   currentMerchantSub: Subscription;
   currentMerchant = new BehaviorSubject<Merchant>(null);
 
-  stats: Stats = null; //aggregation map
+  aggStats: AggStats = null; //aggregation map
+  currencyStats: CurrencyStats = null; //currency aggregation map
 
   constructor(
     private db: AngularFirestore,
@@ -37,10 +47,19 @@ export class StatsComponent implements OnInit, OnDestroy {
         filter((merchant) => merchant.connectID !== null),
         take(1),
         mergeMap((retrievedMerchant) => {
-          return this.db
+          const aggregationObs = this.db
             .collection('aggregations')
-            .doc<Stats>(retrievedMerchant.connectID)
+            .doc<AggStats>(retrievedMerchant.connectID)
             .valueChanges();
+
+          const currencyAggregationObs = this.db
+            .collection(`aggregations`)
+            .doc(retrievedMerchant.connectID)
+            .collection('currencies')
+            .doc<CurrencyStats>('usd')
+            .valueChanges();
+
+          return combineLatest(aggregationObs, currencyAggregationObs);
         })
       )
       .pipe(
@@ -52,15 +71,28 @@ export class StatsComponent implements OnInit, OnDestroy {
           return empty();
         })
       )
-      .subscribe((i) => {
+      .subscribe((data) => {
         //LATER: check to see if field item exists, if not, return 0
-        this.stats = new Stats(
-          i.merchantUID,
-          i.connectID,
-          i.customerCount,
-          i.subscriptions,
-          i.transactions
-        );
+
+        const agg = data[0];
+        const currency = data[1];
+
+        if (agg) {
+          this.aggStats = new AggStats(
+            agg.merchantUID,
+            agg.connectID,
+            agg.customerCount,
+            agg.subscriptions
+          );
+        }
+
+        if (currency) {
+          this.currencyStats = new CurrencyStats(
+            currency.merchantUID,
+            currency.connectID,
+            currency.transactions
+          );
+        }
       });
   }
 

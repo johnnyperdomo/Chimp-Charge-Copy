@@ -41,8 +41,8 @@
               </h6>
 
               <!-- Heading -->
-              <span *ngIf="stats" class="h2 mb-0">
-                {{ stats.customerCount || 0 }}
+              <span class="h2 mb-0">
+                {{ (aggStats && aggStats.customerCount) || 0 }}
               </span>
             </div>
 
@@ -64,9 +64,12 @@
               </h6>
 
               <!-- Heading -->
-              <span *ngIf="stats" class="h2 mb-0">
+              <span class="h2 mb-0">
                 {{
-                  (stats.subscriptions && stats.subscriptions.activeCount) || 0
+                  (aggStats &&
+                    aggStats.subscriptions &&
+                    aggStats.subscriptions.activeCount) ||
+                    0
                 }}
               </span>
             </div>
@@ -89,8 +92,8 @@
               </h6>
 
               <!-- Heading -->
-              <span *ngIf="stats" class="h2 mb-0">
-                {{ stats.successfulAmount }}
+              <span class="h2 mb-0">
+                {{ (currencyStats && currencyStats.successfulAmount) || "$0" }}
               </span>
             </div>
 
