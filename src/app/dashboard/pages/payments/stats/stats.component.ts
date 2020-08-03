@@ -2,17 +2,9 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Store } from '@ngrx/store';
 import * as fromApp from 'src/app/shared/app-store/app.reducer';
-import {
-  Subscription,
-  BehaviorSubject,
-  empty,
-  forkJoin,
-  concat,
-  combineLatest,
-} from 'rxjs';
+import { Subscription, BehaviorSubject, empty, combineLatest } from 'rxjs';
 import { Merchant } from 'src/app/merchants/merchant.model';
 import { map, filter, mergeMap, catchError, take } from 'rxjs/operators';
-import { Stats } from './stats.model';
 import { AggStats } from './agg-stats.model';
 import { CurrencyStats } from './currency-stats.model';
 @Component({

@@ -1,7 +1,6 @@
 import { SubscriptionsAggregationFieldInterface } from 'src/app/shared/interfaces';
 
 //aggregation map, quick stats on connect data
-//check to see if field values exist
 export class AggStats {
   public merchantUID: string;
   public connectID: string;
