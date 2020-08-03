@@ -15,6 +15,7 @@ import { HelperService } from 'src/app/shared/helper.service';
 import { environment } from 'src/environments/environment';
 import { v4 as uuidv4 } from 'uuid';
 import * as firebase from 'firebase/app';
+import * as moment from 'moment';
 
 // This lets me use jquery
 declare var $: any;
@@ -49,6 +50,8 @@ export class PaywallComponent implements OnInit, OnDestroy {
   isCardPaymentComplete: boolean = false; //successful card input
   isPaymentResponseLoading: boolean = false;
   paymentResponseError: string;
+
+  sevenDaysFromNow = moment().add(7, 'days').format('MMMM Do'); //for trial expiration date; usually 7 days
 
   constructor(
     private store: Store<fromApp.AppState>,
