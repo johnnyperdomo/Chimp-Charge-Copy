@@ -10,6 +10,7 @@ import { Merchant } from 'src/app/merchants/merchant.model';
 import { HelperService } from 'src/app/shared/helper.service';
 import { PaymentLinkService } from '../payment-link.service';
 import { Clipboard } from '@angular/cdk/clipboard';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-payment-link-list',
@@ -34,7 +35,8 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
     private store: Store<fromApp.AppState>,
     private helperService: HelperService,
     private linkService: PaymentLinkService,
-    private clipboard: Clipboard
+    private clipboard: Clipboard,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -103,9 +105,11 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
 
   onCopyLinkAtRow(itemID: string) {
     const payLink = this.linkService.copyPayLink(itemID);
-    this.clipboard.copy(payLink);
 
-    //LATER: add alert upon success
+    this.clipboard.copy(payLink);
+    this.snackBar.open('Link copied to clipboard.', '', {
+      duration: 2000,
+    });
   }
 
   onEditLinkAtRow(itemID: string) {
@@ -127,6 +131,11 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
           currentLink.product.id
         );
         this.isLoading = false;
+
+        this.snackBar.open('Link successfully deleted.', '', {
+          duration: 2000,
+        });
+
         return response;
       } catch (err) {
         this.isLoading = false;

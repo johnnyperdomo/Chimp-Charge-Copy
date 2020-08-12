@@ -23,6 +23,7 @@ import {
 import { Customer } from '../../customers/customer.model';
 import { PaymentLink } from '../../payment-links/payment-link.model';
 import { HelperService } from 'src/app/shared/helper.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-subscriber-list',
@@ -47,7 +48,8 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
   constructor(
     private db: AngularFirestore,
     private store: Store<fromApp.AppState>,
-    private helperService: HelperService
+    private helperService: HelperService,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -191,6 +193,11 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
         );
 
         this.isLoading = false;
+
+        this.snackBar.open('Subscription successfully cancelled.', '', {
+          duration: 2000,
+        });
+
         return response;
       } catch (err) {
         this.isLoading = false;

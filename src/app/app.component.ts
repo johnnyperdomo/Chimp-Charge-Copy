@@ -20,6 +20,7 @@ export class AppComponent implements OnInit {
   }
 }
 
+//LATER: see where you can replace certain components, using angular material components, like loading spinners, dialogs, etc.... way easier, and faster
 //LATER: make all 'lists' text wrapper for long texts, to make it response
 
 //LATER: fix firebase query reads; make sure app doesn't query on each component load, but does so one time, and can also from ngrx store to load this instead on the component. Maybee load a limited amount of most recent data once on initial app.comp.ts load, and then only fetch new data on pagination change, or on individual snapshot changes. i.e, limit => 10 of the most recent transactions.(don't want to get unnecesary needs user won't read)

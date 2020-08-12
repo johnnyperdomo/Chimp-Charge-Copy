@@ -8,6 +8,7 @@ import { Store } from '@ngrx/store';
 import * as fromApp from 'src/app/shared/app-store/app.reducer';
 import { HelperService } from 'src/app/shared/helper.service';
 import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-transaction-list',
@@ -30,7 +31,8 @@ export class PaymentListComponent implements OnInit, OnDestroy {
     private store: Store<fromApp.AppState>,
     private helperService: HelperService,
     private zone: NgZone,
-    private router: Router
+    private router: Router,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -100,6 +102,11 @@ export class PaymentListComponent implements OnInit, OnDestroy {
         );
 
         this.isLoading = false;
+
+        this.snackBar.open('Payment successfully refunded.', '', {
+          duration: 2000,
+        });
+
         return response;
       } catch (err) {
         this.isLoading = false;

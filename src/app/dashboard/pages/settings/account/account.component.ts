@@ -14,6 +14,7 @@ import { MerchantService } from 'src/app/merchants/merchants.service';
 import { Merchant } from 'src/app/merchants/merchant.model';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { HelperService } from 'src/app/shared/helper.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-account',
@@ -36,7 +37,8 @@ export class AccountComponent implements OnInit, OnDestroy {
     private store: Store<fromApp.AppState>,
     private merchantService: MerchantService,
     private db: AngularFirestore,
-    private helperService: HelperService
+    private helperService: HelperService,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -89,12 +91,14 @@ export class AccountComponent implements OnInit, OnDestroy {
 
       //FIX: reconfigure function, cuz this tries to get data from server again, instead of just getting it locally; there's lag on client side
       this.merchantService.getMerchantInfo(this.merchant.merchantUID);
+
+      this.snackBar.open('Settings successfully updated.', '', {
+        duration: 2000,
+      });
     } catch (err) {
       alert(err + ' - Try Again.');
       //LATER: present error
     }
-
-    //LATER: present alert on success
   }
 
   ngOnDestroy() {

@@ -54,6 +54,8 @@ import { PayoutsListComponent } from './dashboard/pages/settings/payouts/payout-
 import { BalanceComponent } from './dashboard/pages/settings/payouts/balance/balance.component';
 import { StatsComponent } from './dashboard/pages/payments/stats/stats.component';
 import { PaywallComponent } from './dashboard/paywall/paywall.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 firebase.initializeApp(environment.firebase);
 
@@ -105,6 +107,8 @@ firebase.initializeApp(environment.firebase);
     StoreRouterConnectingModule.forRoot(),
     EffectsModule.forRoot([AuthEffects, MerchantEffects]),
     AppRoutingModule,
+    BrowserAnimationsModule,
+    MatSnackBarModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

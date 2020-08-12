@@ -16,6 +16,7 @@ import * as firebase from 'firebase/app';
 import * as AuthActions from '../../../../auth/store/auth.actions';
 import { User } from 'src/app/auth/user.model';
 import { HelperService } from 'src/app/shared/helper.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-security',
@@ -41,7 +42,8 @@ export class SecurityComponent implements OnInit, OnDestroy {
     private store: Store<fromApp.AppState>,
     private auth: AngularFireAuth,
     private formBuilder: FormBuilder,
-    private helperService: HelperService
+    private helperService: HelperService,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -99,7 +101,9 @@ export class SecurityComponent implements OnInit, OnDestroy {
       this.isChangeEmailLoading = false;
       this.emailForm.controls['confirmCurrentPassword'].reset();
 
-      //LATER: trigger success alert
+      this.snackBar.open('Email successfully updated.', '', {
+        duration: 2000,
+      });
     } catch (err) {
       //FIX: sometimes when changing email i get this bug 'cannot read property 'reset' of undefined'
       this.changeEmailError = err;
@@ -136,6 +140,8 @@ export class SecurityComponent implements OnInit, OnDestroy {
 
       const updatedUser = this.getUpdatedUser(currentUser, newTokenResult);
 
+      //FIX: error: redo this function(this.store.dispatch), or fix: when changing password and dispatching action, page is redirected, not the intended response
+
       this.store.dispatch(
         new AuthActions.AuthenticateSuccess({
           user: updatedUser,
@@ -143,9 +149,12 @@ export class SecurityComponent implements OnInit, OnDestroy {
         })
       );
 
-      //LATER: trigger success alert
       this.isChangePasswordLoading = false;
       this.passwordForm.reset();
+
+      this.snackBar.open('Password successfully updated.', '', {
+        duration: 2000,
+      });
     } catch (err) {
       this.changePasswordError = err;
       this.isChangePasswordLoading = false;

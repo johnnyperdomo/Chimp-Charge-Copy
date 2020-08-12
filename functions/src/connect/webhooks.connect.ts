@@ -170,6 +170,8 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
       //Subscription Events ==================>
       //
       case 'invoice.payment_succeeded':
+        //FIX : rare instances that this is not batched correctly either, so the sub would process from stripe side, but it would not add to dashboard. Try to see why. Maybe some code runs in front of the other and blocks it. This usually tends to happen with sub payments, one time payments are perfect with this; i see this happen during a cold start, after this hasn't been shot in a long time.
+
         const invoicePaymentSucceeded = eventObject as Stripe.Invoice;
         const invoicePaymentSuccessMerchantUID = await validateStripeWebhook(
           event,
@@ -190,6 +192,8 @@ export async function handleStripeConnectWebhooks(event: Stripe.Event) {
 
       //Subscriptions
       case 'customer.subscription.created':
+        //FIX : rare instances that this is not batched correctly, so the sub would process, but it would not add to dashboard. Try to see why. Maybe some code runs in front of the other and blocks it.
+
         //only active or trialing === success
         const subscriptionCreated = eventObject as Stripe.Subscription;
         if (
