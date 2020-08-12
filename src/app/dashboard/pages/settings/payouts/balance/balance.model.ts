@@ -8,6 +8,7 @@ export class Balance {
     this.balance = balance;
   }
 
+  // on the way to bank
   get availableAmount() {
     //i.e. $350.00
 
@@ -19,6 +20,7 @@ export class Balance {
     return MoneyFormatter.convertMinorUnitToStandard(totalAvailable);
   }
 
+  // estimated future payouts; rolling day cycles
   get pendingAmount() {
     //i.e. $350.00
 

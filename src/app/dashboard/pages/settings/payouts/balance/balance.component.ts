@@ -13,6 +13,7 @@ export class BalanceComponent implements OnInit {
 
   constructor(private helperService: HelperService) {}
 
+  //LATER: if balance is negative, show a tooltip explaining why balance is negative(cuz refunds or disputes exceed balance)
   ngOnInit(): void {
     //LATER: add loading spinner
     this.getBalance();

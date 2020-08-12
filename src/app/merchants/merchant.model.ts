@@ -8,6 +8,11 @@ export class Merchant {
     public merchantUID: string,
     public connectID: string = null, //stripe connect account id
     public customerID: string = null, //stripe customer id
-    public membership: MembershipFieldInterface = null //{}
+    public membership: MembershipFieldInterface = null, //{}
+
+    // Schema Version 2.1.0 //
+    //TODO: do all of this in a new branch not here
+    //TODO: have a 'type' for currencies
+    public defaultCurrency: string = 'usd' 
   ) {}
 }

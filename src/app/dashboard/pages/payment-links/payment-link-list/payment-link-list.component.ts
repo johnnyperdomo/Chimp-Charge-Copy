@@ -98,7 +98,7 @@ export class PaymentLinkListComponent implements OnInit, OnDestroy {
 
   onViewLinkAtRow(itemID: string) {
     const payLink = this.linkService.copyPayLink(itemID);
-    window.open(payLink); //TODO: make sure page loads on production
+    window.open(payLink);
   }
 
   onCopyLinkAtRow(itemID: string) {
