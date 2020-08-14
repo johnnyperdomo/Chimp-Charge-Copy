@@ -33,18 +33,18 @@
       </thead>
       <tbody class="list">
         <!-- LATER: Make table rows fully tappable, or just allow txn id to be a tappable link, then leads to more in-depth information about the payment -->
-        <tr *ngFor="let subscriberEl of subscribers">
+        <tr *ngFor="let subscriptionEl of subscriptions">
           <td>
-            <h5 class="mb-0">{{ subscriberEl.customer.name }}</h5>
+            <h5 class="mb-0">{{ subscriptionEl.customer.name }}</h5>
             <p class="card-text small text-muted mb-0">
-              {{ subscriberEl.customer.email }}
+              {{ subscriptionEl.customer.email }}
             </p>
           </td>
           <td>
-            <h5 class="mb-0">{{ subscriberEl.paymentLink.name }}</h5>
+            <h5 class="mb-0">{{ subscriptionEl.paymentLink.name }}</h5>
             <p class="card-text small text-muted mb-0">
-              {{ subscriberEl.linkAmount }} -
-              {{ subscriberEl.billingInterval }}
+              {{ subscriptionEl.linkAmount }} -
+              {{ subscriptionEl.billingInterval }}
             </p>
           </td>
           <td>
@@ -52,24 +52,24 @@
               <span
                 class="badge badge-pill"
                 [ngClass]="{
-                  'badge-soft-primary': subscriberEl.status === 'active',
-                  'badge-soft-info': subscriberEl.status === 'trialing',
-                  'badge-soft-warning': subscriberEl.status === 'past_due',
-                  'badge-soft-danger': subscriberEl.status === 'unpaid',
-                  'badge-soft-secondary': subscriberEl.status === 'canceled'
+                  'badge-soft-primary': subscriptionEl.status === 'active',
+                  'badge-soft-info': subscriptionEl.status === 'trialing',
+                  'badge-soft-warning': subscriptionEl.status === 'past_due',
+                  'badge-soft-danger': subscriptionEl.status === 'unpaid',
+                  'badge-soft-secondary': subscriptionEl.status === 'canceled'
                 }"
               >
-                <b>{{ subscriberEl.status }}</b>
+                <b>{{ subscriptionEl.status }}</b>
               </span>
             </h4>
           </td>
-          <td>{{ subscriberEl.created }}</td>
+          <td>{{ subscriptionEl.created }}</td>
           <td class="text-right">
             <button
-              *ngIf="subscriberEl.isCancelled === false"
+              *ngIf="subscriptionEl.isCancelled === false"
               type="button"
               (click)="
-                onCancelSubAtRow(subscriberEl.subscription.subscriptionID)
+                onCancelSubAtRow(subscriptionEl.subscription.subscriptionID)
               "
               class="btn btn-outline-danger btn-sm"
             >
@@ -85,11 +85,11 @@
   <!-- // LATER: don't show text at all if data loading -->
   <div
     [hidden]="
-      (dataDidLoad === true && subscribers.length !== 0) ||
+      (dataDidLoad === true && subscriptions.length !== 0) ||
       dataDidLoad === false
     "
     class="row justify-content-center my-6"
   >
-    <h2 class="text-muted">No Subscribers</h2>
+    <h2 class="text-muted">No Subscriptions</h2>
   </div>
 </div>

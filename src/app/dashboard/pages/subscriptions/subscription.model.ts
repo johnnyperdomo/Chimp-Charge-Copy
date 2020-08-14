@@ -7,7 +7,7 @@ import * as MoneyFormatter from 'src/app/shared/accounting';
 import * as moment from 'moment';
 import Stripe from 'stripe';
 
-export class Subscriber {
+export class Subscription {
   public id: string;
   public merchantUID: string;
   public connectID: string;

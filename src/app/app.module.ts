@@ -7,7 +7,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { HeaderComponent } from './dashboard/header/header.component';
 import { PaymentsComponent } from './dashboard/pages/payments/transactions.component';
 import { CustomersComponent } from './dashboard/pages/customers/customers.component';
-import { SubscribersComponent } from './dashboard/pages/subscribers/subscribers.component';
+import { SubscriptionsComponent } from './dashboard/pages/subscriptions/subscriptions.component';
 import { PaymentLinksComponent } from './dashboard/pages/payment-links/payment-links.component';
 import { SettingsComponent } from './dashboard/pages/settings/settings.component';
 import { AccountComponent } from './dashboard/pages/settings/account/account.component';
@@ -17,7 +17,7 @@ import { PaymentListComponent } from './dashboard/pages/payments/transaction-lis
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CustomerListComponent } from './dashboard/pages/customers/customer-list/customer-list.component';
 import { PaymentLinkListComponent } from './dashboard/pages/payment-links/payment-link-list/payment-link-list.component';
-import { SubscriberListComponent } from './dashboard/pages/subscribers/subscriber-list/subscriber-list.component';
+import { SubscriptionListComponent } from './dashboard/pages/subscriptions/subscription-list/subscription-list.component';
 import { SignUpComponent } from './auth/sign-up/sign-up.component';
 import { LoginComponent } from './auth/login/login.component';
 import { AuthComponent } from './auth/auth.component';
@@ -66,7 +66,7 @@ firebase.initializeApp(environment.firebase);
     HeaderComponent,
     PaymentsComponent,
     CustomersComponent,
-    SubscribersComponent,
+    SubscriptionsComponent,
     PaymentLinksComponent,
     SettingsComponent,
     AccountComponent,
@@ -75,7 +75,7 @@ firebase.initializeApp(environment.firebase);
     PaymentListComponent,
     CustomerListComponent,
     PaymentLinkListComponent,
-    SubscriberListComponent,
+    SubscriptionListComponent,
     SignUpComponent,
     LoginComponent,
     AuthComponent,

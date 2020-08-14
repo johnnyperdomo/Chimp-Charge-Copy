@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscriber } from '../subscriber.model';
+import { Subscription as SubscriptionModel } from '../subscription.model';
 import {
   Subscription,
   BehaviorSubject,
@@ -26,24 +26,24 @@ import { HelperService } from 'src/app/shared/helper.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
-  selector: 'app-subscriber-list',
-  templateUrl: './subscriber-list.component.html',
-  styleUrls: ['./subscriber-list.component.scss'],
+  selector: 'app-subscription-list',
+  templateUrl: './subscription-list.component.html',
+  styleUrls: ['./subscription-list.component.scss'],
 })
-export class SubscriberListComponent implements OnInit, OnDestroy {
+export class SubscriptionListComponent implements OnInit, OnDestroy {
   merchantStoreSub: Subscription;
   currentMerchantSub: Subscription;
   currentMerchant = new BehaviorSubject<Merchant>(null);
 
   isLoading: boolean = false;
 
-  subscribers: Subscriber[] = [];
+  subscriptions: SubscriptionModel[] = [];
 
   dataDidLoad: boolean = false; //to see whether firebase data already loaded
 
   //measure data mapping sequence
-  subscriberSequenceArray: any[][] = [];
-  expectedSubscribersCount: number;
+  subscriptionSequenceArray: any[][] = [];
+  expectedSubscriptionsCount: number;
 
   constructor(
     private db: AngularFirestore,
@@ -83,7 +83,7 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
           }
 
           return subscriptions.map((sub) => {
-            this.expectedSubscribersCount = subscriptions.length; //to calculate mapping sequence position
+            this.expectedSubscriptionsCount = subscriptions.length; //to calculate mapping sequence position
 
             //get customer that belongs from this subscription
             const customerObs = this.db
@@ -146,26 +146,26 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
       )
       .subscribe((data) => {
         const flattenedArr: any[] = Array.prototype.concat.apply([], data); //[[0]sub{}, [1]customer{}, [2] link{} ]
-        this.subscriberSequenceArray.push(flattenedArr);
+        this.subscriptionSequenceArray.push(flattenedArr);
 
         //wait until observable sequence mapping finishes;
         if (
-          this.subscriberSequenceArray.length === this.expectedSubscribersCount
+          this.subscriptionSequenceArray.length === this.expectedSubscriptionsCount
         ) {
           //filter out objects that are undefined, & missing relational data in the rare case, needs to be 3 items
-          const filteredArr = this.subscriberSequenceArray
+          const filteredArr = this.subscriptionSequenceArray
             .filter((arr) => arr[0] !== undefined)
             .filter((arr) => arr[1] !== undefined)
             .filter((arr) => arr[2] !== undefined)
             .filter((arr) => arr.length == 3);
 
-          //map values to subscriber list
-          this.subscribers = filteredArr.map((valueArr) => {
+          //map values to subscription list
+          this.subscriptions = filteredArr.map((valueArr) => {
             const subscription = valueArr[0];
             const customer: Customer = valueArr[1];
             const paymentLink: PaymentLink = valueArr[2];
 
-            return new Subscriber(
+            return new SubscriptionModel(
               subscription.id,
               subscription.merchantUID,
               subscription.connectID,
@@ -185,8 +185,8 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
               subscription.lastUpdated
             );
           });
-          this.expectedSubscribersCount = 0;
-          this.subscriberSequenceArray = [];
+          this.expectedSubscriptionsCount = 0;
+          this.subscriptionSequenceArray = [];
           this.dataDidLoad = true;
         }
       });

@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { PaymentsComponent } from './dashboard/pages/payments/transactions.component';
 import { CustomersComponent } from './dashboard/pages/customers/customers.component';
-import { SubscribersComponent } from './dashboard/pages/subscribers/subscribers.component';
+import { SubscriptionsComponent } from './dashboard/pages/subscriptions/subscriptions.component';
 import { PaymentLinksComponent } from './dashboard/pages/payment-links/payment-links.component';
 import { SettingsComponent } from './dashboard/pages/settings/settings.component';
 import { AccountComponent } from './dashboard/pages/settings/account/account.component';
@@ -71,8 +71,8 @@ const routes: Routes = [
     data: { authGuardPipe: redirectUnauthorizedToLogin },
   },
   {
-    path: 'subscribers',
-    component: SubscribersComponent,
+    path: 'subscriptions',
+    component: SubscriptionsComponent,
     canActivate: [AngularFireAuthGuard],
     data: { authGuardPipe: redirectUnauthorizedToLogin },
   },
