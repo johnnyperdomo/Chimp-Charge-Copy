@@ -47,9 +47,9 @@
         <!-- LATER: Make table rows fully tappable, or just allow txn id to be a tappable link, then leads to more in-depth information about the payment -->
         <tr *ngFor="let transactionEl of transactions">
           <td>
-            <h5 class="mb-0">{{ transactionEl.customer.name }}</h5>
+            <h5 class="mb-0">{{ transactionEl.upToDateCustomer.name }}</h5>
             <p class="card-text small text-muted mb-0">
-              {{ transactionEl.customer.email }}
+              {{ transactionEl.upToDateCustomer.email }}
             </p>
           </td>
           <td>{{ transactionEl.shortTxnID }}</td>

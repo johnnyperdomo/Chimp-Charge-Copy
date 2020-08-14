@@ -176,6 +176,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   async onSubmit(checkoutForm: NgForm) {
+    // note: customer is created by default, even if the payment is not successful, so you can capture any potential leads that may have been lost.
+
     this.isPaymentResponseLoading = true;
 
     const cardHolderName = checkoutForm.value.cardHolderName;
@@ -364,3 +366,5 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     }
   }
 }
+
+//LATER: maybe let merchant create custom fields, like firstname, lastname. Example: memberstack.io

@@ -60,13 +60,12 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
         this.currentMerchant.next(payload);
       });
 
-    //LATER: listen to snapshot changes of payment links, and customers, if something changes there, retrigger sub function
+    //FIX: listen to snapshot changes of payment links, and customers, if something changes there, retrigger sub function
     this.currentMerchantSub = this.currentMerchant
       .pipe(
         filter((retrievedMerchant) => retrievedMerchant !== null),
         take(1),
         mergeMap((retrievedMerchant) => {
-          //only execute if merchant not null
           return this.db
             .collection<any>(
               'subscriptions',
@@ -99,7 +98,13 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
                   .limit(1)
               )
               .get()
-              .pipe(map((doc) => doc.docs[0].data()));
+              .pipe(
+                map((doc) => {
+                  if (!doc.empty) {
+                    return doc.docs[0].data();
+                  }
+                })
+              );
 
             //get payment link that belongs to this subscription
             const paymentLinkObs = this.db
@@ -115,7 +120,13 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
                   .limit(1)
               )
               .get()
-              .pipe(map((doc) => doc.docs[0].data()));
+              .pipe(
+                map((doc) => {
+                  if (!doc.empty) {
+                    return doc.docs[0].data();
+                  }
+                })
+              );
 
             return combineLatest(of(sub), customerObs, paymentLinkObs);
           });
@@ -141,10 +152,12 @@ export class SubscriberListComponent implements OnInit, OnDestroy {
         if (
           this.subscriberSequenceArray.length === this.expectedSubscribersCount
         ) {
-          //filter out objects that are missing relational data in the rare case, needs to be 3 items
-          const filteredArr = this.subscriberSequenceArray.filter(
-            (arr) => arr.length == 3
-          );
+          //filter out objects that are undefined, & missing relational data in the rare case, needs to be 3 items
+          const filteredArr = this.subscriberSequenceArray
+            .filter((arr) => arr[0] !== undefined)
+            .filter((arr) => arr[1] !== undefined)
+            .filter((arr) => arr[2] !== undefined)
+            .filter((arr) => arr.length == 3);
 
           //map values to subscriber list
           this.subscribers = filteredArr.map((valueArr) => {

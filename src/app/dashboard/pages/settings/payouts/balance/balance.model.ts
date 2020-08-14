@@ -8,6 +8,10 @@ export class Balance {
     this.balance = balance;
   }
 
+  //TODO: remove this for now, because the available balance is retrieveing datat from the wrong object, it should a payout object with 'in_transit' status, fix in future update; comment the code out
+
+  //LATER: get list of all payouts, and then only get the 'in_transit' status, that is 'on the way to bank' method.
+
   // on the way to bank
   get availableAmount() {
     //i.e. $350.00
@@ -20,7 +24,7 @@ export class Balance {
     return MoneyFormatter.convertMinorUnitToStandard(totalAvailable);
   }
 
-  // estimated future payouts; rolling day cycles
+  // estimated future payouts; subject rolling day cycles
   get pendingAmount() {
     //i.e. $350.00
 

@@ -13,6 +13,8 @@ export class Merchant {
     // Schema Version 2.1.0 //
     //TODO: do all of this in a new branch not here
     //TODO: have a 'type' for currencies
-    public defaultCurrency: string = 'usd' 
+    public defaultCurrency: string = 'usd' //≈
   ) {}
 }
+
+//LATER: have 'private' sub collection, for api keys and stuff.
