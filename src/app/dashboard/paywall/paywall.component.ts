@@ -16,6 +16,7 @@ import { environment } from 'src/environments/environment';
 import { v4 as uuidv4 } from 'uuid';
 import * as firebase from 'firebase/app';
 import * as moment from 'moment';
+import { AngularFireAnalytics } from '@angular/fire/analytics';
 
 // This lets me use jquery
 declare var $: any;
@@ -55,7 +56,8 @@ export class PaywallComponent implements OnInit, OnDestroy {
 
   constructor(
     private store: Store<fromApp.AppState>,
-    private helperService: HelperService
+    private helperService: HelperService,
+    private _analytics: AngularFireAnalytics
   ) {}
 
   ngOnInit(): void {
@@ -182,6 +184,8 @@ export class PaywallComponent implements OnInit, OnDestroy {
           throw Error(confirmSetupIntent.error.message);
         }
 
+        this._analytics.logEvent('start_trial_subscription');
+
         return subscription;
       } else {
         throw Error('unknown error, try again.');
@@ -248,10 +252,14 @@ export class PaywallComponent implements OnInit, OnDestroy {
         this.newCustomerIdempotencyKey
       );
 
-      return await this.processStripeSubscription(
+      const processedSub = await this.processStripeSubscription(
         subscription,
         paymentMethod.paymentMethod.id
       );
+
+      this._analytics.logEvent('reactivate_subscription');
+
+      return processedSub;
     } catch (error) {
       this.paymentResponseError = error.message;
       this.isPaymentResponseLoading = false;

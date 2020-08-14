@@ -17,7 +17,6 @@ export class Transaction {
   public productName: string;
   public isRefunded: boolean;
   public lastUpdated: Date;
-  //TODO: upTODateCustomer
   //LATER: //isdisputed
 
   constructor(

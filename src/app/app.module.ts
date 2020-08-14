@@ -28,6 +28,7 @@ import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireFunctionsModule } from '@angular/fire/functions';
+import { AngularFireAnalyticsModule } from '@angular/fire/analytics';
 import { HttpClientModule } from '@angular/common/http';
 
 import { environment } from '../environments/environment';
@@ -99,6 +100,7 @@ firebase.initializeApp(environment.firebase);
     FormsModule,
     ReactiveFormsModule,
     AngularFireModule.initializeApp(environment.firebase),
+    AngularFireAnalyticsModule,
     AngularFirestoreModule,
     AngularFireAuthModule,
     AngularFireFunctionsModule,

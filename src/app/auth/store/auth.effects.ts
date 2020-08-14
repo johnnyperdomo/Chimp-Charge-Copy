@@ -10,6 +10,7 @@ import { User } from '../user.model';
 import { MerchantService } from 'src/app/merchants/merchants.service';
 import { Merchant } from 'src/app/merchants/merchant.model';
 import * as firebase from 'firebase/app';
+import { AngularFireAnalytics } from '@angular/fire/analytics';
 
 let userFirstName: string = null;
 let userLastName: string = null;
@@ -63,6 +64,9 @@ export class AuthEffects {
               user.sendEmailVerification();
             }
           });
+        }),
+        tap(() => {
+          this._analytics.logEvent('sign_up', { method: 'Email/Password' });
         }),
         catchError((errorRes) => {
           return this.authService.handleError(errorRes);
@@ -171,6 +175,7 @@ export class AuthEffects {
     private afAuth: AngularFireAuth,
     private authService: AuthService,
     private router: Router,
-    private merchantService: MerchantService
+    private merchantService: MerchantService,
+    private _analytics: AngularFireAnalytics
   ) {}
 }
