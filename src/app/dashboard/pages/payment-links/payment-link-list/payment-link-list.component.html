@@ -2,6 +2,8 @@
 <div *ngIf="isLoading" class="row justify-content-center mb-3">
   <div class="spinner-border text-primary" role="status"></div>
 </div>
+
+<div class="d-lg-none text-muted row justify-content-center">← scroll →</div>
 <div class="card">
   <div class="table-responsive">
     <table class="table table-sm table-nowrap card-table">
@@ -9,6 +11,7 @@
         <tr>
           <!-- LATER: add sort order, filters in table header for payment data-->
           <!-- LATER: add pagination to not show all results in 1 page, order by pages -->
+          <th></th>
           <th>
             <h5 class="text-muted mb-0">
               Payment Link Name
@@ -24,7 +27,7 @@
               Price
             </h5>
           </th>
-          <th colspan="3">
+          <th colspan="2">
             <h5 class="text-muted mb-0">
               Created
             </h5>
@@ -34,6 +37,14 @@
       <tbody class="list">
         <!-- LATER: Make table rows fully tappable, or just allow txn id to be a tappable link, then leads to more in-depth information about the payment -->
         <tr *ngFor="let linkEl of paymentLinks">
+          <td>
+            <button
+              (click)="onCopyLinkAtRow(linkEl.id)"
+              class="btn btn-outline-primary btn-sm"
+            >
+              Copy Link
+            </button>
+          </td>
           <td class="text-wrapper">
             <h5 class="mb-0">{{ linkEl.product.name }}</h5>
             <p class="card-text small text-muted mb-0">
@@ -58,14 +69,7 @@
             </p>
           </td>
           <td>{{ linkEl.created }}</td>
-          <td class="text-right">
-            <button
-              (click)="onCopyLinkAtRow(linkEl.id)"
-              class="btn btn-outline-primary btn-sm"
-            >
-              Copy Link
-            </button>
-          </td>
+
           <td class="text-right">
             <div class="dropdown">
               <a
