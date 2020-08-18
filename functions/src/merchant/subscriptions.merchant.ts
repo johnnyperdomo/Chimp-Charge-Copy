@@ -49,7 +49,7 @@ export async function startTrialSubscription(data: any, userID: string) {
       {
         customer: customer.id,
         items: [{ price: monthly_pro_price_id }],
-        trial_period_days: 30, //30 day free trial
+        trial_period_days: 14, //14 day free trial
         expand: ['latest_invoice.payment_intent'],
       },
       { idempotencyKey: chargeIdempotencyKey }
