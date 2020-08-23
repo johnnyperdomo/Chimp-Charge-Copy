@@ -52,7 +52,7 @@ export class PaywallComponent implements OnInit, OnDestroy {
   isPaymentResponseLoading: boolean = false;
   paymentResponseError: string;
 
-  sevenDaysFromNow = moment().add(14, 'days').format('MMMM Do'); //for trial expiration date; usually 14 days
+  trialLength = moment().add(14, 'days').format('MMMM Do'); //for trial expiration date; usually 14 days
 
   constructor(
     private store: Store<fromApp.AppState>,
