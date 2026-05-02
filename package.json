@@ -34,7 +34,7 @@
     "rxjs": "~6.5.4",
     "stripe": "^8.69.0",
     "tslib": "^1.10.0",
-    "uuid": "^8.1.0",
+    "uuid": "^14.0.0",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
